@@ -37,7 +37,6 @@ print.textspace <- function(x, ...){
 #' @param ... not used
 #' @export
 #' @return a list with elements input and a data.frame called prediction which has columns called label and prob
-#' @export
 predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)
@@ -58,11 +57,10 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
 #' @description K-nearest neighbours using a Starspace model 
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param newdata a character string of length 1
-#' @param ... not used
+#' @param k integer with the number of nearest neighbours
 #' @export
 #' @return a list with elements input and a data.frame called prediction which has columns called label and prob
-#' @export
-starspace_knn <- function(object, newdata, k = 5){
+starspace_knn <- function(object, newdata, k = 5, ...){
   stopifnot(inherits(object, "textspace"))
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)
