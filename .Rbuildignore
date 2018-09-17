@@ -2,6 +2,6 @@
 ^\.Rproj\.user$
 LICENSE
 dev
-*.bin
-*.tsv
+.bin
+.tsv
 
