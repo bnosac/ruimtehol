@@ -70,6 +70,8 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
 [1,] -0.4213823 0.4987145 -0.08066317 -0.6519815 -0.1743725 0.09401496 0.02670185 0.262726 0.1761705 0.04599866
 ```
 
+Currently the package allows to do model building and getting the embeddings. More functionality will be added soon.
+
 ## Notes
 
 - Why did you call the package ruimtehol? Because that is the translation of StarSpace in WestVlaams.
