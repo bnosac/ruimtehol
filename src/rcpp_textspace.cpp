@@ -301,6 +301,26 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string
   return out;
 }
 
+// [[Rcpp::export]]
+Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  starspace::Matrix<starspace::Real> vec = sp->getDocVector(line, " ");
+  std::vector<std::pair<int32_t, starspace::Real>> preds = sp->model_->findLHSLike(vec, k);
+  std::vector<std::string> label;
+  std::vector<float> prob;
+  for (auto n : preds) {
+    //cout << sp->dict_->getSymbol(n.first) << ' ' << n.second << endl;
+    label.push_back(sp->dict_->getSymbol(n.first));
+    prob.push_back(n.second);
+  }
+  Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = line, 
+                                      Rcpp::Named("prediction") = Rcpp::DataFrame::create(
+                                        Rcpp::Named("label") = label,
+                                        Rcpp::Named("prob") = prob,
+                                        Rcpp::Named("stringsAsFactors") = false)); 
+  return out;
+}
+
 
 // [[Rcpp::export]]
 int textspace_embedding_ngram(SEXP textspacemodel, std::string input) {

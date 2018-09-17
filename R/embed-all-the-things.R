@@ -53,6 +53,24 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   }
 }
 
+
+#' @title K-nearest neighbours using a Starspace model 
+#' @description K-nearest neighbours using a Starspace model 
+#' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
+#' @param newdata a character string of length 1
+#' @param ... not used
+#' @export
+#' @return a list with elements input and a data.frame called prediction which has columns called label and prob
+#' @export
+starspace_knn <- function(object, newdata, k = 5){
+  stopifnot(inherits(object, "textspace"))
+  stopifnot(is.character(newdata))
+  stopifnot(length(newdata) == 1)
+  stopifnot(nchar(newdata) > 0)
+  k <- as.integer(k)
+  textspace_knn(object$model, newdata, k)
+}
+
 #' @title Load a Starspace model
 #' @description Load a Starspace model
 #' @param object either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.
