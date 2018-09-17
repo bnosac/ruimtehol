@@ -8,3 +8,4 @@ src/*.dll
 dev
 *.bin
 *.tsv
+inst/paper
