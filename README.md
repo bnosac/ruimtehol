@@ -22,15 +22,15 @@ This package is still under heavy construction and subject to major changes. It 
 library(ruimtehol)
 
 ## Get some training data
-download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "dev/wikipedia_train250k.tgz")
-x <- readLines("dev/wikipedia_train250k.tgz", encoding = "UTF-8")
+download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "wikipedia_train250k.tgz")
+x <- readLines("wikipedia_train250k.tgz", encoding = "UTF-8")
 x <- x[sample(x = length(x), size = 100)]
-writeLines(text = x, sep = "\n", con = "dev/wikipedia_train100.txt")
+writeLines(text = x, sep = "\n", con = "wikipedia_train100.txt")
 ```
 
 ```r
 ## Train
-model <- starspace(trainFile = "dev/wikipedia_train100.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(trainFile = "wikipedia_train100.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
