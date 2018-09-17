@@ -82,8 +82,8 @@ library(ruimtehol)
 data(train_sentences, package = "fastrtext")
 
 filename <- tempfile()
-writeLines(text = paste(paste0("__label__", train_sentences$class.text),  tolower(train_sentences$text), sep = " "),
-con = filename)
+writeLines(text = paste(paste0("__label__", train_sentences$class.text),  tolower(train_sentences$text)),
+           con = filename)
 
 model <- starspace(file = "fastrtext.bin", trainFile = filename, 
                    trainMode = 0, label = "__label__", 
