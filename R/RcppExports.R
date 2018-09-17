@@ -25,6 +25,10 @@ textspace_embedding_doc <- function(textspacemodel, input) {
     .Call('_ruimtehol_textspace_embedding_doc', PACKAGE = 'ruimtehol', textspacemodel, input)
 }
 
+textspace_predict <- function(textspacemodel, input, basedoc = "", sep = " ") {
+    .Call('_ruimtehol_textspace_predict', PACKAGE = 'ruimtehol', textspacemodel, input, basedoc, sep)
+}
+
 textspace_embedding_ngram <- function(textspacemodel, input) {
     .Call('_ruimtehol_textspace_embedding_ngram', PACKAGE = 'ruimtehol', textspacemodel, input)
 }

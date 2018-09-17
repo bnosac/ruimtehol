@@ -115,6 +115,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// textspace_predict
+Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string basedoc, std::string sep);
+RcppExport SEXP _ruimtehol_textspace_predict(SEXP textspacemodelSEXP, SEXP inputSEXP, SEXP basedocSEXP, SEXP sepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
+    Rcpp::traits::input_parameter< std::string >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< std::string >::type basedoc(basedocSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sep(sepSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_predict(textspacemodel, input, basedoc, sep));
+    return rcpp_result_gen;
+END_RCPP
+}
 // textspace_embedding_ngram
 int textspace_embedding_ngram(SEXP textspacemodel, std::string input);
 RcppExport SEXP _ruimtehol_textspace_embedding_ngram(SEXP textspacemodelSEXP, SEXP inputSEXP) {
@@ -135,6 +149,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 1},
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 2},
     {"_ruimtehol_textspace_embedding_doc", (DL_FUNC) &_ruimtehol_textspace_embedding_doc, 2},
+    {"_ruimtehol_textspace_predict", (DL_FUNC) &_ruimtehol_textspace_predict, 4},
     {"_ruimtehol_textspace_embedding_ngram", (DL_FUNC) &_ruimtehol_textspace_embedding_ngram, 2},
     {NULL, NULL, 0}
 };

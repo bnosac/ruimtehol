@@ -26,6 +26,33 @@ print.textspace <- function(x, ...){
   cat(sprintf(" training arguments:\n      %s", paste(params, collapse = "\n      ")), sep = "\n")
 }
 
+
+#' @title Predict using a Starspace model 
+#' @description Predict using a Starspace model 
+#' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
+#' @param newdata a character string of length 1
+#' @param sep character string used to split \code{newdata} using boost::split
+#' @param basedoc optional, the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
+#' the ones from the training data
+#' @param ... not used
+#' @export
+#' @return a list with elements input and a data.frame called prediction which has columns called label and prob
+#' @export
+predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
+  stopifnot(is.character(newdata))
+  stopifnot(length(newdata) == 1)
+  stopifnot(nchar(newdata) > 0)
+  if(object$args$data$trainMode != 0){
+    warning("Using predict on model which was trained with another trainMode than 0.")
+  }
+  if(missing(basedoc)){
+    textspace_predict(object$model, input = newdata, sep = sep)  
+  }else{
+    stopifnot(file.exists(basedoc))
+    textspace_predict(object$model, input = newdata, sep = sep, basedoc = basedoc)  
+  }
+}
+
 #' @title Load a Starspace model
 #' @description Load a Starspace model
 #' @param object either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.

@@ -261,6 +261,45 @@ Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string inp
   return embedding;
 }
 
+// [[Rcpp::export]]
+Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string basedoc = "", std::string sep = " ") {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  // Set dropout probability to 0 in test case.
+  sp->args_->dropoutLHS = 0.0;
+  sp->args_->dropoutRHS = 0.0;
+  // Load basedocs which are set of possible things to predict.
+  if(std::ifstream(basedoc)){
+    sp->args_->basedoc = basedoc;
+    sp->args_->fileFormat = "labelDoc";
+  }
+  sp->loadBaseDocs();
+  
+  // Do the prediction
+  vector<starspace::Base> query_vec;
+  vector<starspace::Predictions> predictions;
+  vector<starspace::Base> tokens;
+  sp->parseDoc(input, query_vec, sep);
+  sp->predictOne(query_vec, predictions);
+  
+  std::vector<std::string> label;
+  std::vector<float> prob;
+  for (int i = 0; i < predictions.size(); i++) {
+    prob.push_back(predictions[i].first);
+    tokens = sp->baseDocs_[predictions[i].second]; 
+    for (auto t : tokens) {
+      // skip ngram tokens
+      if (t.first < sp->dict_->size()) {
+        label.push_back(sp->dict_->getSymbol(t.first));
+      }
+    }
+  }
+  Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = input, 
+                                      Rcpp::Named("prediction") = Rcpp::DataFrame::create(
+                                        Rcpp::Named("label") = label,
+                                        Rcpp::Named("prob") = prob,
+                                        Rcpp::Named("stringsAsFactors") = false)); 
+  return out;
+}
 
 
 // [[Rcpp::export]]

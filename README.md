@@ -72,6 +72,27 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
 
 Currently the package allows to do model building and getting the embeddings. More functionality will be added soon.
 
+#### Another example
+
+Below Starspace is used for classification
+
+```r
+library(fastrtext)
+library(ruimtehol)
+data(train_sentences, package = "fastrtext")
+
+filename <- tempfile()
+writeLines(text = paste(paste0("__label__", train_sentences$class.text),  tolower(train_sentences$text), sep = " "),
+con = filename)
+
+model <- starspace(file = "fastrtext.bin", trainFile = filename, 
+                   trainMode = 0, label = "__label__", 
+                   similarity = "dot", verbose = TRUE, initRandSd = 0.01, adagrad = FALSE, 
+                   ngrams = 1, lr = 0.01, epoch = 5, thread = 20, dim = 10, negSearchLimit = 5, maxNegSamples = 3)
+predict(model, "We developed a two-level machine learning approach that in the first level considers two different 
+                properties important for protein-protein binding derived from structural models of V3 and V3 sequences.")                   
+```
+
 ## Notes
 
 - Why did you call the package ruimtehol? Because that is the translation of StarSpace in WestVlaams.
