@@ -58,6 +58,7 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param newdata a character string of length 1
 #' @param k integer with the number of nearest neighbours
+#' @param ... not used
 #' @export
 #' @return a list with elements input and a data.frame called prediction which has columns called label and prob
 starspace_knn <- function(object, newdata, k = 5, ...){

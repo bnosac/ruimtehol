@@ -12,6 +12,8 @@ starspace_knn(object, newdata, k = 5, ...)
 \item{newdata}{a character string of length 1}
 
 \item{k}{integer with the number of nearest neighbours}
+
+\item{...}{not used}
 }
 \value{
 a list with elements input and a data.frame called prediction which has columns called label and prob
