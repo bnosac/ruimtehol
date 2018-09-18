@@ -309,7 +309,6 @@ Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
   std::vector<std::string> label;
   std::vector<float> prob;
   for (auto n : preds) {
-    //cout << sp->dict_->getSymbol(n.first) << ' ' << n.second << endl;
     label.push_back(sp->dict_->getSymbol(n.first));
     prob.push_back(n.second);
   }
