@@ -14,6 +14,14 @@ This package is still under heavy construction and subject to major changes. It 
 
 - For installing the development version of this package: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
 
+#### Capabilities
+
+This R package allows to 
+
+1. Build Starspace models on your own text
+2. Get embeddings of words/ngrams/sentences/documents
+3. Get predictions from a model
+4. Get nearest neighbours similarity
 
 #### Short example
 
@@ -72,8 +80,6 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
 starspace_knn(model, "What does this bunch of text look like", k = 10)
 starspace_dictionary(model)
 ```
-
-Currently the package allows to do model building and getting the embeddings. More functionality will be added soon.
 
 #### Another example
 

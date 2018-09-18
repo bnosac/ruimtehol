@@ -295,6 +295,27 @@ Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string inp
 }
 
 // [[Rcpp::export]]
+Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, std::string input) {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  if (sp->args_->ngrams <= 1) {
+    Rcpp::stop("Error: your provided model does not use ngram > 1.\n");
+  }
+  starspace::MatrixRow vec = sp->getNgramVector(input);
+  //std::vector<float> values;
+  //for (auto v : vec) { 
+  //  values.push_back(v);
+  //}
+  //Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = input, 
+  //                                    Rcpp::Named("values") = values); 
+  //return out;
+  Rcpp::NumericMatrix embedding(1, vec.size());
+  for(int j = 0; j < vec.size(); j++){
+    embedding(0, j) = vec[j];
+  }
+  return embedding;
+}
+
+// [[Rcpp::export]]
 Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string basedoc = "", std::string sep = " ") {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   // Set dropout probability to 0 in test case.
@@ -354,15 +375,3 @@ Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
 }
 
 
-// [[Rcpp::export]]
-int textspace_embedding_ngram(SEXP textspacemodel, std::string input) {
-  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
-  if (sp->args_->ngrams <= 1) {
-    Rcpp::stop("Error: your provided model does not use ngram > 1.\n");
-  }
-  auto vec = sp->getNgramVector(input);
-  cout << input;
-  for (auto v : vec) { cout << "\t" << v; }
-  cout << endl;
-  return 1;
-}

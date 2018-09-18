@@ -126,6 +126,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// textspace_embedding_ngram
+Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, std::string input);
+RcppExport SEXP _ruimtehol_textspace_embedding_ngram(SEXP textspacemodelSEXP, SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
+    Rcpp::traits::input_parameter< std::string >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_embedding_ngram(textspacemodel, input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // textspace_predict
 Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string basedoc, std::string sep);
 RcppExport SEXP _ruimtehol_textspace_predict(SEXP textspacemodelSEXP, SEXP inputSEXP, SEXP basedocSEXP, SEXP sepSEXP) {
@@ -153,18 +165,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// textspace_embedding_ngram
-int textspace_embedding_ngram(SEXP textspacemodel, std::string input);
-RcppExport SEXP _ruimtehol_textspace_embedding_ngram(SEXP textspacemodelSEXP, SEXP inputSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
-    Rcpp::traits::input_parameter< std::string >::type input(inputSEXP);
-    rcpp_result_gen = Rcpp::wrap(textspace_embedding_ngram(textspacemodel, input));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace_help", (DL_FUNC) &_ruimtehol_textspace_help, 1},
@@ -174,9 +174,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 2},
     {"_ruimtehol_textspace_dictionary", (DL_FUNC) &_ruimtehol_textspace_dictionary, 1},
     {"_ruimtehol_textspace_embedding_doc", (DL_FUNC) &_ruimtehol_textspace_embedding_doc, 2},
+    {"_ruimtehol_textspace_embedding_ngram", (DL_FUNC) &_ruimtehol_textspace_embedding_ngram, 2},
     {"_ruimtehol_textspace_predict", (DL_FUNC) &_ruimtehol_textspace_predict, 4},
     {"_ruimtehol_textspace_knn", (DL_FUNC) &_ruimtehol_textspace_knn, 3},
-    {"_ruimtehol_textspace_embedding_ngram", (DL_FUNC) &_ruimtehol_textspace_embedding_ngram, 2},
     {NULL, NULL, 0}
 };
 

@@ -119,22 +119,24 @@ starspace_save_model <- function(object, file = "textspace.tsv"){
 }
 
 
-#' @title Get the document embeddings
-#' @description Get the document embeddings
+#' @title Get the document or ngram embeddings
+#' @description Get the document or ngram embeddings
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param x character string with text
-#' @param type the type of embedding requested. Currently only 'document' is possible
+#' @param type the type of embedding requested. Either one of 'document' or 'ngram'. In case of document, 
+#' the function returns the document embedding, in case of ngram the function returns the embedding of the 
+#' provided ngram term which is used in the model building. 
 #' @export
 #' @return a matrix 
-starspace_embedding <- function(object, x, type = "document"){
+starspace_embedding <- function(object, x, type = c("document", "ngram")){
   stopifnot(inherits(object, "textspace"))
   stopifnot(is.character(x))
   stopifnot(length(x) == 1)
   type <- match.arg(type)
   if(type == "document"){
     textspace_embedding_doc(object$model, x)  
-  }else{
-    .NotYetImplemented()
+  }else if(type == "ngram"){
+    textspace_embedding_ngram(object$model, x)  
   }
 }
 

@@ -2,20 +2,22 @@
 % Please edit documentation in R/embed-all-the-things.R
 \name{starspace_embedding}
 \alias{starspace_embedding}
-\title{Get the document embeddings}
+\title{Get the document or ngram embeddings}
 \usage{
-starspace_embedding(object, x, type = "document")
+starspace_embedding(object, x, type = c("document", "ngram"))
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
 \item{x}{character string with text}
 
-\item{type}{the type of embedding requested. Currently only 'document' is possible}
+\item{type}{the type of embedding requested. Either one of 'document' or 'ngram'. In case of document, 
+the function returns the document embedding, in case of ngram the function returns the embedding of the 
+provided ngram term which is used in the model building.}
 }
 \value{
 a matrix
 }
 \description{
-Get the document embeddings
+Get the document or ngram embeddings
 }
