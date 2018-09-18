@@ -8,13 +8,7 @@ This repository contains an R package which wraps the StarSpace C++ library (htt
 - Ranking web documents
 - Content-based or Collaborative filtering-based Recommendation, e.g. recommending music or videos.
 
-## Installation
-
-This package is still under heavy construction and subject to major changes. It is not mature yet for CRAN release, you can only install it as follows:
-
-- For installing the development version of this package: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
-
-#### Capabilities
+## Main functionalities
 
 This R package allows to 
 
@@ -22,6 +16,11 @@ This R package allows to
 2. Get embeddings of words/ngrams/sentences/documents
 3. Get predictions from a model
 4. Get nearest neighbours similarity
+
+
+## Installation
+
+This package is still under heavy construction and subject to major changes. It is not mature yet for CRAN release, you can only install it as follows: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
 
 #### Short example
 
