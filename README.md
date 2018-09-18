@@ -14,7 +14,7 @@ This R package allows to
 
 1. Build Starspace models on your own text
 2. Get embeddings of words/ngrams/sentences/documents
-3. Get predictions from a model
+3. Get predictions from a model (e.g. classification / ranking)
 4. Get nearest neighbours similarity
 
 
