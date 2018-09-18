@@ -1,14 +1,74 @@
 
-#' @title Interface to Starspace
-#' @description Interface to Starspace, providing raw access to the textspace functionality. For expert use only.
-#' @param file the path to where the model file will be save. Defaults to 'textspace.bin'
-#' @param ... UNDER CONSTRUCTION. Currently just look to the C++ code of the textspace function in the src/rcpp_textspace.cpp 
-#' or type ruimtehol:::textspace_help() for seeing the Starspace options
+#' @title Interface to Starspace for training a Starspace model
+#' @description Interface to Starspace for training a Starspace model, providing raw access to the C++ functionality. For expert use only.
+#' @param model the full path to where the model file will be saved. Defaults to 'textspace.bin'.
+#' @param file the full path to the file on disk which will be used for training.
+#' @param trainMode integer with the training mode. Possible values are 0, 1, 2, 3, 4 or 5. Defaults to 0. The use cases are
+#' \itemize{
+#' \item 0: tagspace (classification tasks) and search tasks
+#' \item 1: pagespace & docspace (content-based or collaborative filtering-based recommendation)
+#' \item 2: articlespace (sentences within document)
+#' \item 3: sentence embeddings and entity similarity 
+#' \item 4: multi-relational graphs
+#' \item 5: word embeddings 
+#' }
+#' @param fileFormat either one of 'fastText' or 'labelDoc'. See the documentation of StarSpace
+#' @param ... arguments passed on to ruimtehol:::textspace. See the details below.
+#' @references \url{https://github.com/facebookresearch}
+#' @details
+#' The internal function ruimtehol:::textspace allows direct access to the C++ code in order to run Starspace. 
+#' The following arguments are available in that functionality when you do the training. Default settings are shown next to the definition: \cr
+#' 
+#' \strong{Arguments which define how the training is done:}
+#' \itemize{
+#' \item lr:              learning rate [0.01]
+#' \item dim:             size of embedding vectors [100]
+#' \item epoch:           number of epochs [5]
+#' \item maxTrainTime:    max train time (secs) [8640000]
+#' \item negSearchLimit:  number of negatives sampled [50]
+#' \item maxNegSamples:   max number of negatives in a batch update [10]
+#' \item loss:            loss function {hinge, softmax} [hinge]
+#' \item margin:          margin parameter in hinge loss. It's only effective if hinge loss is used. [0.05]
+#' \item similarity:      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss. It's only effective if hinge loss is used. [cosine]
+#' \item adagrad:         whether to use adagrad in training [1]
+#' \item shareEmb:        whether to use the same embedding matrix for LHS and RHS. [1]
+#' \item ws:              only used in trainMode 5, the size of the context window for word level training. [5]
+#' \item dropoutLHS:      dropout probability for LHS features. [0]
+#' \item dropoutRHS:      dropout probability for RHS features. [0]
+#' \item initRandSd:      initial values of embeddings are randomly generated from normal distribution with mean=0, standard deviation=initRandSd. [0.001]
+#' \item trainWord:       whether to train word level together with other tasks (for multi-tasking). [0]
+#' \item wordWeight:      if trainWord is true, wordWeight specifies example weight for word level training examples. [0.5]
+#' }
+#' 
+#' \strong{Arguments specific to the dictionary of words and labels:}
+#' \itemize{
+#' \item minCount:        minimal number of word occurences [1]
+#' \item minCountLabel:   minimal number of label occurences [1]
+#' \item ngrams:          max length of word ngram [1]
+#' \item bucket:          number of buckets [2000000]
+#' \item label:           labels prefix [__label__]
+#' }
+#' 
+#' \strong{Arguments which define early stopping or proceeding of model building:}
+#' \itemize{
+#' \item initModel:       if not empty, it loads a previously trained model in -initModel and carry on training.
+#' \item validationFile:  validation file path
+#' \item validationPatience:    number of iterations of validation where does not improve before we stop training [10]
+#' \item saveEveryEpoch:  save intermediate models after each epoch [0]
+#' \item saveTempModel:   save intermediate models after each epoch with an unique name including epoch number [0]
+#' }
 #' @export
 #' @return an object of class textspace
-starspace <- function(file = "textspace.bin", ...) {
+starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat = c("fastText", "labelDoc"), ...) {
   file <- path.expand(file)
-  object <- textspace(file = file, ...)
+  stopifnot(trainMode %in% 0:5 && length(trainMode) == 1)
+  fileFormat <- match.arg(fileFormat)
+  ldots <- list(...)
+  wrong <- intersect(c("testFile", "basedoc", "predictionFile", "K", "excludeLHS"), names(ldots))
+  if(length(wrong)){
+    stop(sprintf("You should not pass the arguments %s as they can only be used when doing starspace_test", paste(wrong, collapse = ", ")))
+  }
+  object <- textspace(model = model, trainFile = file, trainMode = as.integer(trainMode), fileFormat = fileFormat, ...)
   class(object) <- "textspace"
   object
 }

@@ -2,7 +2,7 @@
 #' @description Build a Starspace model to be used for classification purposes
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param y a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}
-#' @param file name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
 #' @param ... further arguments passed on to \code{\link{starspace}}
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -16,7 +16,7 @@
 #'                             dim = 10, minCount = 5)
 #' predict(model, "room close to centre gare du midi")
 #' starspace_embedding(model, "room close to centre gare du midi")
-textspace_classify <- function(x, y, file = "textspace_classifier.bin", ...) {
+textspace_classify <- function(x, y, model = "textspace_classifier.bin", ...) {
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
   label <- "__label__"
@@ -29,7 +29,7 @@ textspace_classify <- function(x, y, file = "textspace_classifier.bin", ...) {
     targets <- paste(label, y, sep = "")
   }
   writeLines(text = paste(targets, x), con = filename)
-  starspace(file = file, trainFile = filename, trainMode = 0, label = label, fileFormat = "fastText", ...)
+  starspace(model = model, file = filename, trainMode = 0, label = label, fileFormat = "fastText", ...)
 }
 
 #' @title NotYetImplemented

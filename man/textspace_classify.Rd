@@ -4,14 +4,14 @@
 \alias{textspace_classify}
 \title{Build a Starspace model to be used for classification purposes}
 \usage{
-textspace_classify(x, y, file = "textspace_classifier.bin", ...)
+textspace_classify(x, y, model = "textspace_classifier.bin", ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
 
 \item{y}{a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}}
 
-\item{file}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+\item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
 \item{...}{further arguments passed on to \code{\link{starspace}}}
 }

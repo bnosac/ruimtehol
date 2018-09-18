@@ -37,7 +37,7 @@ writeLines(text = x, sep = "\n", con = "wikipedia_train100.txt")
 
 ```r
 ## Train
-model <- starspace(trainFile = "wikipedia_train100.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(file = "wikipedia_train100.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
@@ -93,7 +93,7 @@ filename <- tempfile()
 writeLines(text = paste(paste0("__label__", train_sentences$class.text),  tolower(train_sentences$text)),
            con = filename)
 
-model <- starspace(file = "fastrtext.bin", trainFile = filename, 
+model <- starspace(file = filename, 
                    trainMode = 0, label = "__label__", 
                    similarity = "dot", verbose = TRUE, initRandSd = 0.01, adagrad = FALSE, 
                    ngrams = 1, lr = 0.01, epoch = 5, thread = 20, dim = 10, negSearchLimit = 5, maxNegSamples = 3)

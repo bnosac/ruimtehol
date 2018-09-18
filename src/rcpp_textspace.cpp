@@ -81,7 +81,7 @@ Rcpp::List textspace_args(SEXP textspacemodel) {
 
 
 // [[Rcpp::export]]
-Rcpp::List textspace(std::string file = "textspace.bin",
+Rcpp::List textspace(std::string model = "textspace.bin",
                      /* Arguments specific for training */
                      std::string trainFile = "",
                      std::string initModel = "",
@@ -129,7 +129,7 @@ Rcpp::List textspace(std::string file = "textspace.bin",
                      bool trainWord = false,
                      bool excludeLHS = false) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
-  args->model = file;
+  args->model = model;
   /*
    * Check if it is training or testing
    */
