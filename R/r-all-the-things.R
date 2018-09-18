@@ -24,7 +24,7 @@ textspace_classify <- function(x, y, file = "textspace_classifier.bin", ...) {
     label <- ldots$label
   }
   if(is.list(y)){
-    targets <- sapply(y, FUN=function(x) txt_collapse(paste(label, x, sep = "")))
+    targets <- sapply(y, FUN=function(x) paste(paste(label, x, sep = ""), collapse = " "))
   }else{
     targets <- paste(label, y, sep = "")
   }
