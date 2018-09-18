@@ -21,6 +21,10 @@ textspace_save_model <- function(textspacemodel, file = "textspace.tsv") {
     .Call('_ruimtehol_textspace_save_model', PACKAGE = 'ruimtehol', textspacemodel, file)
 }
 
+textspace_dictionary <- function(textspacemodel) {
+    .Call('_ruimtehol_textspace_dictionary', PACKAGE = 'ruimtehol', textspacemodel)
+}
+
 textspace_embedding_doc <- function(textspacemodel, input) {
     .Call('_ruimtehol_textspace_embedding_doc', PACKAGE = 'ruimtehol', textspacemodel, input)
 }

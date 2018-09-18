@@ -246,6 +246,39 @@ Rcpp::List textspace_save_model(SEXP textspacemodel, std::string file = "textspa
 
 
 // [[Rcpp::export]]
+Rcpp::List textspace_dictionary(SEXP textspacemodel) {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  std::vector<std::string> labels;
+  std::vector<std::string> key;
+  std::vector<bool> is_word;
+  std::vector<bool> is_label;
+  starspace::entry_type wordorlabel;
+  
+  for(int32_t i = 0; i < sp->dict_->size(); i++){
+    key.push_back(sp->dict_->getSymbol(i));
+    wordorlabel = sp->dict_->getType(i);
+    is_word.push_back(wordorlabel == starspace::entry_type::word);
+    is_label.push_back(wordorlabel == starspace::entry_type::label);
+  }
+  for(int32_t i = 0; i < sp->dict_->nlabels(); i++){
+    labels.push_back(sp->dict_->getLabel(i));
+  }
+  Rcpp::List out = Rcpp::List::create(
+    Rcpp::Named("ntokens") = sp->dict_->ntokens(),
+    Rcpp::Named("nwords") = sp->dict_->nwords(),
+    Rcpp::Named("nlabels") = sp->dict_->nlabels(),
+    Rcpp::Named("labels") = labels,
+    Rcpp::Named("dictionary") = Rcpp::DataFrame::create(
+      Rcpp::Named("term") = key,
+      Rcpp::Named("is_word") = is_word,
+      Rcpp::Named("is_label") = is_label,
+      Rcpp::Named("stringsAsFactors") = false)
+  );
+  return out;
+}
+
+
+// [[Rcpp::export]]
 Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string input) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   // set useWeight by default. use 1.0 for default weight if weight is not found

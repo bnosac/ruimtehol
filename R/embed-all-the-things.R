@@ -26,6 +26,24 @@ print.textspace <- function(x, ...){
   cat(sprintf(" training arguments:\n      %s", paste(params, collapse = "\n      ")), sep = "\n")
 }
 
+#' @title Get the dictionary of a Starspace model
+#' @description Get the dictionary of a Starspace model
+#' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
+#' @export
+#' @return a list with elements 
+#' \enumerate{
+#' \item{ntokens: }{The number of tokens in the data}
+#' \item{nwords: }{The number of words which are part of the dictionary}
+#' \item{nlabels: }{The number of labels which are part of the dictionary}
+#' \item{labels: }{A character vector with the labels}
+#' \item{dictionary: }{A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
+#' for each term if it is a word or a label}
+#' }
+starspace_dictionary <- function(object){
+  stopifnot(inherits(object, "textspace"))
+  textspace_dictionary(object$model)
+}
+
 
 #' @title Predict using a Starspace model 
 #' @description Predict using a Starspace model 

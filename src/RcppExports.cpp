@@ -103,6 +103,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// textspace_dictionary
+Rcpp::List textspace_dictionary(SEXP textspacemodel);
+RcppExport SEXP _ruimtehol_textspace_dictionary(SEXP textspacemodelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_dictionary(textspacemodel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // textspace_embedding_doc
 Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string input);
 RcppExport SEXP _ruimtehol_textspace_embedding_doc(SEXP textspacemodelSEXP, SEXP inputSEXP) {
@@ -161,6 +172,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 44},
     {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 1},
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 2},
+    {"_ruimtehol_textspace_dictionary", (DL_FUNC) &_ruimtehol_textspace_dictionary, 1},
     {"_ruimtehol_textspace_embedding_doc", (DL_FUNC) &_ruimtehol_textspace_embedding_doc, 2},
     {"_ruimtehol_textspace_predict", (DL_FUNC) &_ruimtehol_textspace_predict, 4},
     {"_ruimtehol_textspace_knn", (DL_FUNC) &_ruimtehol_textspace_knn, 3},

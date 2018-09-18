@@ -69,7 +69,8 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
            [,1]      [,2]        [,3]       [,4]       [,5]       [,6]       [,7]     [,8]      [,9]      [,10]
 [1,] -0.4213823 0.4987145 -0.08066317 -0.6519815 -0.1743725 0.09401496 0.02670185 0.262726 0.1761705 0.04599866
 
-starspace_knn(model, "What does this bunch of text like", k = 10)
+starspace_knn(model, "What does this bunch of text look like", k = 10)
+starspace_dictionary(model)
 ```
 
 Currently the package allows to do model building and getting the embeddings. More functionality will be added soon.
