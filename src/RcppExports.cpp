@@ -81,13 +81,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // textspace_load_model
-Rcpp::List textspace_load_model(const std::string file_model);
-RcppExport SEXP _ruimtehol_textspace_load_model(SEXP file_modelSEXP) {
+Rcpp::List textspace_load_model(const std::string file_model, bool is_tsv);
+RcppExport SEXP _ruimtehol_textspace_load_model(SEXP file_modelSEXP, SEXP is_tsvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type file_model(file_modelSEXP);
-    rcpp_result_gen = Rcpp::wrap(textspace_load_model(file_model));
+    Rcpp::traits::input_parameter< bool >::type is_tsv(is_tsvSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_load_model(file_model, is_tsv));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -170,7 +171,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace_help", (DL_FUNC) &_ruimtehol_textspace_help, 1},
     {"_ruimtehol_textspace_args", (DL_FUNC) &_ruimtehol_textspace_args, 1},
     {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 44},
-    {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 1},
+    {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 2},
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 2},
     {"_ruimtehol_textspace_dictionary", (DL_FUNC) &_ruimtehol_textspace_dictionary, 1},
     {"_ruimtehol_textspace_embedding_doc", (DL_FUNC) &_ruimtehol_textspace_embedding_doc, 2},

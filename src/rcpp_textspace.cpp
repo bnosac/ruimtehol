@@ -226,11 +226,15 @@ Rcpp::List textspace(std::string file = "textspace.bin",
 
 
 // [[Rcpp::export]]
-Rcpp::List textspace_load_model(const std::string file_model) {
+Rcpp::List textspace_load_model(const std::string file_model, bool is_tsv = false) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = file_model;
   Rcpp::XPtr<starspace::StarSpace> sp(new starspace::StarSpace(args), true);
-  sp->initFromSavedModel(args->model);
+  if(is_tsv){
+    sp->initFromTsv(args->model);
+  }else{
+    sp->initFromSavedModel(args->model);  
+  }
   Rcpp::List out = Rcpp::List::create(
     Rcpp::Named("model") = sp,
     Rcpp::Named("args") = textspace_args(sp));

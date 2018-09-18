@@ -4,10 +4,13 @@
 \alias{starspace_load_model}
 \title{Load a Starspace model}
 \usage{
-starspace_load_model(object)
+starspace_load_model(object, is_tsv = FALSE)
 }
 \arguments{
 \item{object}{either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.}
+
+\item{is_tsv}{logical indicating that if \code{object} is a file on disk, it is a tab-separated flat file. 
+Defaults to \code{FALSE} indicating it is binary file as created by a call to \code{\link{starspace}}}
 }
 \value{
 an object of class textspace

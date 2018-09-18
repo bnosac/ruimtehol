@@ -13,8 +13,8 @@ textspace <- function(file = "textspace.bin", trainFile = "", initModel = "", va
     .Call('_ruimtehol_textspace', PACKAGE = 'ruimtehol', file, trainFile, initModel, validationFile, testFile, basedoc, predictionFile, fileFormat, label, loss, similarity, lr, termLr, norm, margin, initRandSd, p, dropoutLHS, dropoutRHS, wordWeight, dim, epoch, ws, maxTrainTime, validationPatience, thread, maxNegSamples, negSearchLimit, minCount, minCountLabel, bucket, ngrams, trainMode, K, verbose, debug, adagrad, normalizeText, saveEveryEpoch, saveTempModel, shareEmb, useWeight, trainWord, excludeLHS)
 }
 
-textspace_load_model <- function(file_model) {
-    .Call('_ruimtehol_textspace_load_model', PACKAGE = 'ruimtehol', file_model)
+textspace_load_model <- function(file_model, is_tsv = FALSE) {
+    .Call('_ruimtehol_textspace_load_model', PACKAGE = 'ruimtehol', file_model, is_tsv)
 }
 
 textspace_save_model <- function(textspacemodel, file = "textspace.tsv") {

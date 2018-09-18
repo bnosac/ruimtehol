@@ -91,17 +91,20 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' @title Load a Starspace model
 #' @description Load a Starspace model
 #' @param object either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.
+#' @param is_tsv logical indicating that if \code{object} is a file on disk, it is a tab-separated flat file. 
+#' Defaults to \code{FALSE} indicating it is binary file as created by a call to \code{\link{starspace}}
 #' @export
 #' @return an object of class textspace
-starspace_load_model <- function(object){
+starspace_load_model <- function(object, is_tsv = FALSE){
   if(inherits(object, "textspace")){
     filename <- object$args$file
+    is_tsv <- FALSE
   }else{
     stopifnot(is.character(object))
     stopifnot(file.exists(object))
     filename <- object
   }
-  object <- textspace_load_model(filename)
+  object <- textspace_load_model(filename, is_tsv)
   class(object) <- "textspace"
   object
 }
