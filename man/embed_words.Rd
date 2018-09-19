@@ -2,13 +2,38 @@
 % Please edit documentation in R/r-all-the-things.R
 \name{embed_words}
 \alias{embed_words}
-\title{NotYetImplemented}
+\title{Build a Starspace model which calculates word embeddings}
 \usage{
-embed_words()
+embed_words(x, model = "embed_words.bin", ...)
+}
+\arguments{
+\item{x}{a character vector of text where tokens are separated by spaces}
+
+\item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{...}{further arguments passed on to \code{\link{starspace}}}
 }
 \value{
-NotYetImplemented
+an object of class \code{textspace} as returned by \code{\link{starspace}}.
 }
 \description{
-NotYetImplemented
+Build a Starspace model which calculates word embeddings
+}
+\examples{
+library(udpipe)
+library(tokenizers)
+data(brussels_reviews, package = "udpipe")
+x <- subset(brussels_reviews, language == "nl")
+x <- tokenize_words(x$feedback)
+x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
+
+model <- embed_words(x, dim = 25, ws = 7, loss = "softmax", epoch = 20)
+wordvectors <- as.matrix(model)
+
+mostsimilar <- tcrossprod(wordvectors, wordvectors["weekend", , drop = FALSE])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
+mostsimilar <- tcrossprod(wordvectors, wordvectors["vriendelijk", , drop = FALSE])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
+mostsimilar <- tcrossprod(wordvectors, wordvectors["grote", , drop = FALSE])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 }

@@ -4,7 +4,7 @@
 \alias{textspace_classify}
 \title{Build a Starspace model to be used for classification purposes}
 \usage{
-textspace_classify(x, y, model = "textspace_classifier.bin", ...)
+textspace_classify(x, y, model = "tagspace.bin", ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
@@ -26,7 +26,7 @@ library(udpipe)
 library(tokenizers)
 data(brussels_listings, package = "udpipe")
 x <- tokenize_words(brussels_listings$name)
-x <- sapply(x, FUN=txt_collapse)
+x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 model <- textspace_classify(x = x, y = brussels_listings$room_type, 
                             dim = 10, minCount = 5)
 predict(model, "room close to centre gare du midi")
