@@ -37,7 +37,7 @@ writeLines(text = x, sep = "\n", con = "wikipedia_train100.txt")
 
 ```r
 ## Train
-model <- starspace(file = "dev/wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(file = "wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
