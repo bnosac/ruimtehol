@@ -47,7 +47,7 @@ textspace_classify <- function(x, y, model = "tagspace.bin", ...) {
 #' x <- tokenize_words(x$feedback)
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
-#' model <- embed_words(x, dim = 25, ws = 7, loss = "softmax", epoch = 20)
+#' model <- embed_words(x, dim = 25, ws = 7, loss = "softmax", epoch = 5)
 #' wordvectors <- as.matrix(model)
 #' 
 #' mostsimilar <- tcrossprod(wordvectors, wordvectors["weekend", , drop = FALSE])
