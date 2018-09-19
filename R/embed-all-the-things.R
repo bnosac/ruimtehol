@@ -204,3 +204,14 @@ starspace_embedding <- function(object, x, type = c("document", "ngram")){
 }
 
 
+#' @export
+as.matrix.textspace <- function(x, ...){
+  embedding_dimension <- x$args$dim
+  filename <- tempfile()
+  starspace_save_model(x, file = filename)
+  x <- utils::read.delim(filename, header = FALSE, stringsAsFactors = FALSE, encoding = "UTF-8", colClasses = c("character", rep("numeric", embedding_dimension)))
+  dn <- list(x$V1, 1:(ncol(x)-1))
+  x <- as.matrix(x[, -1, drop = FALSE])
+  dimnames(x) <- dn
+  x
+}

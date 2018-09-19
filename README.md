@@ -37,7 +37,7 @@ writeLines(text = x, sep = "\n", con = "wikipedia_train100.txt")
 
 ```r
 ## Train
-model <- starspace(file = "wikipedia_train100.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(file = "dev/wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
@@ -61,6 +61,15 @@ Object of class textspace
       dropoutLHS: 0
       dropoutRHS: 0
       initRandSd: 0.001
+```
+
+```r
+embedding <- as.matrix(model)
+embedding[c("school", "house"), ]
+
+               1           2            3         4           5          6          7          8          9        10
+school 0.0201249 -0.00478271 -0.018693000 0.0155070  0.01113670 -0.0184385 0.00892674 0.00549661 -0.0144082 0.0056668
+house  0.0123371  0.01406140 -0.000166073 0.0313477 -0.00962703 -0.0237911 0.00225086 0.03393420  0.0035634 0.0160656
 ```
 
 ```r
