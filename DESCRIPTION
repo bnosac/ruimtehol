@@ -8,7 +8,7 @@ Authors@R: c(
     person('BNOSAC', role = 'cph', comment = "R wrapper"), 
     person('Facebook, Inc.', role = 'cph', comment = "Starspace (BSD licensed)"))
 Description: Wraps the 'StarSpace' library <https://github.com/facebookresearch/StarSpace> allowing users to calculate word, sentence, article, document, webpage, link and entity embeddings as well as text based classification. 
-    The techniques are explained in detail in the paper: 'StarSpace: Embed All The Things!', available at <https://arxiv.org/abs/1709.03856>.
+    The techniques are explained in detail in the paper: 'StarSpace: Embed All The Things!', available at <arXiv:1709.03856>.
 License: MPL-2.0
 Encoding: UTF-8
 LazyData: true
