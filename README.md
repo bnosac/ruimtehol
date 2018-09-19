@@ -31,8 +31,8 @@ library(ruimtehol)
 ## Get some training data
 download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "wikipedia_train250k.tgz")
 x <- readLines("wikipedia_train250k.tgz", encoding = "UTF-8")
-x <- x[sample(x = length(x), size = 100)]
-writeLines(text = x, sep = "\n", con = "wikipedia_train100.txt")
+x <- x[sample(x = length(x), size = 10000)]
+writeLines(text = x, sep = "\n", con = "wikipedia_train10k.txt")
 ```
 
 ```r
