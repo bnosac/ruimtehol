@@ -187,8 +187,8 @@ starspace_save_model <- function(object, file = "textspace.tsv"){
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param x character vector with text to get the embeddings 
 #' \itemize{
-#' \item If \code{type} is set to 'document', will assume that ' \t' is used as separator of the sentences of each element of \code{x}.
-#' \item If \code{type} is set to 'ngram', will assume that ' ' is used as separator of the words in case \code{x} contains words.
+#' \item If \code{type} is set to 'document', will assume that a space followed by a tab is used as separator of the sentences of each element of \code{x}.
+#' \item If \code{type} is set to 'ngram', will assume that a space is used as separator of the words in case \code{x} contains words.
 #' }
 #' @param type the type of embedding requested. Either one of 'document' or 'ngram'. In case of document, 
 #' the function returns the document embedding, in case of ngram the function returns the embedding of the 

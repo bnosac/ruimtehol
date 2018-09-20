@@ -11,8 +11,8 @@ starspace_embedding(object, x, type = c("document", "ngram"))
 
 \item{x}{character vector with text to get the embeddings 
 \itemize{
-\item If \code{type} is set to 'document', will assume that ' \t' is used as separator of the sentences of each element of \code{x}.
-\item If \code{type} is set to 'ngram', will assume that ' ' is used as separator of the words in case \code{x} contains words.
+\item If \code{type} is set to 'document', will assume that a space followed by a tab is used as separator of the sentences of each element of \code{x}.
+\item If \code{type} is set to 'ngram', will assume that a space is used as separator of the words in case \code{x} contains words.
 }}
 
 \item{type}{the type of embedding requested. Either one of 'document' or 'ngram'. In case of document, 
