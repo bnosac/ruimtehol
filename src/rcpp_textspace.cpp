@@ -306,9 +306,6 @@ Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, Rcpp::StringVec
 // [[Rcpp::export]]
 Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringVector x) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
-  if (sp->args_->ngrams <= 1) {
-    Rcpp::stop("Error: your provided model does not use ngram > 1.\n");
-  }
   Rcpp::NumericMatrix embedding(x.size(), sp->args_->dim);
   rownames(embedding) = x; 
   for (int i = 0; i < x.size(); i++){
