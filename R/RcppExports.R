@@ -25,12 +25,12 @@ textspace_dictionary <- function(textspacemodel) {
     .Call('_ruimtehol_textspace_dictionary', PACKAGE = 'ruimtehol', textspacemodel)
 }
 
-textspace_embedding_doc <- function(textspacemodel, input) {
-    .Call('_ruimtehol_textspace_embedding_doc', PACKAGE = 'ruimtehol', textspacemodel, input)
+textspace_embedding_doc <- function(textspacemodel, x) {
+    .Call('_ruimtehol_textspace_embedding_doc', PACKAGE = 'ruimtehol', textspacemodel, x)
 }
 
-textspace_embedding_ngram <- function(textspacemodel, input) {
-    .Call('_ruimtehol_textspace_embedding_ngram', PACKAGE = 'ruimtehol', textspacemodel, input)
+textspace_embedding_ngram <- function(textspacemodel, x) {
+    .Call('_ruimtehol_textspace_embedding_ngram', PACKAGE = 'ruimtehol', textspacemodel, x)
 }
 
 textspace_predict <- function(textspacemodel, input, basedoc = "", sep = " ") {

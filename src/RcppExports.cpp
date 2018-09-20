@@ -116,26 +116,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // textspace_embedding_doc
-Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string input);
-RcppExport SEXP _ruimtehol_textspace_embedding_doc(SEXP textspacemodelSEXP, SEXP inputSEXP) {
+Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, Rcpp::StringVector x);
+RcppExport SEXP _ruimtehol_textspace_embedding_doc(SEXP textspacemodelSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
-    Rcpp::traits::input_parameter< std::string >::type input(inputSEXP);
-    rcpp_result_gen = Rcpp::wrap(textspace_embedding_doc(textspacemodel, input));
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_embedding_doc(textspacemodel, x));
     return rcpp_result_gen;
 END_RCPP
 }
 // textspace_embedding_ngram
-Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, std::string input);
-RcppExport SEXP _ruimtehol_textspace_embedding_ngram(SEXP textspacemodelSEXP, SEXP inputSEXP) {
+Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringVector x);
+RcppExport SEXP _ruimtehol_textspace_embedding_ngram(SEXP textspacemodelSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
-    Rcpp::traits::input_parameter< std::string >::type input(inputSEXP);
-    rcpp_result_gen = Rcpp::wrap(textspace_embedding_ngram(textspacemodel, input));
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_embedding_ngram(textspacemodel, x));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -283,38 +283,40 @@ Rcpp::List textspace_dictionary(SEXP textspacemodel) {
 
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, std::string input) {
+Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, Rcpp::StringVector x) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   // set useWeight by default. use 1.0 for default weight if weight is not found
   sp->args_->useWeight = true;
-  // get docvector and return it as a matrix
-  starspace::Matrix<starspace::Real> vec = sp->getDocVector(input, " \t");
-  Rcpp::NumericMatrix embedding(vec.numRows(), vec.numCols());
-  for(int i = 0; i < vec.numRows(); i++){
+  // get docvector of each document and return it as a matrix
+  Rcpp::NumericMatrix embedding(x.size(), sp->args_->dim);
+  rownames(embedding) = x;
+  for (int i = 0; i < x.size(); i++){
+    std::string input = Rcpp::as<std::string>(x[i]);
+    starspace::Matrix<starspace::Real> vec = sp->getDocVector(input, " \t");
+    if(vec.numRows() > 1){
+      Rcpp::stop("Unexpected outcome of sp->getDocVector, please report to the ruimtehol maintainer.");
+    }
     for(int j = 0; j < vec.numCols(); j++){
-      embedding(i, j) = vec.cell(i, j);
+      embedding(i, j) = vec.cell(0, j);
     }
   }
   return embedding;
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, std::string input) {
+Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringVector x) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   if (sp->args_->ngrams <= 1) {
     Rcpp::stop("Error: your provided model does not use ngram > 1.\n");
   }
-  starspace::MatrixRow vec = sp->getNgramVector(input);
-  //std::vector<float> values;
-  //for (auto v : vec) { 
-  //  values.push_back(v);
-  //}
-  //Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = input, 
-  //                                    Rcpp::Named("values") = values); 
-  //return out;
-  Rcpp::NumericMatrix embedding(1, vec.size());
-  for(int j = 0; j < vec.size(); j++){
-    embedding(0, j) = vec[j];
+  Rcpp::NumericMatrix embedding(x.size(), sp->args_->dim);
+  rownames(embedding) = x; 
+  for (int i = 0; i < x.size(); i++){
+    std::string input = Rcpp::as<std::string>(x[i]);
+    starspace::MatrixRow vec = sp->getNgramVector(input);
+    for(int j = 0; j < vec.size(); j++){
+      embedding(i, j) = vec[j];
+    }
   }
   return embedding;
 }
