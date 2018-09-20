@@ -19,7 +19,7 @@ the ones from the training data}
 \item{...}{not used}
 }
 \value{
-a list with elements input and a data.frame called prediction which has columns called label and prob
+a list with elements input and a data.frame called prediction which has columns called label and similarity
 }
 \description{
 Predict using a Starspace model

@@ -114,7 +114,7 @@ starspace_dictionary <- function(object){
 #' the ones from the training data
 #' @param ... not used
 #' @export
-#' @return a list with elements input and a data.frame called prediction which has columns called label and prob
+#' @return a list with elements input and a data.frame called prediction which has columns called label and similarity
 predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)

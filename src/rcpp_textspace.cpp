@@ -353,7 +353,7 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string
   Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = input, 
                                       Rcpp::Named("prediction") = Rcpp::DataFrame::create(
                                         Rcpp::Named("label") = label,
-                                        Rcpp::Named("prob") = prob,
+                                        Rcpp::Named("similarity") = prob,
                                         Rcpp::Named("stringsAsFactors") = false)); 
   return out;
 }
@@ -372,7 +372,7 @@ Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
   Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = line, 
                                       Rcpp::Named("prediction") = Rcpp::DataFrame::create(
                                         Rcpp::Named("label") = label,
-                                        Rcpp::Named("prob") = prob,
+                                        Rcpp::Named("similarity") = prob,
                                         Rcpp::Named("stringsAsFactors") = false)); 
   return out;
 }
