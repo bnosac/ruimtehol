@@ -5,6 +5,26 @@
 
 using namespace Rcpp;
 
+// rand
+int rand();
+RcppExport SEXP _ruimtehol_rand() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(rand());
+    return rcpp_result_gen;
+END_RCPP
+}
+// srand
+void srand(unsigned int seed);
+RcppExport SEXP _ruimtehol_srand(SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    srand(seed);
+    return R_NilValue;
+END_RCPP
+}
 // textspace_help
 void textspace_help(std::string type);
 RcppExport SEXP _ruimtehol_textspace_help(SEXP typeSEXP) {
@@ -168,6 +188,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_ruimtehol_rand", (DL_FUNC) &_ruimtehol_rand, 0},
+    {"_ruimtehol_srand", (DL_FUNC) &_ruimtehol_srand, 1},
     {"_ruimtehol_textspace_help", (DL_FUNC) &_ruimtehol_textspace_help, 1},
     {"_ruimtehol_textspace_args", (DL_FUNC) &_ruimtehol_textspace_args, 1},
     {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 44},
