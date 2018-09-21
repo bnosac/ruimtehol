@@ -64,7 +64,8 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
   stopifnot(trainMode %in% 0:5 && length(trainMode) == 1)
   fileFormat <- match.arg(fileFormat)
   ldots <- list(...)
-  wrong <- intersect(c("testFile", "basedoc", "predictionFile", "K", "excludeLHS"), names(ldots))
+  #wrong <- intersect(c("testFile", "basedoc", "predictionFile", "K", "excludeLHS"), names(ldots))
+  wrong <- intersect(c("testFile", "basedoc", "predictionFile", "excludeLHS"), names(ldots))
   if(length(wrong)){
     stop(sprintf("You should not pass the arguments %s as they can only be used when doing starspace_test", paste(wrong, collapse = ", ")))
   }
