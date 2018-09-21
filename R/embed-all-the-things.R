@@ -123,11 +123,12 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
     warning("Using predict on model which was trained with another trainMode than 0.")
   }
   if(missing(basedoc)){
-    textspace_predict(object$model, input = newdata, sep = sep)  
+    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep))
   }else{
     stopifnot(file.exists(basedoc))
-    textspace_predict(object$model, input = newdata, sep = sep, basedoc = basedoc)  
+    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, basedoc = basedoc))
   }
+  scores
 }
 
 
