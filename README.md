@@ -8,21 +8,46 @@ This repository contains an R package which wraps the StarSpace C++ library (htt
 - Ranking web documents
 - Content-based or Collaborative filtering-based Recommendation, e.g. recommending music or videos.
 
-## Main functionalities
+<img src="vignettes/logo-ruimtehol.png" width="600">
 
-This R package allows to 
-
-1. Build Starspace models on your own text
-2. Get embeddings of words/ngrams/sentences/documents
-3. Get predictions from a model (e.g. classification / ranking)
-4. Get nearest neighbours similarity
 
 
 ## Installation
 
-This package is still under heavy construction and subject to major changes. It is not mature yet for CRAN release, you can only install it as follows: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
+This package is not on CRAN, you can only install it as follows: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
 
-#### Short example
+
+## Main functionalities
+
+This R package allows to *Build Starspace models* on your own text / *Get embeddings* of words/ngrams/sentences/documents / Get *predictions* from a model (e.g. classification / ranking) / Get *nearest neighbours similarity*
+
+The following functions are made available.
+
+| Function                      | Functionality                                                  |
+|-------------------------------|----------------------------------------------------------------|
+| `starspace`                   | Low-level interface to build a Starspace model                 |
+| `starspace_load_model`        | Load a pre-trained model or a tab-separated file               |
+| `starspace_save_model`        | Save a Starspace model to a tab-separated file                 |
+| `starspace_embedding`         | Get embeddings of documents/words/ngrams/labels                |
+| `starspace_knn`               | Find k-neareast neighbouring label                             |
+| `starspace_dictonary`         | Get words/labels with the model dictionary                     |
+| `predict.textspace`           | Get predictions along a Starspace model                        |
+| `as.matrix`                   | Get words/labels word embeddings                               |
+| `embedding_similarity`        | Basic cosine/dot product based similarity                      |
+| `embed_words`                 | Build a Starspace model which calculates word/ngram embeddings                              |
+| `embed_sentences`             | Build a Starspace model which calculates sentence embeddings                                |
+| `embed_tagspace`              | Build a Starspace model for multi-label classification                                      |
+| `embed_pagespace`             | Build a Starspace model for interest-based recommendation and page embeddings               |
+| `embed_docspace`              | Build a Starspace model for content-based recommendation                                    |
+| `embed_articlespace`          | Build a Starspace model for embedding an article and finding sentences-article similarities |
+| `embed_graphspace`            | Build a Starspace model for entity completion (still under construction)                    |
+
+
+
+## Example
+
+
+### Short example showing word embeddings
 
 
 ```r
@@ -89,7 +114,8 @@ starspace_knn(model, "What does this bunch of text look like", k = 10)
 starspace_dictionary(model)
 ```
 
-#### Another example
+### Short example showing classification modelling (tagspace)
+
 
 Below Starspace is used for classification
 
