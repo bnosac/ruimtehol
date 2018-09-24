@@ -27,13 +27,13 @@ x <- subset(brussels_reviews, language == "nl")
 x <- tokenize_words(x$feedback)
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
-model <- embed_words(x, dim = 25, ws = 7, loss = "softmax", epoch = 5)
+model <- embed_words(x, dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
 wordvectors <- as.matrix(model)
 
-mostsimilar <- tcrossprod(wordvectors, wordvectors["weekend", , drop = FALSE])
+mostsimilar <- embedding_similarity(wordvectors, wordvectors["weekend", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-mostsimilar <- tcrossprod(wordvectors, wordvectors["vriendelijk", , drop = FALSE])
+mostsimilar <- embedding_similarity(wordvectors, wordvectors["vriendelijk", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-mostsimilar <- tcrossprod(wordvectors, wordvectors["grote", , drop = FALSE])
+mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 }

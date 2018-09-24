@@ -7,9 +7,9 @@
 embedding_similarity(x, y, type = c("cosine", "dot"))
 }
 \arguments{
-\item{x}{a matrix}
+\item{x}{a matrix with embeddings}
 
-\item{y}{a matrix}
+\item{y}{a matrix with embeddings}
 
 \item{type}{either 'cosine' or 'dot'. If 'dot', returns inner-product based similarity, if 'cosine', returns cosine similarity}
 }
@@ -22,7 +22,10 @@ Cosine and Inner product based similarity
 }
 \examples{
 x <- matrix(rnorm(6), nrow = 2, ncol = 3)
+rownames(x) <- c("word1", "word2")
 y <- matrix(rnorm(15), nrow = 5, ncol = 3)
+rownames(y) <- c("term1", "term2", "term3", "term4", "term5")
+
 embedding_similarity(x, y, type = "cosine")
 embedding_similarity(x, y, type = "dot")
 }
