@@ -7,15 +7,20 @@
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
-#' library(udpipe)
 #' library(tokenizers)
-#' data(brussels_listings, package = "udpipe")
-#' x <- tokenize_words(brussels_listings$name)
-#' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
-#' model <- embed_tagspace(x = x, y = brussels_listings$room_type, 
+#' data(dekamer, package = "ruimtehol")
+#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
+#' dekamer$text <- tokenize_words(dekamer$text)
+#' dekamer$text <- sapply(dekamer$text, 
+#'                        FUN = function(x) paste(x, collapse = " "))
+#' 
+#' model <- embed_tagspace(x = dekamer$text, 
+#'                         y = dekamer$question_theme_main, 
 #'                         dim = 10, minCount = 5)
-#' predict(model, "room close to centre gare du midi")
-#' starspace_embedding(model, "room close to centre gare du midi")
+#' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
+#' predict(model, "de migranten komen naar europa, in asielcentra ...")
+#' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
+#' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
 embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
@@ -76,7 +81,7 @@ embed_sentences <- function() {
 #' @description NotYetImplemented
 #' @export
 #' @return NotYetImplemented
-embed_articles <- function() {
+embed_articlespace <- function() {
   .NotYetImplemented()
   ## Each article contains several sentences
   ## trainmode 2, fileFormat labelDoc
@@ -88,7 +93,7 @@ embed_articles <- function() {
 #' @description NotYetImplemented
 #' @export
 #' @return NotYetImplemented
-embed_webpage <- function() {
+embed_docspace <- embed_webpage <- function() {
   .NotYetImplemented()
   ## user clicks on a web page which has content
   ## trainMode 1, fileFormat labelDoc
@@ -98,7 +103,7 @@ embed_webpage <- function() {
 #' @description NotYetImplemented
 #' @export
 #' @return NotYetImplemented
-embed_clicks <- function() {
+embed_pagespace <- embed_clicks <- function() {
   .NotYetImplemented()
   ## user clicks or is fan of a webpage
   ## trainMode 1
