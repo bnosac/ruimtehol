@@ -27,7 +27,17 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 \item{...}{arguments passed on to ruimtehol:::textspace. See the details below.}
 }
 \value{
-an object of class textspace
+an object of class textspace which is a list with elements 
+\enumerate{
+\item model: a Rcpp pointer to the model
+\item file: the binary file of the model saved on disk
+\item dim: the dimension of the embedding
+\item data: data-specific Starspace training parameters
+\item param: algorithm-specific Starspace training parameters
+\item dictionary: parameters which define ths dictionary of words and labels in Starspace
+\item options: parameters specific to duration of training and text preparation
+\item test: parameters specific to model testing
+}
 }
 \description{
 Interface to Starspace for training a Starspace model, providing raw access to the C++ functionality. For expert use only.
@@ -73,6 +83,34 @@ The following arguments are available in that functionality when you do the trai
 \item validationPatience:    number of iterations of validation where does not improve before we stop training [10]
 \item saveEveryEpoch:  save intermediate models after each epoch [0]
 \item saveTempModel:   save intermediate models after each epoch with an unique name including epoch number [0]
+}
+}
+\examples{
+library(tokenizers)
+data(dekamer, package = "ruimtehol")
+dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
+x <- tokenize_words(dekamer$text)
+x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
+
+\dontrun{
+idx <- sample.int(n = nrow(dekamer), size = 6000)
+writeLines(x[idx], con = "traindata.txt")
+writeLines(x[-idx], con = "validationdata.txt")
+
+m <- starspace(model = "mymodel.bin", 
+               file = "traindata.txt", validationFile = "validationdata.txt", 
+               trainMode = 5, dim = 10, 
+               loss = "softmax", lr = 0.01, ngrams = 2, minCount = 5,
+               similarity = "cosine", adagrad = TRUE, ws = 7, epoch = 3,
+               maxTrainTime = 10)
+str(starspace_dictionary(m))              
+wordvectors <- as.matrix(m)
+wv <- starspace_embedding(m, 
+                          x = c("Nationale Loterij", "migranten", "pensioen"),
+                          type = "ngram")
+wv
+mostsimilar <- embedding_similarity(wordvectors, wv["pensioen", ])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 }
 }
 \references{
