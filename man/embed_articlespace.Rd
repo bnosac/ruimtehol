@@ -2,13 +2,37 @@
 % Please edit documentation in R/r-all-the-things.R
 \name{embed_articlespace}
 \alias{embed_articlespace}
-\title{NotYetImplemented}
+\title{Build a Starspace model for learning the mapping between sentences and articles (articlespace)}
 \usage{
-embed_articlespace()
+embed_articlespace(x, model = "articlespace.bin", ...)
+}
+\arguments{
+\item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token 
+The doc_id is just an article or document identifier, 
+the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters}
+
+\item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{...}{further arguments passed on to \code{\link{starspace}}}
 }
 \value{
-NotYetImplemented
+an object of class \code{textspace} as returned by \code{\link{starspace}}.
 }
 \description{
-NotYetImplemented
+Build a Starspace model for learning the mapping between sentences and articles (articlespace)
+}
+\examples{
+library(udpipe)
+data(dekamer, package = "ruimtehol")
+dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
+x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
+x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+model <- embed_articlespace(x, dim = 15, epoch = 5, minCount = 5)
+
+embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
+dim(embeddings)
+
+sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
+mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 }

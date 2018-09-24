@@ -82,9 +82,9 @@ embed_words <- function(x, model = "embed_words.bin", ...) {
 #' library(udpipe)
 #' data(dekamer, package = "ruimtehol")
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
-#' x <- udpipe(dekamer$text, "dutch", tagger = "none", parser = "none", trace = 100)
+#' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
-#' model <- embed_sentences(x, dim = 15, epoch = 5, minCount = 5)
+#' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 #' 
 #' embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
 #' dim(embeddings)
@@ -92,7 +92,7 @@ embed_words <- function(x, model = "embed_words.bin", ...) {
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 #' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_sentences <- function(x, model = "embed_words.bin", ...) {
+embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
   stopifnot(is.data.frame(x))
   stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
@@ -107,16 +107,42 @@ embed_sentences <- function(x, model = "embed_words.bin", ...) {
   starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", ...)
 }
 
-#' @title NotYetImplemented
-#' @description NotYetImplemented
+#' @title Build a Starspace model for learning the mapping between sentences and articles (articlespace)
+#' @description Build a Starspace model for learning the mapping between sentences and articles (articlespace)
+#' @param x a data.frame with sentences containg the columns doc_id, sentence_id and token 
+#' The doc_id is just an article or document identifier, 
+#' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
+#' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}}
 #' @export
-#' @return NotYetImplemented
-embed_articlespace <- function() {
-  .NotYetImplemented()
-  ## Each article contains several sentences
-  ## trainmode 2, fileFormat labelDoc
-  
-  ## use case: if we have a new sentence, get me the article which looks like the sentence
+#' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
+#' @examples 
+#' library(udpipe)
+#' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
+#' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
+#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' model <- embed_articlespace(x, dim = 15, epoch = 5, minCount = 5)
+#' 
+#' embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
+#' dim(embeddings)
+#' 
+#' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
+#' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
+#' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
+embed_articlespace <- function(x, model = "articlespace.bin", ...) {
+  stopifnot(is.data.frame(x))
+  stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  x <- split(x, f = x$doc_id)
+  x <- sapply(x, FUN=function(tokens){
+    sentences <- split(tokens, tokens$sentence_id)
+    sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
+    paste(sentences, collapse = " \t ")
+  })
+  writeLines(text = paste(x, collapse = "\n"), con = filename)
+  on.exit(file.remove(filename))
+  starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", ...)
 }
 
 #' @title NotYetImplemented
