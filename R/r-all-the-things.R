@@ -12,11 +12,11 @@
 #' data(brussels_listings, package = "udpipe")
 #' x <- tokenize_words(brussels_listings$name)
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
-#' model <- embed_tags(x = x, y = brussels_listings$room_type, 
-#'                     dim = 10, minCount = 5)
+#' model <- embed_tagspace(x = x, y = brussels_listings$room_type, 
+#'                         dim = 10, minCount = 5)
 #' predict(model, "room close to centre gare du midi")
 #' starspace_embedding(model, "room close to centre gare du midi")
-embed_tags <- function(x, y, model = "tagspace.bin", ...) {
+embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
   label <- "__label__"
