@@ -33,14 +33,14 @@ The following functions are made available.
 | `starspace_dictonary`         | Get words/labels with the model dictionary                     |
 | `predict.textspace`           | Get predictions along a Starspace model                        |
 | `as.matrix`                   | Get words and labels embeddings                                |
-| `embedding_similarity`        | Basic cosine/dot product based similarity                      |
-| `embed_words`                 | Build a Starspace model which calculates word/ngram embeddings                              |
+| `embedding_similarity`        | Basic cosine/dot product based similarity of embeddings        |
+| `embed_wordspace`             | Build a Starspace model which calculates word/ngram embeddings                              |
 | `embed_sentencespace`         | Build a Starspace model which calculates sentence embeddings                                |
-| `embed_tagspace`              | Build a Starspace model for multi-label classification                                      |
-| `embed_pagespace`             | Build a Starspace model for interest-based recommendation and page embeddings               |
-| `embed_docspace`              | Build a Starspace model for content-based recommendation                                    |
 | `embed_articlespace`          | Build a Starspace model for embedding an article and finding sentences-article similarities |
-| `embed_graphspace`            | Build a Starspace model for entity completion (still under construction)                    |
+| `embed_tagspace`              | Build a Starspace model for multi-label classification                                      |
+| `embed_docspace`              | Build a Starspace model for content-based recommendation                                    |
+| `embed_pagespace`             | Build a Starspace model for interest-based recommendation                                   |
+| `embed_entityrelationspace`   | Build a Starspace model for entity relationship completion (still under construction)       |
 
 
 

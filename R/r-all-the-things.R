@@ -53,7 +53,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' x <- tokenize_words(x$feedback)
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
-#' model <- embed_words(x, dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+#' model <- embed_wordspace(x, dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
 #' wordvectors <- as.matrix(model)
 #' 
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["weekend", ])
@@ -62,7 +62,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-embed_words <- function(x, model = "embed_words.bin", ...) {
+embed_wordspace <- function(x, model = "embed_wordspace.bin", ...) {
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
   writeLines(text = paste(x, collapse = "\n"), con = filename)
   on.exit(file.remove(filename))
@@ -168,18 +168,20 @@ embed_pagespace <- embed_clicks <- function() {
 }
 
 
+embed_entityrelationspace <- function() {
+  .NotYetImplemented()
+}
+embed_imagespace <- function() {
+  .NotYetImplemented()
+}
+
 if(FALSE){
-  embed_entityrelations <- function() {
-    .NotYetImplemented()
-  }
-  embed_images <- function() {
-    .NotYetImplemented()
-  }
-  TagSpace <- embed_words
-  SentenceSpace <- embed_sentences
-  ArticleSpace <- embed_articles
-  DocSpace <- embed_webpage
-  PageSpace <- embed_clicks
-  GraphSpace <- embed_entityrelations
-  ImageSpace <- embed_images
+  TagSpace <- embed_tagspace
+  WordSpace <- embed_wordspace
+  SentenceSpace <- embed_sentencespace
+  ArticleSpace <- embed_articlespace
+  DocSpace <- embed_webpage <- embed_docspace
+  PageSpace <- embed_clicks <- embed_pagespace
+  GraphSpace <- embed_entityrelationspace
+  ImageSpace <- embed_imagespace
 }
