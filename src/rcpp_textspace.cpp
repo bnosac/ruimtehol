@@ -319,34 +319,72 @@ Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringV
 }
 
 // [[Rcpp::export]]
-Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string basedoc = "", std::string sep = " ") {
+Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, Rcpp::StringVector basedoc = "", std::string sep = " ") { 
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   // Set dropout probability to 0 in test case.
   sp->args_->dropoutLHS = 0.0;
   sp->args_->dropoutRHS = 0.0;
-  // Load basedocs which are set of possible things to predict.
-  if(std::ifstream(basedoc)){
-    sp->args_->basedoc = basedoc;
-    sp->args_->fileFormat = "labelDoc";
+  bool user_basedocs = false;
+  // Load set of possible things to predict (basedoc), either from file or as a character vector of possible labels or take the labels from the dictionary
+  sp->baseDocs_.clear();
+  sp->baseDocVectors_.clear();
+  if(basedoc.size() > 0){
+    std::string file = Rcpp::as<std::string>(basedoc[0]);
+    if(basedoc.size() == 1 && file != "" && std::ifstream(file)){
+      // basedoc is a file
+      sp->args_->basedoc = file;
+      sp->args_->fileFormat = "labelDoc";
+      sp->loadBaseDocs();
+    }else{
+      // basedoc is a character vector
+      for (int i = 0; i < basedoc.size(); i++){
+        std::string line = Rcpp::as<std::string>(basedoc[i]);
+        vector<starspace::Base> ids;
+        sp->parseDoc(line, ids, "\t ");
+        sp->baseDocs_.push_back(ids);
+        sp->baseDocVectors_.push_back(sp->model_->projectRHS(ids));
+      }
+      user_basedocs = true;
+    }
+  }else{
+    sp->loadBaseDocs();
   }
-  sp->loadBaseDocs();
-  
+
   // Do the prediction
   vector<starspace::Base> query_vec;
   vector<starspace::Predictions> predictions;
   vector<starspace::Base> tokens;
+  // split according to separator of the input query and put in query_vec all tokens which are part of the dictionary only
   sp->parseDoc(input, query_vec, sep);
   sp->predictOne(query_vec, predictions);
   
   std::vector<std::string> label;
+  std::vector<std::string> basedoc_terms;
+  std::vector<int32_t> basedoc_index;
   std::vector<float> prob;
   for (int i = 0; i < predictions.size(); i++) {
     prob.push_back(predictions[i].first);
+    basedoc_index.push_back(predictions[i].second + 1); 
     tokens = sp->baseDocs_[predictions[i].second]; 
-    for (auto t : tokens) {
-      // skip ngram tokens
-      if (t.first < sp->dict_->size()) {
-        label.push_back(sp->dict_->getSymbol(t.first));
+    std::string tokensline = "";
+    if(user_basedocs){
+      // If basedoc is given by R user as a character vector, should return just that instead of all the terms which are in the dictionary and are part of the basedoc
+      label.push_back(Rcpp::as<std::string>(basedoc[predictions[i].second]));
+      for (auto t : tokens) {
+        if (t.first < sp->dict_->size()) {
+          if(tokensline == ""){
+            tokensline = tokensline + sp->dict_->getSymbol(t.first);
+          }else{
+            tokensline = tokensline + sep + sp->dict_->getSymbol(t.first);  
+          }
+        }
+      }
+      basedoc_terms.push_back(tokensline);
+    }else{
+      for (auto t : tokens) {
+        if (t.first < sp->dict_->size()) {
+          label.push_back(sp->dict_->getSymbol(t.first));
+        }
       }
     }
   }
@@ -354,7 +392,10 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, std::string
                                       Rcpp::Named("prediction") = Rcpp::DataFrame::create(
                                         Rcpp::Named("label") = label,
                                         Rcpp::Named("similarity") = prob,
-                                        Rcpp::Named("stringsAsFactors") = false)); 
+                                        Rcpp::Named("stringsAsFactors") = false),
+                                      Rcpp::Named("terms") = Rcpp::List::create(
+                                        Rcpp::Named("basedoc_index") = basedoc_index,
+                                        Rcpp::Named("basedoc_terms") = basedoc_terms)); 
   return out;
 }
 

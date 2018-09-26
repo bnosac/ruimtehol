@@ -13,13 +13,19 @@
 
 \item{sep}{character string used to split \code{newdata} using boost::split}
 
-\item{basedoc}{optional, the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
+\item{basedoc}{optional, either a character vector of possible elements to predict or 
+the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
 the ones from the training data}
 
 \item{...}{not used}
 }
 \value{
-a list with elements input and a data.frame called prediction which has columns called label and similarity
+a list with elements 
+\enumerate{
+\item input: the character string passed on to newdata
+\item prediction: data.frame called prediction which has columns called label and similarity indicating the predicted label and the similarity of the input ot the label
+\item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
+}
 }
 \description{
 Predict using a Starspace model

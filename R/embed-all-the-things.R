@@ -148,11 +148,17 @@ starspace_dictionary <- function(object){
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param newdata a character string of length 1
 #' @param sep character string used to split \code{newdata} using boost::split
-#' @param basedoc optional, the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
+#' @param basedoc optional, either a character vector of possible elements to predict or 
+#' the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
 #' the ones from the training data
 #' @param ... not used
 #' @export
-#' @return a list with elements input and a data.frame called prediction which has columns called label and similarity
+#' @return a list with elements 
+#' \enumerate{
+#' \item input: the character string passed on to newdata
+#' \item prediction: data.frame called prediction which has columns called label and similarity indicating the predicted label and the similarity of the input ot the label
+#' \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
+#' }
 predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)
