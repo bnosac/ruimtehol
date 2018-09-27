@@ -64,7 +64,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 embed_wordspace <- function(x, model = "embed_wordspace.bin", ...) {
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
-  writeLines(text = paste(x, collapse = "\n"), con = filename)
+  writeLines(text = x, con = filename)
   on.exit(file.remove(filename))
   starspace(model = model, file = filename, trainMode = 5, ...)
 }
@@ -86,7 +86,7 @@ embed_wordspace <- function(x, model = "embed_wordspace.bin", ...) {
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 #' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 #' predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
-#'         basecode = unique(x$sentence))
+#'         basedoc = unique(x$sentence))
 #' 
 #' embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
 #' dim(embeddings)
@@ -104,14 +104,14 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  writeLines(text = paste(x, collapse = "\n"), con = filename)
+  writeLines(text = x, con = filename)
   on.exit(file.remove(filename))
   starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", ...)
 }
 
 #' @title Build a Starspace model for learning the mapping between sentences and articles (articlespace)
 #' @description Build a Starspace model for learning the mapping between sentences and articles (articlespace)
-#' @param x a data.frame with sentences containg the columns doc_id, sentence_id and token 
+#' @param x a data.frame with sentences containing the columns doc_id, sentence_id and token 
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
@@ -142,29 +142,101 @@ embed_articlespace <- function(x, model = "articlespace.bin", ...) {
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  writeLines(text = paste(x, collapse = "\n"), con = filename)
+  writeLines(text = x, con = filename)
   on.exit(file.remove(filename))
   starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", ...)
 }
 
-#' @title NotYetImplemented
-#' @description NotYetImplemented
+#' @title Build a Starspace model for content-based recommendation
+#' @description Build a Starspace model for content-based recommendation (docspace). For example a user clicks on a webpage and this webpage contains a bunch or words.
+#' @param x a data.frame with user interest containing the columns user_id, doc_id and text 
+#' The user_id is an identifier of a user
+#' The doc_id is just an article or document identifier 
+#' the text column is a character field which contains words which are part of the doc_id, words should be separated by a space and 
+#' should not contain any tab characters
+#' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}}
 #' @export
-#' @return NotYetImplemented
-embed_docspace <- embed_webpage <- function() {
-  .NotYetImplemented()
+#' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
+#' @examples 
+#' library(udpipe)
+#' data(dekamer, package = "ruimtehol")
+#' data(dekamer_theme_terminology, package = "ruimtehol")
+#' ## Which person is interested in which theme (aka document)
+#' x <- table(dekamer$aut_person, dekamer$question_theme_main)
+#' x <- as.data.frame(x)
+#' colnames(x) <- c("user_id", "doc_id", "freq")
+#' ## Characterise the themes (aka document)
+#' docs <- split(dekamer_theme_terminology, dekamer_theme_terminology$theme)
+#' docs <- lapply(docs, FUN=function(x){
+#'   data.frame(theme = x$theme[1], text = paste(x$term, collapse = " "), 
+#'              stringsAsFactors=FALSE)
+#' })
+#' docs <- do.call(rbind, docs)
+#' 
+#' ## Build a model
+#' x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
+#' model <- embed_docspace(x, dim = 10)
+embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", ...) {
   ## user clicks on a web page which has content
   ## trainMode 1, fileFormat labelDoc
+  stopifnot(is.data.frame(x))
+  stopifnot(all(c("user_id", "doc_id", "text") %in% colnames(x)))
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  x <- split(x, f = x$user_id)
+  x <- sapply(x, FUN=function(userdata){
+    paste(userdata$text, collapse = " \t ")
+  })
+  writeLines(text = x, con = filename)
+  on.exit(file.remove(filename))
+  starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", ...)
 }
 
-#' @title NotYetImplemented
-#' @description NotYetImplemented
+#' @title Build a Starspace model for interest-based recommendation
+#' @description Build a Starspace model for interest-based recommendation (pagespace). For example a user clicks on a webpage.
+#' @param x a list where each list element contains a character vector of pages which the user was interested in
+#' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}}
 #' @export
-#' @return NotYetImplemented
-embed_pagespace <- embed_clicks <- function() {
-  .NotYetImplemented()
+#' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
+#' @examples 
+#' data(dekamer, package = "ruimtehol")
+#' x <- subset(dekamer, !is.na(question_theme))
+#' x <- strsplit(x$question_theme, " \\| ")
+#' x <- lapply(x, FUN=function(themes){
+#'   themes <- trimws(themes)
+#'   themes <- unique(themes)
+#'   themes
+#' })
+#' str(x)
+#' model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
+#' 
+#' pagevectors <- as.matrix(model)
+#' 
+#' mostsimilar <- embedding_similarity(pagevectors, 
+#'                                     pagevectors["__THEME__MIGRATIEBELEID", ])
+#' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
+#' mostsimilar <- embedding_similarity(pagevectors, 
+#'                                     pagevectors["__THEME__DEFENSIEBELEID", ])
+#' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
+embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
   ## user clicks or is fan of a webpage
   ## trainMode 1
+  stopifnot(is.list(x))
+  stopifnot(all(sapply(x, FUN=is.character)))
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
+  x <- sapply(x, FUN=function(x){
+    pages <- sprintf("%s%s", label, gsub("[[:space:]]", "", unique(x))) 
+    paste(pages, collapse = " ")
+  })
+  writeLines(text = paste(x, collapse = "\n"), con = filename)
+  on.exit(file.remove(filename))
+  starspace(model = model, file = filename, trainMode = 1, ...)
 }
 
 

@@ -29,7 +29,7 @@ x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace =
 x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
-        basecode = unique(x$sentence))
+        basedoc = unique(x$sentence))
 
 embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
 dim(embeddings)

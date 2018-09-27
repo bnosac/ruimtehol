@@ -7,7 +7,7 @@
 embed_articlespace(x, model = "articlespace.bin", ...)
 }
 \arguments{
-\item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token 
+\item{x}{a data.frame with sentences containing the columns doc_id, sentence_id and token 
 The doc_id is just an article or document identifier, 
 the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters}
 

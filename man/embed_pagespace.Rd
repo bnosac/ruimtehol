@@ -2,13 +2,41 @@
 % Please edit documentation in R/r-all-the-things.R
 \name{embed_pagespace}
 \alias{embed_pagespace}
-\title{NotYetImplemented}
+\title{Build a Starspace model for interest-based recommendation}
 \usage{
-embed_pagespace()
+embed_pagespace(x, model = "pagespace.bin", ...)
+}
+\arguments{
+\item{x}{a list where each list element contains a character vector of pages which the user was interested in}
+
+\item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{...}{further arguments passed on to \code{\link{starspace}}}
 }
 \value{
-NotYetImplemented
+an object of class \code{textspace} as returned by \code{\link{starspace}}.
 }
 \description{
-NotYetImplemented
+Build a Starspace model for interest-based recommendation (pagespace). For example a user clicks on a webpage.
+}
+\examples{
+data(dekamer, package = "ruimtehol")
+x <- subset(dekamer, !is.na(question_theme))
+x <- strsplit(x$question_theme, " \\\\| ")
+x <- lapply(x, FUN=function(themes){
+  themes <- trimws(themes)
+  themes <- unique(themes)
+  themes
+})
+str(x)
+model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
+
+pagevectors <- as.matrix(model)
+
+mostsimilar <- embedding_similarity(pagevectors, 
+                                    pagevectors["__THEME__MIGRATIEBELEID", ])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
+mostsimilar <- embedding_similarity(pagevectors, 
+                                    pagevectors["__THEME__DEFENSIEBELEID", ])
+head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 }
