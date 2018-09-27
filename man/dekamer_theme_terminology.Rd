@@ -3,15 +3,15 @@
 \docType{data}
 \name{dekamer_theme_terminology}
 \alias{dekamer_theme_terminology}
-\title{Relevant terminology for each theme of the \code{dekamer} dataset}
+\title{Dataset containing relevant terminology for each theme of the \code{dekamer} dataset}
 \description{
-Relevant terminology for each theme of the \code{\link{dekamer}} dataset
+Dataset containing relevant terminology for each theme of the \code{\link{dekamer}} dataset
 
 The dataset contains the following information: 
 \itemize{
 \item theme: a theme, corresponding to the \code{question_theme_main} field in the \code{\link{dekamer}} dataset
-\item term: a word which describeds the \code{theme}
-\item n: a measure of information indicating how relevant the term is
+\item term: a word which describes the \code{theme}
+\item n: a measure of information indicating how relevant the term is (frequency of occurrence)
 }
 }
 \examples{
