@@ -28,8 +28,10 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 }
 \value{
 an object of class textspace which is a list with elements 
-\enumerate{
+\itemize{
 \item model: a Rcpp pointer to the model
+\item args: a list with elements
+\enumerate{
 \item file: the binary file of the model saved on disk
 \item dim: the dimension of the embedding
 \item data: data-specific Starspace training parameters
@@ -37,6 +39,8 @@ an object of class textspace which is a list with elements
 \item dictionary: parameters which define ths dictionary of words and labels in Starspace
 \item options: parameters specific to duration of training and text preparation
 \item test: parameters specific to model testing
+}
+\item iter: a list with element epoch, lr, error and error_validation showing the error after each epoch
 }
 }
 \description{

@@ -204,11 +204,12 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     }else{
       sp->init();  
     }
-    sp->train();
+    Rcpp::List iter = sp->train();
     sp->saveModel(args->model);  
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
-      Rcpp::Named("args") = textspace_args(sp));
+      Rcpp::Named("args") = textspace_args(sp),
+      Rcpp::Named("iter") = iter);
   }else{
     sp->initFromSavedModel(args->model);
     sp->evaluate();

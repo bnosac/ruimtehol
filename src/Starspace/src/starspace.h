@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <Rcpp.h>
 #include "utils/args.h"
 #include "dict.h"
 #include "matrix.h"
@@ -29,7 +30,7 @@ class StarSpace {
     void initFromTsv(const std::string& filename);
     void initFromSavedModel(const std::string& filename);
 
-    void train();
+    Rcpp::List train();
     void evaluate();
 
     MatrixRow getNgramVector(const std::string& phrase);
