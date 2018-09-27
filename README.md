@@ -36,7 +36,7 @@ The following functions are made available.
 | `embedding_similarity`        | Basic cosine/dot product based similarity of embeddings        |
 | `embed_wordspace`             | Build a Starspace model which calculates word/ngram embeddings                              |
 | `embed_sentencespace`         | Build a Starspace model which calculates sentence embeddings                                |
-| `embed_articlespace`          | Build a Starspace model for embedding an article and sentences-article similarities |
+| `embed_articlespace`          | Build a Starspace model for embedding an article and sentences-article similarities         |
 | `embed_tagspace`              | Build a Starspace model for multi-label classification                                      |
 | `embed_docspace`              | Build a Starspace model for content-based recommendation                                    |
 | `embed_pagespace`             | Build a Starspace model for interest-based recommendation                                   |
