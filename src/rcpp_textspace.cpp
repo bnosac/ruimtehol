@@ -272,6 +272,7 @@ Rcpp::List textspace_dictionary(SEXP textspacemodel) {
     Rcpp::Named("nwords") = sp->dict_->nwords(),
     Rcpp::Named("nlabels") = sp->dict_->nlabels(),
     Rcpp::Named("labels") = labels,
+    Rcpp::Named("dictionary_size") = sp->dict_->size(),
     Rcpp::Named("dictionary") = Rcpp::DataFrame::create(
       Rcpp::Named("term") = key,
       Rcpp::Named("is_word") = is_word,
@@ -349,15 +350,20 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, Rcpp::Strin
   }else{
     sp->loadBaseDocs();
   }
+  /*
+  cout << sp->baseDocs_.size() << endl;
+  for(int i=0; i < sp->baseDocs_.size(); i++){
+    cout << sp->dict_->getSymbol(sp->baseDocs_[i][0].first) << endl;
+  }
+  */
 
   // Do the prediction
-  vector<starspace::Base> query_vec;
-  vector<starspace::Predictions> predictions;
-  vector<starspace::Base> tokens;
+  std::vector<starspace::Base> query_vec;
+  std::vector<starspace::Predictions> predictions;
+  std::vector<starspace::Base> tokens;
   // split according to separator of the input query and put in query_vec all tokens which are part of the dictionary only
   sp->parseDoc(input, query_vec, sep);
   sp->predictOne(query_vec, predictions);
-  
   std::vector<std::string> label;
   std::vector<std::string> basedoc_terms;
   std::vector<int32_t> basedoc_index;
@@ -403,6 +409,14 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, Rcpp::Strin
 Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   starspace::Matrix<starspace::Real> vec = sp->getDocVector(line, " ");
+  /*
+  for(int i = 0; i < vec.numRows(); i++){
+    for(int j = 0; j < vec.numCols(); j++){
+      cout << vec.cell(i,j) << ' ';    
+    }  
+   cout << endl;    
+  }
+  */
   std::vector<std::pair<int32_t, starspace::Real>> preds = sp->model_->findLHSLike(vec, k);
   std::vector<std::string> label;
   std::vector<float> prob;

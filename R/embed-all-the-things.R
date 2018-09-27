@@ -134,6 +134,7 @@ print.textspace <- function(x, ...){
 #' \item{nwords: }{The number of words which are part of the dictionary}
 #' \item{nlabels: }{The number of labels which are part of the dictionary}
 #' \item{labels: }{A character vector with the labels}
+#' \item{dictionary_size: }{The size of the dictionary (nwords + nlabels)}
 #' \item{dictionary: }{A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
 #' for each term if it is a word or a label}
 #' }
@@ -163,13 +164,9 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)
   stopifnot(nchar(newdata) > 0)
-  if(object$args$data$trainMode != 0){
-    warning("Using predict on model which was trained with another trainMode than 0.")
-  }
   if(missing(basedoc)){
-    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep))
+    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, basedoc = as.character(c())))
   }else{
-    stopifnot(file.exists(basedoc))
     capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, basedoc = basedoc))
   }
   scores
