@@ -19,7 +19,7 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 \item{trainMode}{integer with the training mode. Possible values are 0, 1, 2, 3, 4 or 5. Defaults to 0. The use cases are
 \itemize{
 \item 0: tagspace (classification tasks) and search tasks
-\item 1: pagespace & docspace (content-based or collaborative filtering-based recommendation)
+\item 1: pagespace & docspace (interest-based or content-based recommendation)
 \item 2: articlespace (sentences within document)
 \item 3: sentence embeddings and entity similarity 
 \item 4: multi-relational graphs
@@ -74,7 +74,7 @@ an object of class textspace which is a list with elements
 }
 }
 \description{
-Interface to Starspace for training a Starspace model, providing raw access to the C++ functionality. For expert use only.
+Interface to Starspace for training a Starspace model, providing raw access to the C++ functionality.
 }
 \details{
 The internal function ruimtehol:::textspace allows direct access to the C++ code in order to run Starspace. 

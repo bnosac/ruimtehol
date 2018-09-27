@@ -240,14 +240,57 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
 }
 
 
-embed_entityrelationspace <- function() {
-  .NotYetImplemented()
-}
-embed_imagespace <- function() {
-  .NotYetImplemented()
+#' @title Build a Starspace model for entity relationship completion
+#' @description Build a Starspace model for entity relationship completion (graphspace). 
+#' @param x a data.frame with columns entity_head, entity_tail and relation indicating the relation between the head and tail entity
+#' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @export
+#' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
+#' @examples 
+#' ## Example on Freebase
+#' filename <- paste(
+#'   "https://raw.githubusercontent.com/bnosac-dev/GraphEmbeddings/master/",
+#'   "diffbot_data/FB15k/freebase_mtr100_mte100-train.txt", 
+#'   sep = "")
+#' x <- read.delim(filename, header = FALSE, nrows = 1000,  
+#'                 col.names = c("entity_head", "relation", "entity_tail"),
+#'                 stringsAsFactors = FALSE)
+#' head(x)
+#' 
+#' model <- embed_entityrelationspace(x, dim = 50)
+#' predict(model, "/m/027rn /location/country/form_of_government")
+#' 
+#' ## Also add reverse relation
+#' x_reverse <- x
+#' colnames(x_reverse) <- c("entity_tail", "relation", "entity_head")
+#' x_reverse$relation <- sprintf("REVERSE_%s", x_reverse$relation)
+#' 
+#' relations <- rbind(x, x_reverse)
+#' model <- embed_entityrelationspace(relations, dim = 50)
+#' predict(model, "/m/027rn /location/country/form_of_government")
+#' predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")
+embed_entityrelationspace <- function(x, model = "graphspace.bin", ...) {
+  stopifnot(is.data.frame(x))
+  stopifnot(all(c("entity_head", "entity_tail", "relation") %in% colnames(x)))
+  
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
+  txt <- sprintf("%s\t%s\t%s%s", x$entity_head, x$relation, label, x$entity_tail)
+  writeLines(text = txt, con = filename)
+  on.exit(file.remove(filename))
+  starspace(model = model, file = filename, trainMode = 0, ...)
 }
 
+
 if(FALSE){
+  embed_imagespace <- function() {
+    .NotYetImplemented()
+  }
   TagSpace <- embed_tagspace
   WordSpace <- embed_wordspace
   SentenceSpace <- embed_sentencespace

@@ -40,7 +40,7 @@ The following functions are made available.
 | `embed_tagspace`              | Build a Starspace model for multi-label classification                                      |
 | `embed_docspace`              | Build a Starspace model for content-based recommendation                                    |
 | `embed_pagespace`             | Build a Starspace model for interest-based recommendation                                   |
-| `embed_entityrelationspace`   | Build a Starspace model for entity relationship completion (still under construction)       |
+| `embed_entityrelationspace`   | Build a Starspace model for entity relationship completion                                  |
 
 
 
