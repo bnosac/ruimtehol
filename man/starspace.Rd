@@ -76,9 +76,12 @@ an object of class textspace which is a list with elements
 \description{
 Interface to Starspace for training a Starspace model, providing raw access to the C++ functionality.
 }
-\details{
-The internal function ruimtehol:::textspace allows direct access to the C++ code in order to run Starspace. 
-The following arguments are available in that functionality when you do the training. Default settings are shown next to the definition: \cr
+\note{
+The function \code{starspace} is a tiny wrapper over the internal function ruimtehol:::textspace which 
+allows direct access to the C++ code in order to run Starspace. \cr
+The following arguments are available in that functionality when you do the training. 
+Default settings are shown next to the definition. Some of these arguments are directly set in the \code{starspace} function,
+others can be passed on with ... . \cr
 
 \strong{Arguments which define how the training is done:}
 \itemize{
