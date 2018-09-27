@@ -5,7 +5,11 @@
 \title{Interface to Starspace for training a Starspace model}
 \usage{
 starspace(model = "textspace.bin", file, trainMode = 0,
-  fileFormat = c("fastText", "labelDoc"), ...)
+  fileFormat = c("fastText", "labelDoc"), dim = 100, epoch = 5,
+  lr = 0.01, loss = c("hinge", "softmax"), margin = 0.05,
+  similarity = c("cosine", "dot"), negSearchLimit = 50, adagrad = TRUE,
+  ws = 5, minCount = 1, minCountLabel = 1, ngrams = 1, thread = 10,
+  ...)
 }
 \arguments{
 \item{model}{the full path to where the model file will be saved. Defaults to 'textspace.bin'.}
@@ -23,6 +27,32 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 }}
 
 \item{fileFormat}{either one of 'fastText' or 'labelDoc'. See the documentation of StarSpace}
+
+\item{dim}{the size of the embedding vectors (integer, defaults to 100)}
+
+\item{epoch}{number of epochs (integer, defaults to 5)}
+
+\item{lr}{learning rate (numeric, defaults to 0.01)}
+
+\item{loss}{loss function (either 'hinge' or 'softmax')}
+
+\item{margin}{margin parameter in case of hinge loss (numeric, defaults to 0.05)}
+
+\item{similarity}{cosine or dot product similarity in cas of hinge loss (character, defaults to 'cosine')}
+
+\item{negSearchLimit}{number of negatives sampled (integer, defaults to 50)}
+
+\item{adagrad}{whether to use adagrad in training (logical)}
+
+\item{ws}{the size of the context window for word level training - only used in trainMode 5 (integer, defaults to 5)}
+
+\item{minCount}{minimal number of word occurences for being part of the dictionary (integer, defaults to 1 keeping all words)}
+
+\item{minCountLabel}{minimal number of label occurences for being part of the dictionary (integer, defaults to 1 keeping all labels)}
+
+\item{ngrams}{max length of word ngram (integer, defaults to 1, using only unigrams)}
+
+\item{thread}{integer with the number of threads to use. Defaults to 10.}
 
 \item{...}{arguments passed on to ruimtehol:::textspace. See the details below.}
 }
@@ -52,23 +82,20 @@ The following arguments are available in that functionality when you do the trai
 
 \strong{Arguments which define how the training is done:}
 \itemize{
-\item lr:              learning rate [0.01]
 \item dim:             size of embedding vectors [100]
 \item epoch:           number of epochs [5]
-\item maxTrainTime:    max train time (secs) [8640000]
-\item negSearchLimit:  number of negatives sampled [50]
-\item maxNegSamples:   max number of negatives in a batch update [10]
+\item lr:              learning rate [0.01]
 \item loss:            loss function {hinge, softmax} [hinge]
 \item margin:          margin parameter in hinge loss. It's only effective if hinge loss is used. [0.05]
 \item similarity:      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss. It's only effective if hinge loss is used. [cosine]
+\item negSearchLimit:  number of negatives sampled [50]
+\item maxNegSamples:   max number of negatives in a batch update [10]
 \item adagrad:         whether to use adagrad in training [1]
-\item shareEmb:        whether to use the same embedding matrix for LHS and RHS. [1]
 \item ws:              only used in trainMode 5, the size of the context window for word level training. [5]
 \item dropoutLHS:      dropout probability for LHS features. [0]
 \item dropoutRHS:      dropout probability for RHS features. [0]
+\item shareEmb:        whether to use the same embedding matrix for LHS and RHS. [1]
 \item initRandSd:      initial values of embeddings are randomly generated from normal distribution with mean=0, standard deviation=initRandSd. [0.001]
-\item trainWord:       whether to train word level together with other tasks (for multi-tasking). [0]
-\item wordWeight:      if trainWord is true, wordWeight specifies example weight for word level training examples. [0.5]
 }
 
 \strong{Arguments specific to the dictionary of words and labels:}
@@ -87,6 +114,14 @@ The following arguments are available in that functionality when you do the trai
 \item validationPatience:    number of iterations of validation where does not improve before we stop training [10]
 \item saveEveryEpoch:  save intermediate models after each epoch [0]
 \item saveTempModel:   save intermediate models after each epoch with an unique name including epoch number [0]
+\item maxTrainTime:    max train time (secs) [8640000]
+}
+
+\strong{Other:}
+\itemize{
+\item trainWord:       whether to train word level together with other tasks (for multi-tasking). [0]
+\item wordWeight:      if trainWord is true, wordWeight specifies example weight for word level training examples. [0.5]
+\item useWeight        whether input file contains weights [0]
 }
 }
 \examples{
