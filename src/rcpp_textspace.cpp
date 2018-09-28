@@ -305,7 +305,7 @@ Rcpp::NumericMatrix textspace_embedding_doc(SEXP textspacemodel, Rcpp::StringVec
     if(vec.numRows() > 1){
       Rcpp::stop("Unexpected outcome of sp->getDocVector, please report to the ruimtehol maintainer.");
     }
-    for(int j = 0; j < vec.numCols(); j++){
+    for(unsigned int j = 0; j < vec.numCols(); j++){
       embedding(i, j) = vec.cell(0, j);
     }
   }
@@ -320,7 +320,7 @@ Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringV
   for (int i = 0; i < x.size(); i++){
     std::string input = Rcpp::as<std::string>(x[i]);
     starspace::MatrixRow vec = sp->getNgramVector(input);
-    for(int j = 0; j < vec.size(); j++){
+    for(unsigned int j = 0; j < vec.size(); j++){
       embedding(i, j) = vec[j];
     }
   }
@@ -376,7 +376,7 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, Rcpp::Strin
   std::vector<std::string> basedoc_terms;
   std::vector<int32_t> basedoc_index;
   std::vector<float> prob;
-  for (int i = 0; i < predictions.size(); i++) {
+  for (unsigned int i = 0; i < predictions.size(); i++) {
     prob.push_back(predictions[i].first);
     basedoc_index.push_back(predictions[i].second + 1); 
     tokens = sp->baseDocs_[predictions[i].second]; 
