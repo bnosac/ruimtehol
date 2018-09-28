@@ -236,6 +236,11 @@ void StarSpace::parseDoc(
 
   vector<string> tokens;
   boost::split(tokens, line, boost::is_any_of(string(sep)));
+  /*
+  for(int i=0; i < tokens.size(); i++){
+    cout << "---------------" << tokens[i] << "---------------" << endl;  
+  }
+  */
   parser_->parse(tokens, ids);
 }
 

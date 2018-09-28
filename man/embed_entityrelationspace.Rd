@@ -11,7 +11,7 @@ embed_entityrelationspace(x, model = "graphspace.bin", ...)
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
-\item{...}{further arguments passed on to \code{\link{starspace}}}
+\item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
 \value{
 an object of class \code{textspace} as returned by \code{\link{starspace}}.

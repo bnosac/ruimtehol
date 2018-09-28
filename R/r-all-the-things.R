@@ -3,7 +3,7 @@
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param y a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -42,7 +42,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' @description Build a Starspace model which calculates word embeddings
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -75,7 +75,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -115,7 +115,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -155,7 +155,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", ...) {
 #' the text column is a character field which contains words which are part of the doc_id, words should be separated by a space and 
 #' should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -196,7 +196,7 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", ...) {
 #' @description Build a Starspace model for interest-based recommendation (pagespace). For example a user clicks on a webpage.
 #' @param x a list where each list element contains a character vector of pages which the user was interested in
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
@@ -244,7 +244,7 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
 #' @description Build a Starspace model for entity relationship completion (graphspace). 
 #' @param x a data.frame with columns entity_head, entity_tail and relation indicating the relation between the head and tail entity
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param ... further arguments passed on to \code{\link{starspace}}
+#' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
