@@ -2,7 +2,7 @@ This R package is distributed under the Mozilla Public License version 2.0 licen
 The package also includes 3rd party open source software components which are distributed under the BSD license. 
 The following is a list of these components. The full copies of the license agreements of these components are included below.
 
-- StarSpace (all code under src/Starspace: BSD license
+- StarSpace (all code under src/Starspace): BSD license
 
 
 BSD License
