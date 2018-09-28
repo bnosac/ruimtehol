@@ -157,9 +157,11 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
 #' @export
 print.textspace <- function(x, ...){
   cat("Object of class textspace", sep = "\n")
-  fsize <- file.info(x$args$file)$size
-  cat(sprintf(" model saved at %s", x$args$file) , sep = "\n")
-  cat(sprintf(" size of the model in Mb: %s", round(fsize / (2^20), 2)), sep = "\n")
+  if(file.exists(x$args$file)){
+    fsize <- file.info(x$args$file)$size
+    cat(sprintf(" model saved at %s", x$args$file) , sep = "\n")
+    cat(sprintf(" size of the model in Mb: %s", round(fsize / (2^20), 2)), sep = "\n")  
+  }
   cat(sprintf(" dimension of the embedding: %s", x$args$dim) , sep = "\n")
   params <- mapply(key = names(x$args$param), value = x$args$param, FUN=function(key, value){
     sprintf("%s: %s", key, value)
@@ -277,13 +279,22 @@ starspace_load_model <- function(object, is_tsv = FALSE){
 #' @title Save a starspace model as a tab-delimited TSV file
 #' @description Save a starspace model as a tab-delimited TSV file
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
-#' @param file character string with the path to the file where to save the model
+#' @param file character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}
+#' @param as_tsv logical indicating to save the model as a TSV file or as a binary file. Defaults to FALSE indicating to save as a binary file.
 #' @export
-#' @return invisibly, the \code{file} with the location of the TSV file
-starspace_save_model <- function(object, file = "textspace.tsv"){
+#' @return the character string with the file of the saved object
+starspace_save_model <- function(object, file = "textspace.tsv",  as_tsv = FALSE){
   stopifnot(inherits(object, "textspace"))
-  textspace_save_model(object$model, file)
-  invisible(file)
+  if(as_tsv){
+    result <- textspace_save_model(object$model, file, as_tsv)  
+  }else{
+    if(!missing(file)){
+      result <- textspace_save_model(object$model, file, as_tsv)  
+    }else{
+      result <- textspace_save_model(object$model, object$args$file, as_tsv)  
+    }
+  }
+  result
 }
 
 

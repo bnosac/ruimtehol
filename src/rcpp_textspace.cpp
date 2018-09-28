@@ -82,6 +82,7 @@ Rcpp::List textspace_args(SEXP textspacemodel) {
 
 // [[Rcpp::export]]
 Rcpp::List textspace(std::string model = "textspace.bin",
+                     bool save = false,
                      /* Arguments specific for training */
                      std::string trainFile = "",
                      std::string initModel = "",
@@ -205,7 +206,9 @@ Rcpp::List textspace(std::string model = "textspace.bin",
       sp->init();  
     }
     Rcpp::List iter = sp->train();
-    sp->saveModel(args->model);  
+    if(save){
+      sp->saveModel(args->model);    
+    }
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
       Rcpp::Named("args") = textspace_args(sp),
@@ -243,9 +246,13 @@ Rcpp::List textspace_load_model(const std::string file_model, bool is_tsv = fals
 }
 
 // [[Rcpp::export]]
-Rcpp::List textspace_save_model(SEXP textspacemodel, std::string file = "textspace.tsv") {
+std::string textspace_save_model(SEXP textspacemodel, std::string file, bool as_tsv = false) {
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
-  sp->saveModelTsv(file);
+  if(as_tsv){
+    sp->saveModelTsv(file);  
+  }else{
+    sp->saveModel(file);   
+  }
   return file;
 }
 

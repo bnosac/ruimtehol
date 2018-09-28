@@ -55,19 +55,18 @@ library(ruimtehol)
 
 ## Get some training data
 download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "wikipedia_train250k.tgz")
-x <- readLines("wikipedia_train250k.tgz", encoding = "UTF-8")
+x <- readLines("dev/wikipedia_train250k.tgz", encoding = "UTF-8")
+x <- x[-c(1:9)]
 x <- x[sample(x = length(x), size = 10000)]
 writeLines(text = x, sep = "\n", con = "wikipedia_train10k.txt")
 ```
 
 ```r
 ## Train
-model <- starspace(file = "wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(file = "dev/wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
- model saved at textspace.bin
- size of the model in Mb: 0.87
  dimension of the embedding: 10
  training arguments:
       loss: hinge
@@ -98,11 +97,13 @@ house  0.0123371  0.01406140 -0.000166073 0.0313477 -0.00962703 -0.0237911 0.002
 ```
 
 ```r
-## Save trained model as TSV so that you can inspect the embeddings e.g. with data.table::fread("wikipedia_embeddings.tsv")
-starspace_save_model(model, file = "wikipedia_embeddings.tsv")
+## Save trained model as a binary file or as TSV so that you can inspect the embeddings e.g. with data.table::fread("wikipedia_embeddings.tsv")
+starspace_save_model(model)
+starspace_save_model(model, file = "wikipedia_embeddings.bin")
+starspace_save_model(model, file = "wikipedia_embeddings.tsv", as_tsv = TRUE)
 
 ## Load a pre-trained model
-model <- starspace_load_model("textspace.bin")
+model <- starspace_load_model("wikipedia_embeddings.bin")
 
 ## Get the document embedding
 starspace_embedding(model, "The apps to predict / get nearest neighbours are still under construction.")

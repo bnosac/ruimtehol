@@ -4,15 +4,17 @@
 \alias{starspace_save_model}
 \title{Save a starspace model as a tab-delimited TSV file}
 \usage{
-starspace_save_model(object, file = "textspace.tsv")
+starspace_save_model(object, file = "textspace.tsv", as_tsv = FALSE)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
-\item{file}{character string with the path to the file where to save the model}
+\item{file}{character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}}
+
+\item{as_tsv}{logical indicating to save the model as a TSV file or as a binary file. Defaults to FALSE indicating to save as a binary file.}
 }
 \value{
-invisibly, the \code{file} with the location of the TSV file
+the character string with the file of the saved object
 }
 \description{
 Save a starspace model as a tab-delimited TSV file
