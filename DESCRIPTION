@@ -13,7 +13,7 @@ License: MPL-2.0
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: Rcpp (>= 0.11.5), utils
+Imports: Rcpp (>= 0.11.5), utils, graphics
 Suggests: udpipe, tokenizers
 LinkingTo: Rcpp, BH
 RoxygenNote: 6.0.1

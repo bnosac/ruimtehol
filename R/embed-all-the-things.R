@@ -215,6 +215,26 @@ predict.textspace <- function(object, newdata, sep = " ", basedoc, ...){
   scores
 }
 
+#' @export
+plot.textspace <- function(x, ...){
+  if("iter" %in% names(x)){
+    dataset <- data.frame(epoch = x$iter$epoch, error = x$iter$error, datatype = "training")
+    if(length(x$iter$error_validation) > 0){
+      dataset <- rbind(dataset, data.frame(epoch = x$iter$epoch, error = x$iter$error_validation, datatype = "validation"))
+    }
+    plot(error ~ epoch, data = dataset, type = "n", xlab = "Epoch", ylab = "Error", ...)
+    points(x = x$iter$epoch, y = x$iter$error, col = "steelblue", type = "b", pch = 20, lty = 1)
+    if(length(x$iter$error_validation) > 0){
+      points(x = x$iter$epoch, y = x$iter$error_validation, col = "purple", type = "b", lty = 2, pch = 20)
+    }
+    legend("topright", legend = c("Training", "Validation"),
+           lty = 1:2, col = c("steelblue", "purple"),
+           title = "Data")
+  }else{
+    stop("This is a model which was loaded using starspace_load_model, in which case plot.textspace does not work as the training error is not available.")
+  }
+}
+
 
 #' @title K-nearest neighbours using a Starspace model 
 #' @description K-nearest neighbours using a Starspace model 
