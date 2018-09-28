@@ -4,7 +4,7 @@
 \alias{embed_sentencespace}
 \title{Build a Starspace model to be used for sentence embedding}
 \usage{
-embed_sentencespace(x, model = "sentencespace.bin", ...)
+embed_sentencespace(x, model = "sentencespace.bin", p = 1, ...)
 }
 \arguments{
 \item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token 
@@ -12,6 +12,8 @@ The doc_id is just an article or document identifier,
 the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -28,6 +30,7 @@ dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
+plot(model)
 predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
         basedoc = unique(x$sentence))
 

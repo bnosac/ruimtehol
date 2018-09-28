@@ -4,12 +4,14 @@
 \alias{embed_pagespace}
 \title{Build a Starspace model for interest-based recommendation}
 \usage{
-embed_pagespace(x, model = "pagespace.bin", ...)
+embed_pagespace(x, model = "pagespace.bin", p = 1, ...)
 }
 \arguments{
 \item{x}{a list where each list element contains a character vector of pages which the user was interested in}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -30,7 +32,8 @@ x <- lapply(x, FUN=function(themes){
 })
 str(x)
 model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
-
+plot(model)
+ 
 pagevectors <- as.matrix(model)
 
 mostsimilar <- embedding_similarity(pagevectors, 

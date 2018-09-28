@@ -4,12 +4,14 @@
 \alias{embed_wordspace}
 \title{Build a Starspace model which calculates word embeddings}
 \usage{
-embed_wordspace(x, model = "wordspace.bin", ...)
+embed_wordspace(x, model = "wordspace.bin", p = 1, ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -27,7 +29,9 @@ x <- subset(brussels_reviews, language == "nl")
 x <- tokenize_words(x$feedback)
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
-model <- embed_wordspace(x, dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+model <- embed_wordspace(x, p = 0.9, 
+                         dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+plot(model)
 wordvectors <- as.matrix(model)
 
 mostsimilar <- embedding_similarity(wordvectors, wordvectors["weekend", ])

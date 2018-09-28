@@ -4,7 +4,7 @@
 \alias{embed_docspace}
 \title{Build a Starspace model for content-based recommendation}
 \usage{
-embed_docspace(x, model = "docspace.bin", ...)
+embed_docspace(x, model = "docspace.bin", p = 1, ...)
 }
 \arguments{
 \item{x}{a data.frame with user interest containing the columns user_id, doc_id and text 
@@ -14,6 +14,8 @@ the text column is a character field which contains words which are part of the 
 should not contain any tab characters}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -42,4 +44,5 @@ docs <- do.call(rbind, docs)
 ## Build a model
 x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
 model <- embed_docspace(x, dim = 10)
+plot(model)
 }

@@ -3,6 +3,7 @@
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param y a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -16,14 +17,22 @@
 #' 
 #' model <- embed_tagspace(x = dekamer$text, 
 #'                         y = dekamer$question_theme_main, 
+#'                         p = 0.8,
 #'                         dim = 10, minCount = 5)
+#' plot(model)
 #' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' predict(model, "de migranten komen naar europa, in asielcentra ...")
 #' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
-embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
+embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
+  stopifnot(p >= 0 && p <= 1)
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
   label <- "__label__"
   if("label" %in% names(ldots)){
     label <- ldots$label
@@ -33,15 +42,23 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
   }else{
     targets <- paste(label, y, sep = "")
   }
-  writeLines(text = paste(targets, x), con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 0, label = label, fileFormat = "fastText", ...)
+  x <- paste(targets, x)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", ...)
+  }
 }
 
 #' @title Build a Starspace model which calculates word embeddings
 #' @description Build a Starspace model which calculates word embeddings
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -53,7 +70,9 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' x <- tokenize_words(x$feedback)
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
-#' model <- embed_wordspace(x, dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+#' model <- embed_wordspace(x, p = 0.9, 
+#'                          dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+#' plot(model)
 #' wordvectors <- as.matrix(model)
 #' 
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["weekend", ])
@@ -62,11 +81,28 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-embed_wordspace <- function(x, model = "wordspace.bin", ...) {
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
-  writeLines(text = x, con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 5, ...)
+embed_wordspace <- function(x, model = "wordspace.bin", p = 1, ...) {
+  stopifnot(p >= 0 && p <= 1)
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 5, fileFormat = "fastText", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 5, fileFormat = "fastText", ...)
+  }
 }
 
 #' @title Build a Starspace model to be used for sentence embedding
@@ -75,6 +111,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -85,6 +122,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", ...) {
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 #' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
+#' plot(model)
 #' predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
 #'         basedoc = unique(x$sentence))
 #' 
@@ -94,19 +132,36 @@ embed_wordspace <- function(x, model = "wordspace.bin", ...) {
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 #' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
+embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
+  stopifnot(p >= 0 && p <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
   x <- split(x, f = x$doc_id)
   x <- sapply(x, FUN=function(tokens){
     sentences <- split(tokens, tokens$sentence_id)
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  writeLines(text = x, con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", ...)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", ...)
+  }
 }
 
 #' @title Build a Starspace model for learning the mapping between sentences and articles (articlespace)
@@ -115,6 +170,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -124,7 +180,8 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
-#' model <- embed_articlespace(x, dim = 15, epoch = 5, minCount = 5)
+#' model <- embed_articlespace(x, p = 0.8, dim = 15, epoch = 5, minCount = 5)
+#' plot(model)
 #' 
 #' embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
 #' dim(embeddings)
@@ -132,19 +189,36 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", ...) {
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 #' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_articlespace <- function(x, model = "articlespace.bin", ...) {
+embed_articlespace <- function(x, model = "articlespace.bin", p = 1, ...) {
+  stopifnot(p >= 0 && p <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
   x <- split(x, f = x$doc_id)
   x <- sapply(x, FUN=function(tokens){
     sentences <- split(tokens, tokens$sentence_id)
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  writeLines(text = x, con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", ...)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", ...)
+  }
 }
 
 #' @title Build a Starspace model for content-based recommendation
@@ -155,6 +229,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", ...) {
 #' the text column is a character field which contains words which are part of the doc_id, words should be separated by a space and 
 #' should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -177,25 +252,44 @@ embed_articlespace <- function(x, model = "articlespace.bin", ...) {
 #' ## Build a model
 #' x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
 #' model <- embed_docspace(x, dim = 10)
-embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", ...) {
+#' plot(model)
+embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", p = 1, ...) {
   ## user clicks on a web page which has content
   ## trainMode 1, fileFormat labelDoc
+  stopifnot(p >= 0 && p <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("user_id", "doc_id", "text") %in% colnames(x)))
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
+  }
   x <- split(x, f = x$user_id)
   x <- sapply(x, FUN=function(userdata){
     paste(userdata$text, collapse = " \t ")
   })
-  writeLines(text = x, con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", ...)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", ...)
+  }
 }
 
 #' @title Build a Starspace model for interest-based recommendation
 #' @description Build a Starspace model for interest-based recommendation (pagespace). For example a user clicks on a webpage.
 #' @param x a list where each list element contains a character vector of pages which the user was interested in
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -210,7 +304,8 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", ...) {
 #' })
 #' str(x)
 #' model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
-#' 
+#' plot(model)
+#'  
 #' pagevectors <- as.matrix(model)
 #' 
 #' mostsimilar <- embedding_similarity(pagevectors, 
@@ -219,13 +314,19 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", ...) {
 #' mostsimilar <- embedding_similarity(pagevectors, 
 #'                                     pagevectors["__THEME__DEFENSIEBELEID", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
+embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", p = 1, ...) {
   ## user clicks or is fan of a webpage
   ## trainMode 1
+  stopifnot(p >= 0 && p <= 1)
   stopifnot(is.list(x))
   stopifnot(all(sapply(x, FUN=is.character)))
   ldots <- list(...)
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
   label <- "__label__"
   if("label" %in% names(ldots)){
     label <- ldots$label
@@ -234,9 +335,15 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
     pages <- sprintf("%s%s", label, gsub("[[:space:]]", "", unique(x))) 
     paste(pages, collapse = " ")
   })
-  writeLines(text = paste(x, collapse = "\n"), con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 1, ...)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 1, fileFormat = "fastText", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 1, fileFormat = "fastText", ...)
+  }
 }
 
 
@@ -244,6 +351,7 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
 #' @description Build a Starspace model for entity relationship completion (graphspace). 
 #' @param x a data.frame with columns entity_head, entity_tail and relation indicating the relation between the head and tail entity
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
+#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -259,6 +367,8 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
 #' head(x)
 #' 
 #' model <- embed_entityrelationspace(x, dim = 50)
+#' plot(model)
+#' 
 #' predict(model, "/m/027rn /location/country/form_of_government")
 #' 
 #' ## Also add reverse relation
@@ -270,20 +380,31 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", ...) {
 #' model <- embed_entityrelationspace(relations, dim = 50)
 #' predict(model, "/m/027rn /location/country/form_of_government")
 #' predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")
-embed_entityrelationspace <- function(x, model = "graphspace.bin", ...) {
+embed_entityrelationspace <- function(x, model = "graphspace.bin", p = 1, ...) {
+  stopifnot(p >= 0 && p <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("entity_head", "entity_tail", "relation") %in% colnames(x)))
-  
   ldots <- list(...)
-  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
   label <- "__label__"
   if("label" %in% names(ldots)){
     label <- ldots$label
   }
-  txt <- sprintf("%s\t%s\t%s%s", x$entity_head, x$relation, label, x$entity_tail)
-  writeLines(text = txt, con = filename)
-  on.exit(file.remove(filename))
-  starspace(model = model, file = filename, trainMode = 0, ...)
+  x <- sprintf("%s\t%s\t%s%s", x$entity_head, x$relation, label, x$entity_tail)
+  if(p < 1){
+    idx <- sample.int(n = length(x), size = round(p * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", ...)
+  }
 }
 
 

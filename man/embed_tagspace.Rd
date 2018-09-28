@@ -4,7 +4,7 @@
 \alias{embed_tagspace}
 \title{Build a Starspace model to be used for classification purposes}
 \usage{
-embed_tagspace(x, y, model = "tagspace.bin", ...)
+embed_tagspace(x, y, model = "tagspace.bin", p = 1, ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
@@ -12,6 +12,8 @@ embed_tagspace(x, y, model = "tagspace.bin", ...)
 \item{y}{a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
+
+\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -31,7 +33,9 @@ dekamer$text <- sapply(dekamer$text,
 
 model <- embed_tagspace(x = dekamer$text, 
                         y = dekamer$question_theme_main, 
+                        p = 0.8,
                         dim = 10, minCount = 5)
+plot(model)
 predict(model, "de nmbs heeft het treinaanbod uitgebreid")
 predict(model, "de migranten komen naar europa, in asielcentra ...")
 starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
