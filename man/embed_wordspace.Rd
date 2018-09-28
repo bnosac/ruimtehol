@@ -4,7 +4,7 @@
 \alias{embed_wordspace}
 \title{Build a Starspace model which calculates word embeddings}
 \usage{
-embed_wordspace(x, model = "embed_wordspace.bin", ...)
+embed_wordspace(x, model = "wordspace.bin", ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}

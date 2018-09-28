@@ -62,7 +62,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", ...) {
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-embed_wordspace <- function(x, model = "embed_wordspace.bin", ...) {
+embed_wordspace <- function(x, model = "wordspace.bin", ...) {
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
   writeLines(text = x, con = filename)
   on.exit(file.remove(filename))
