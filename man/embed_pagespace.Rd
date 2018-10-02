@@ -33,6 +33,7 @@ x <- lapply(x, FUN=function(themes){
 str(x)
 model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
 plot(model)
+predict(model, "__THEME__MARINE __THEME__DEFENSIEBELEID")
  
 pagevectors <- as.matrix(model)
 
