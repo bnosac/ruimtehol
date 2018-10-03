@@ -141,6 +141,7 @@ predict(model, "We developed a two-level machine learning approach that in the f
 
 - Why did you call the package ruimtehol? Because that is the translation of StarSpace in WestVlaams.
 - The R wrapper is distributed under the Mozilla Public License 2.0. The package contains a copy of the StarSpace C++ code (namely all code under src/Starspace) which has a BSD license (which is available in file LICENSE.notes) and also has an accompanying PATENTS file which you can inspect [here](inst/PATENTS).
+- The package has only been tested on Windows and Ubuntu at this stage
 
 ## Support in text mining
 
