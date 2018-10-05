@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-
+/*
 // [[Rcpp::export]]
 int rand() {
   int r = R::unif_rand() * RAND_MAX;
@@ -12,7 +12,7 @@ void srand(unsigned int seed){
   Rcpp::Function set_seed = base["set.seed"];    
   set_seed(seed);
 };
-
+*/
 namespace std {
   std::ostream Rcout(Rcpp::Rcout.rdbuf());
 }

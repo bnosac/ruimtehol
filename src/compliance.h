@@ -6,10 +6,10 @@
 /*
 #define cerr Rcout 
 #define cout Rcout
-*/
+
 int rand();
 void srand(unsigned int seed);
-
+ */
 namespace std {
   extern std::ostream Rcout;
 }
