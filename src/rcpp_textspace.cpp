@@ -228,6 +228,25 @@ Rcpp::List textspace(std::string model = "textspace.bin",
   return out;
 }
 
+// [[Rcpp::export]]
+Rcpp::List textspace_evaluate(SEXP textspacemodel, std::string testFile = "", std::string basedoc = "", std::string predictionFile = "", int K = 5) {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  sp->args_->isTrain = false; 
+  sp->args_->K = K;
+  if(std::ifstream(testFile))       sp->args_->testFile = testFile;
+  if(std::ifstream(basedoc))        sp->args_->basedoc = basedoc;
+  if(std::ifstream(predictionFile)) sp->args_->predictionFile = predictionFile;
+  sp->evaluate();
+  Rcpp::List out;
+  out = Rcpp::List::create(
+    Rcpp::Named("model") = sp,
+    Rcpp::Named("args") = textspace_args(sp),
+    Rcpp::Named("test") = "UNDER CONSTRUCTION: capture results of sp->evaluate() or write own sp->evaluate");
+  return out;
+}
+
+
+
 
 // [[Rcpp::export]]
 Rcpp::List textspace_load_model(const std::string file_model, bool is_tsv = false) {

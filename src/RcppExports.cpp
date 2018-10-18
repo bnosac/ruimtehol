@@ -5,26 +5,6 @@
 
 using namespace Rcpp;
 
-// rand
-int rand();
-RcppExport SEXP _ruimtehol_rand() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rand());
-    return rcpp_result_gen;
-END_RCPP
-}
-// srand
-void srand(unsigned int seed);
-RcppExport SEXP _ruimtehol_srand(SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    srand(seed);
-    return R_NilValue;
-END_RCPP
-}
 // textspace_help
 void textspace_help(std::string type);
 RcppExport SEXP _ruimtehol_textspace_help(SEXP typeSEXP) {
@@ -98,6 +78,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type trainWord(trainWordSEXP);
     Rcpp::traits::input_parameter< bool >::type excludeLHS(excludeLHSSEXP);
     rcpp_result_gen = Rcpp::wrap(textspace(model, save, trainFile, initModel, validationFile, testFile, basedoc, predictionFile, fileFormat, label, loss, similarity, lr, termLr, norm, margin, initRandSd, p, dropoutLHS, dropoutRHS, wordWeight, dim, epoch, ws, maxTrainTime, validationPatience, thread, maxNegSamples, negSearchLimit, minCount, minCountLabel, bucket, ngrams, trainMode, K, verbose, debug, adagrad, normalizeText, saveEveryEpoch, saveTempModel, shareEmb, useWeight, trainWord, excludeLHS));
+    return rcpp_result_gen;
+END_RCPP
+}
+// textspace_evaluate
+Rcpp::List textspace_evaluate(SEXP textspacemodel, std::string testFile, std::string basedoc, std::string predictionFile, int K);
+RcppExport SEXP _ruimtehol_textspace_evaluate(SEXP textspacemodelSEXP, SEXP testFileSEXP, SEXP basedocSEXP, SEXP predictionFileSEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
+    Rcpp::traits::input_parameter< std::string >::type testFile(testFileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type basedoc(basedocSEXP);
+    Rcpp::traits::input_parameter< std::string >::type predictionFile(predictionFileSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_evaluate(textspacemodel, testFile, basedoc, predictionFile, K));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -190,11 +185,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ruimtehol_rand", (DL_FUNC) &_ruimtehol_rand, 0},
-    {"_ruimtehol_srand", (DL_FUNC) &_ruimtehol_srand, 1},
     {"_ruimtehol_textspace_help", (DL_FUNC) &_ruimtehol_textspace_help, 1},
     {"_ruimtehol_textspace_args", (DL_FUNC) &_ruimtehol_textspace_args, 1},
     {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 45},
+    {"_ruimtehol_textspace_evaluate", (DL_FUNC) &_ruimtehol_textspace_evaluate, 5},
     {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 2},
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 3},
     {"_ruimtehol_textspace_dictionary", (DL_FUNC) &_ruimtehol_textspace_dictionary, 1},
