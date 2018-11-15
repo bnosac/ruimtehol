@@ -246,7 +246,7 @@ plot.textspace <- function(x, ...){
 #' @param k integer with the number of nearest neighbours
 #' @param ... not used
 #' @export
-#' @return a list with elements input and a data.frame called prediction which has columns called label and prob
+#' @return a list with elements input and a data.frame called prediction which has columns called label and similarity
 starspace_knn <- function(object, newdata, k = 5, ...){
   stopifnot(inherits(object, "textspace"))
   stopifnot(is.character(newdata))
