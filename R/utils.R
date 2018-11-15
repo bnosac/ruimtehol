@@ -37,7 +37,7 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), tidy = FALSE) 
   }
   if(tidy){
     similarities <- as.data.frame.table(similarities)
-    similarities <- data.table::setnames(similarities, old = c("Var1", "Var2", "Freq"), new = c("term1", "term2", "similarity"))
+    colnames(similarities) <- c("term1", "term2", "similarity")
   }
   similarities
 }
