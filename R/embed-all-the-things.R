@@ -26,6 +26,7 @@
 #' @param minCount minimal number of word occurences for being part of the dictionary (integer, defaults to 1 keeping all words)
 #' @param minCountLabel minimal number of label occurences for being part of the dictionary (integer, defaults to 1 keeping all labels)
 #' @param ngrams max length of word ngram (integer, defaults to 1, using only unigrams)
+#' @param label labels prefix (character string identifying how a label is prefixed, defaults to '__label__') 
 #' @param ... arguments passed on to ruimtehol:::textspace. See the details below.
 #' @references \url{https://github.com/facebookresearch}
 #' @note  
@@ -121,7 +122,7 @@
 #' mostsimilar <- embedding_similarity(wordvectors, wv["pensioen", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' }
-starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat = c("fastText", "labelDoc"), 
+starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat = c("fastText", "labelDoc"), label = "__label__", 
                       dim = 100,
                       epoch = 5,
                       lr = 0.01,
@@ -146,7 +147,7 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
   if(length(wrong)){
     stop(sprintf("You should not pass the arguments %s as they can only be used when doing starspace_test", paste(wrong, collapse = ", ")))
   }
-  object <- textspace(model = model, trainFile = file, trainMode = as.integer(trainMode), fileFormat = fileFormat, dim = as.integer(dim),
+  object <- textspace(model = model, trainFile = file, trainMode = as.integer(trainMode), fileFormat = fileFormat, label = label, dim = as.integer(dim),
                       epoch = as.integer(epoch), lr = lr, loss = loss, margin = margin, similarity = similarity, negSearchLimit = as.integer(negSearchLimit), 
                       adagrad = as.logical(adagrad), ws = as.integer(ws), 
                       minCount = as.integer(minCount), minCountLabel = as.integer(minCountLabel), ngrams = as.integer(ngrams), thread = as.integer(thread), ...)
@@ -276,8 +277,8 @@ starspace_load_model <- function(object, is_tsv = FALSE){
   object
 }
 
-#' @title Save a starspace model as a tab-delimited TSV file
-#' @description Save a starspace model as a tab-delimited TSV file
+#' @title Save a starspace model as a binary or tab-delimited TSV file
+#' @description Save a starspace model as a binary or a tab-delimited TSV file
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param file character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}
 #' @param as_tsv logical indicating to save the model as a TSV file or as a binary file. Defaults to FALSE indicating to save as a binary file.

@@ -27,12 +27,12 @@ The following functions are made available.
 |-------------------------------|----------------------------------------------------------------|
 | `starspace`                   | Low-level interface to build a Starspace model                 |
 | `starspace_load_model`        | Load a pre-trained model or a tab-separated file               |
-| `starspace_save_model`        | Save a Starspace model to a tab-separated file                 |
+| `starspace_save_model`        | Save a Starspace model                                         |
 | `starspace_embedding`         | Get embeddings of documents/words/ngrams/labels                |
 | `starspace_knn`               | Find k-nearest neighbouring information for new text           |
-| `starspace_dictonary`         | Get words/labels with the model dictionary                     |
+| `starspace_dictonary`         | Get words/labels part of the model dictionary                  |
 | `predict.textspace`           | Get predictions along a Starspace model                        |
-| `as.matrix`                   | Get words and labels embeddings                                |
+| `as.matrix`                   | Get words and label embeddings                                 |
 | `embedding_similarity`        | Basic cosine/dot product based similarity of embeddings        |
 | `embed_wordspace`             | Build a Starspace model which calculates word/ngram embeddings                              |
 | `embed_sentencespace`         | Build a Starspace model which calculates sentence embeddings                                |

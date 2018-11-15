@@ -5,8 +5,8 @@
 \title{Interface to Starspace for training a Starspace model}
 \usage{
 starspace(model = "textspace.bin", file, trainMode = 0,
-  fileFormat = c("fastText", "labelDoc"), dim = 100, epoch = 5,
-  lr = 0.01, loss = c("hinge", "softmax"), margin = 0.05,
+  fileFormat = c("fastText", "labelDoc"), label = "__label__", dim = 100,
+  epoch = 5, lr = 0.01, loss = c("hinge", "softmax"), margin = 0.05,
   similarity = c("cosine", "dot"), negSearchLimit = 50, adagrad = TRUE,
   ws = 5, minCount = 1, minCountLabel = 1, ngrams = 1, thread = 10,
   ...)
@@ -27,6 +27,8 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 }}
 
 \item{fileFormat}{either one of 'fastText' or 'labelDoc'. See the documentation of StarSpace}
+
+\item{label}{labels prefix (character string identifying how a label is prefixed, defaults to '__label__')}
 
 \item{dim}{the size of the embedding vectors (integer, defaults to 100)}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/embed-all-the-things.R
 \name{starspace_save_model}
 \alias{starspace_save_model}
-\title{Save a starspace model as a tab-delimited TSV file}
+\title{Save a starspace model as a binary or tab-delimited TSV file}
 \usage{
 starspace_save_model(object, file = "textspace.tsv", as_tsv = FALSE)
 }
@@ -17,5 +17,5 @@ starspace_save_model(object, file = "textspace.tsv", as_tsv = FALSE)
 the character string with the file of the saved object
 }
 \description{
-Save a starspace model as a tab-delimited TSV file
+Save a starspace model as a binary or a tab-delimited TSV file
 }
