@@ -94,6 +94,7 @@ embedding[c("school", "house"), ]
                1           2            3         4           5          6          7          8          9        10
 school 0.0201249 -0.00478271 -0.018693000 0.0155070  0.01113670 -0.0184385 0.00892674 0.00549661 -0.0144082 0.0056668
 house  0.0123371  0.01406140 -0.000166073 0.0313477 -0.00962703 -0.0237911 0.00225086 0.03393420  0.0035634 0.0160656
+dictionary <- starspace_dictionary(model)
 ```
 
 ```r
@@ -115,13 +116,15 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
 The following functionalities do similar things. They see what is the closest word or sentence to a provided sentence.
 
 ```r
+## What is closest term from the dictionary
 starspace_knn(model, "What does this bunch of text look like", k = 10)
-starspace_dictionary(model)
+## What is closest sentence to vector of sentences
 predict(model, newdata = "what does this bunch of text look like", 
         basedoc = c("what does this bunch of text look like", 
                     "word abracadabra was not part of the dictionary", 
                     "give me back my mojo",
                     "cosine distance is what i show"))
+## Get cosine distance between 2 sentence vectors
 embedding_similarity(
   starspace_embedding(model, "what does this bunch of text look like"),
   starspace_embedding(model, "word abracadabra was not part of the dictionary"), 
