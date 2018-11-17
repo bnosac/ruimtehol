@@ -118,12 +118,14 @@ The following functionalities do similar things. They see what is the closest wo
 ```r
 ## What is closest term from the dictionary
 starspace_knn(model, "What does this bunch of text look like", k = 10)
+
 ## What is closest sentence to vector of sentences
 predict(model, newdata = "what does this bunch of text look like", 
         basedoc = c("what does this bunch of text look like", 
                     "word abracadabra was not part of the dictionary", 
                     "give me back my mojo",
                     "cosine distance is what i show"))
+                    
 ## Get cosine distance between 2 sentence vectors
 embedding_similarity(
   starspace_embedding(model, "what does this bunch of text look like"),
