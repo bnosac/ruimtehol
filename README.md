@@ -55,7 +55,7 @@ library(ruimtehol)
 
 ## Get some training data
 download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "wikipedia_train250k.tgz")
-x <- readLines("dev/wikipedia_train250k.tgz", encoding = "UTF-8")
+x <- readLines("wikipedia_train250k.tgz", encoding = "UTF-8")
 x <- x[-c(1:9)]
 x <- x[sample(x = length(x), size = 10000)]
 writeLines(text = x, sep = "\n", con = "wikipedia_train10k.txt")
@@ -63,7 +63,7 @@ writeLines(text = x, sep = "\n", con = "wikipedia_train10k.txt")
 
 ```r
 ## Train
-model <- starspace(file = "dev/wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+model <- starspace(file = "wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
@@ -110,9 +110,22 @@ starspace_embedding(model, "The apps to predict / get nearest neighbours are sti
 
            [,1]      [,2]        [,3]       [,4]       [,5]       [,6]       [,7]     [,8]      [,9]      [,10]
 [1,] -0.4213823 0.4987145 -0.08066317 -0.6519815 -0.1743725 0.09401496 0.02670185 0.262726 0.1761705 0.04599866
+```
 
+The following functionalities do similar things. They see what is the closest word or sentence to a provided sentence.
+
+```r
 starspace_knn(model, "What does this bunch of text look like", k = 10)
 starspace_dictionary(model)
+predict(model, newdata = "what does this bunch of text look like", 
+        basedoc = c("what does this bunch of text look like", 
+                    "word abracadabra was not part of the dictionary", 
+                    "give me back my mojo",
+                    "cosine distance is what i show"))
+embedding_similarity(
+  starspace_embedding(model, "what does this bunch of text look like"),
+  starspace_embedding(model, "word abracadabra was not part of the dictionary"), 
+  type = "cosine")
 ```
 
 ### Short example showing classification modelling (tagspace)
@@ -134,7 +147,7 @@ model <- starspace(file = filename,
                    similarity = "dot", verbose = TRUE, initRandSd = 0.01, adagrad = FALSE, 
                    ngrams = 1, lr = 0.01, epoch = 5, thread = 20, dim = 10, negSearchLimit = 5, maxNegSamples = 3)
 predict(model, "We developed a two-level machine learning approach that in the first level considers two different 
-                properties important for protein-protein binding derived from structural models of V3 and V3 sequences.")                   
+                properties important for protein-protein binding derived from structural models of V3 and V3 sequences.", k = 3)                   
 ```
 
 ## Notes

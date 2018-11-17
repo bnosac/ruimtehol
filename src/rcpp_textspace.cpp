@@ -215,6 +215,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
       Rcpp::Named("iter") = iter);
   }else{
     sp->initFromSavedModel(args->model);
+    sp->initDataHandler();
     sp->evaluate();
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
@@ -233,7 +234,10 @@ Rcpp::List textspace_evaluate(SEXP textspacemodel, std::string testFile = "", st
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
   sp->args_->isTrain = false; 
   sp->args_->K = K;
-  if(std::ifstream(testFile))       sp->args_->testFile = testFile;
+  if(std::ifstream(testFile)){
+    sp->args_->testFile = testFile;
+    sp->initDataHandler();
+  }       
   if(std::ifstream(basedoc))        sp->args_->basedoc = basedoc;
   if(std::ifstream(predictionFile)) sp->args_->predictionFile = predictionFile;
   sp->evaluate();
@@ -347,8 +351,10 @@ Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringV
 }
 
 // [[Rcpp::export]]
-Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, Rcpp::StringVector basedoc = "", std::string sep = " ") { 
+Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, Rcpp::StringVector basedoc = "", std::string sep = " ") { 
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  // Set number of elements to predict
+  sp->args_->K = k;
   // Set dropout probability to 0 in test case.
   sp->args_->dropoutLHS = 0.0;
   sp->args_->dropoutRHS = 0.0;

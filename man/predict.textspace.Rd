@@ -4,12 +4,15 @@
 \alias{predict.textspace}
 \title{Predict using a Starspace model}
 \usage{
-\method{predict}{textspace}(object, newdata, sep = " ", basedoc, ...)
+\method{predict}{textspace}(object, newdata, k = 5L, sep = " ", basedoc,
+  ...)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
 \item{newdata}{a character string of length 1}
+
+\item{k}{integer with the number of predictions to make. Defaults to 5.}
 
 \item{sep}{character string used to split \code{newdata} using boost::split}
 
