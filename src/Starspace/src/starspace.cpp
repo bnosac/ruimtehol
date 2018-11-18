@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include <Rcpp.h>
 
 #include "starspace.h"
 #include <iostream>
@@ -166,12 +165,7 @@ void StarSpace::initFromTsv(const string& filename) {
   initDataHandler();
 }
 
-Rcpp::List StarSpace::train() {
-  std::vector<int> train_epoch;
-  std::vector<float> train_rate;
-  std::vector<float> train_error;
-  std::vector<float> validation_error;
-  
+void StarSpace::train() {
   float rate = args_->lr;
   float decrPerEpoch = (rate - 1e-9) / args_->epoch;
 
@@ -191,15 +185,11 @@ Rcpp::List StarSpace::train() {
     auto err = model_->train(trainData_, args_->thread,
            t_start,  i,
            rate, rate - decrPerEpoch);
-    train_epoch.push_back(i + 1);
-    train_rate.push_back(rate);
-    train_error.push_back(err);
     printf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
            "Epoch", i, err,
            0xe2, 0x98, 0x83);
     if (validData_ != nullptr) {
       auto valid_err = model_->test(validData_, args_->thread);
-      validation_error.push_back(valid_err);
       cout << "\nValidation error: " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
@@ -220,13 +210,6 @@ Rcpp::List StarSpace::train() {
       break;
     }
   }
-  Rcpp::List out = Rcpp::List::create(
-    Rcpp::Named("epoch") = train_epoch,
-    Rcpp::Named("lr") = train_rate,
-    Rcpp::Named("error") = train_error,
-    Rcpp::Named("error_validation") = validation_error
-  );
-  return out;
 }
 
 void StarSpace::parseDoc(
@@ -353,7 +336,7 @@ Metrics StarSpace::evaluateOne(
   for (unsigned int i = 0; i < baseDocVectors_.size(); i++) {
     // in the case basedoc labels are not provided, all labels become basedoc,
     // and we skip the correct label for comparison.
-    if ((args_->basedoc.empty()) && ((int)i == rhs[0].first - dict_->nwords())) {
+    if ((args_->basedoc.empty()) && (i == rhs[0].first - dict_->nwords())) {
       continue;
     }
     auto cur_score = model_->similarity(lhsM, baseDocVectors_[i]);
