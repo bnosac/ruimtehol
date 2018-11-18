@@ -57,7 +57,7 @@ class StarSpace {
 
     std::shared_ptr<Args> args_;
     std::vector<std::vector<Base>> baseDocs_;
-  private:
+  //private:
     void initParser();
     void initDataHandler();
     std::shared_ptr<InternDataHandler> initData();
