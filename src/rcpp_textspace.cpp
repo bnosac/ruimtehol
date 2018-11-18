@@ -78,6 +78,70 @@ Rcpp::List textspace_args(SEXP textspacemodel) {
   return out;
 }
 
+Rcpp::List textspace_train(SEXP textspacemodel) {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  std::vector<int> train_epoch;
+  std::vector<float> train_rate;
+  std::vector<float> train_error;
+  std::vector<float> validation_error;
+  
+  float rate = sp->args_->lr;
+  float decrPerEpoch = (rate - 1e-9) / sp->args_->epoch;
+  
+  int impatience = 0;
+  float best_valid_err = 1e9;
+  auto t_start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < sp->args_->epoch; i++) {
+    if (sp->args_->saveEveryEpoch && i > 0) {
+      auto filename = sp->args_->model;
+      if (sp->args_->saveTempModel) {
+        filename = filename + "_epoch" + std::to_string(i);
+      }
+      sp->saveModel(filename);
+      sp->saveModelTsv(filename + ".tsv");
+    }
+    cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
+    auto err = sp->model_->train(sp->trainData_, sp->args_->thread,
+                                 t_start,  i,
+                                 rate, rate - decrPerEpoch);
+    train_epoch.push_back(i + 1);
+    train_rate.push_back(rate);
+    train_error.push_back(err);
+    Rprintf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
+            "Epoch", i, err,
+            0xe2, 0x98, 0x83);
+    //cout << "Epoch " << i << " Train error: " << err << endl;
+    if (sp->validData_ != nullptr) {
+      auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
+      validation_error.push_back(valid_err);
+      cout << "\nValidation error: " << valid_err << endl;
+      if (valid_err > best_valid_err) {
+        impatience += 1;
+        if (impatience > sp->args_->validationPatience) {
+          cout << "Ran out of Patience! Early stopping based on validation set." << endl;
+          break;
+        }
+      } else {
+        best_valid_err = valid_err;
+      }
+    }
+    rate -= decrPerEpoch;
+    
+    auto t_end = std::chrono::high_resolution_clock::now();
+    auto tot_spent = std::chrono::duration<double>(t_end-t_start).count();
+    if (tot_spent > sp->args_->maxTrainTime) {
+      cout << "MaxTrainTime exceeded." << endl;
+      break;
+    }
+  }
+  Rcpp::List out = Rcpp::List::create(
+    Rcpp::Named("epoch") = train_epoch,
+    Rcpp::Named("lr") = train_rate,
+    Rcpp::Named("error") = train_error,
+    Rcpp::Named("error_validation") = validation_error
+  );
+  return out;
+}
 
 
 // [[Rcpp::export]]
@@ -205,7 +269,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     }else{
       sp->init();  
     }
-    Rcpp::List iter = sp->train();
+    //Rcpp::List iter = sp->train();
+    Rcpp::List iter = textspace_train(sp);
     if(save){
       sp->saveModel(args->model);    
     }
