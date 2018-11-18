@@ -101,7 +101,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
       sp->saveModel(filename);
       sp->saveModelTsv(filename + ".tsv");
     }
-    cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
+    Rcpp::cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
     auto err = sp->model_->train(sp->trainData_, sp->args_->thread,
                                  t_start,  i,
                                  rate, rate - decrPerEpoch);
@@ -111,15 +111,15 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
     Rprintf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
             "Epoch", i, err,
             0xe2, 0x98, 0x83);
-    //cout << "Epoch " << i << " Train error: " << err << endl;
+    //Rcpp::cout << "Epoch " << i << " Train error: " << err << endl;
     if (sp->validData_ != nullptr) {
       auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
       validation_error.push_back(valid_err);
-      cout << "\nValidation error: " << valid_err << endl;
+      Rcpp::cout << "\nValidation error: " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
         if (impatience > sp->args_->validationPatience) {
-          cout << "Ran out of Patience! Early stopping based on validation set." << endl;
+          Rcpp::cout << "Ran out of Patience! Early stopping based on validation set." << endl;
           break;
         }
       } else {
@@ -131,7 +131,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
     auto t_end = std::chrono::high_resolution_clock::now();
     auto tot_spent = std::chrono::duration<double>(t_end-t_start).count();
     if (tot_spent > sp->args_->maxTrainTime) {
-      cout << "MaxTrainTime exceeded." << endl;
+      Rcpp::cout << "MaxTrainTime exceeded." << endl;
       break;
     }
   }
