@@ -19,7 +19,7 @@ This package is not on CRAN, you can only install it as follows: `devtools::inst
 
 ## Main functionalities
 
-This R package allows to *Build Starspace models* on your own text / *Get embeddings* of words/ngrams/sentences/documents / Get *predictions* from a model (e.g. classification / ranking) / Get *nearest neighbours similarity*
+This R package allows to *Build Starspace models* on your own text / *Get embeddings* of words/ngrams/sentences/documents/labels / Get *predictions* from a model (e.g. classification / ranking) / Get *nearest neighbours similarity*
 
 The following functions are made available.
 
@@ -33,7 +33,7 @@ The following functions are made available.
 | `starspace_dictonary`         | Get words/labels part of the model dictionary                  |
 | `predict.textspace`           | Get predictions along a Starspace model                        |
 | `as.matrix`                   | Get words and label embeddings                                 |
-| `embedding_similarity`        | Basic cosine/dot product based similarity of embeddings        |
+| `embedding_similarity`        | Basic cosine/dot product based similarity between embeddings - find top-n most similar text |
 | `embed_wordspace`             | Build a Starspace model which calculates word/ngram embeddings                              |
 | `embed_sentencespace`         | Build a Starspace model which calculates sentence embeddings                                |
 | `embed_articlespace`          | Build a Starspace model for embedding an article and sentences-article similarities         |

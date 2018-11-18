@@ -4,21 +4,24 @@
 \alias{embedding_similarity}
 \title{Cosine and Inner product based similarity}
 \usage{
-embedding_similarity(x, y, type = c("cosine", "dot"), tidy = FALSE)
+embedding_similarity(x, y, type = c("cosine", "dot"), top_n = +Inf)
 }
 \arguments{
-\item{x}{a matrix with embeddings}
+\item{x}{a matrix with embeddings providing embeddings for words/n-grams/documents/labels as indicated in the rownames of the matrix}
 
-\item{y}{a matrix with embeddings}
+\item{y}{a matrix with embeddings providing embeddings for words/n-grams/documents/labels as indicated in the rownames of the matrix}
 
 \item{type}{either 'cosine' or 'dot'. If 'dot', returns inner-product based similarity, if 'cosine', returns cosine similarity}
 
-\item{tidy}{logical indicating to return a data.frame (\code{tidy = TRUE}) or a matrix (\code{tidy = FALSE}). Defaults to \code{FALSE}.}
+\item{top_n}{integer indicating to return only the top n most similar terms from \code{y} for each row of \code{x}.
+If \code{top_n} is supplied, a data.frame will be returned with only the highest similarities between \code{x} and \code{y} instead of all pairwise similarities}
 }
 \value{
 By default, the function returns a similarity matrix between the rows of \code{x} and the rows of \code{y}. 
 The similarity between row i of \code{x} and row j of \code{y} is found in cell \code{[i, j]} of the returned similarity matrix.\cr
-If \code{tidy} is set to \code{TRUE}, the return value is a data.frame with columns term1, term2 and similarity indicating the similarity between the provided terms in \code{x} and \code{y}.
+If \code{top_n} is provided, the return value is a data.frame with columns term1, term2, similarity and rank 
+indicating the similarity between the provided terms in \code{x} and \code{y} 
+ordered from high to low similarity and keeping only the top_n most similar records.
 }
 \description{
 Cosine and Inner product based similarity
@@ -31,6 +34,10 @@ rownames(y) <- c("term1", "term2", "term3", "term4", "term5")
 
 embedding_similarity(x, y, type = "cosine")
 embedding_similarity(x, y, type = "dot")
-embedding_similarity(x, y, type = "cosine", tidy = TRUE)
-embedding_similarity(x, y, type = "dot", tidy = TRUE)
+embedding_similarity(x, y, type = "cosine", top_n = 1)
+embedding_similarity(x, y, type = "dot", top_n = 1)
+embedding_similarity(x, y, type = "cosine", top_n = 2)
+embedding_similarity(x, y, type = "dot", top_n = 2)
+embedding_similarity(x, y, type = "cosine", top_n = +Inf)
+embedding_similarity(x, y, type = "dot", top_n = +Inf)
 }

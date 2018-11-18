@@ -1,14 +1,17 @@
 #' @title Cosine and Inner product based similarity 
 #' @description Cosine and Inner product based similarity 
-#' @param x a matrix with embeddings
-#' @param y a matrix with embeddings
+#' @param x a matrix with embeddings providing embeddings for words/n-grams/documents/labels as indicated in the rownames of the matrix
+#' @param y a matrix with embeddings providing embeddings for words/n-grams/documents/labels as indicated in the rownames of the matrix
 #' @param type either 'cosine' or 'dot'. If 'dot', returns inner-product based similarity, if 'cosine', returns cosine similarity
-#' @param tidy logical indicating to return a data.frame (\code{tidy = TRUE}) or a matrix (\code{tidy = FALSE}). Defaults to \code{FALSE}.
+#' @param top_n integer indicating to return only the top n most similar terms from \code{y} for each row of \code{x}.
+#' If \code{top_n} is supplied, a data.frame will be returned with only the highest similarities between \code{x} and \code{y} instead of all pairwise similarities
 #' @export
 #' @return 
 #' By default, the function returns a similarity matrix between the rows of \code{x} and the rows of \code{y}. 
 #' The similarity between row i of \code{x} and row j of \code{y} is found in cell \code{[i, j]} of the returned similarity matrix.\cr
-#' If \code{tidy} is set to \code{TRUE}, the return value is a data.frame with columns term1, term2 and similarity indicating the similarity between the provided terms in \code{x} and \code{y}.
+#' If \code{top_n} is provided, the return value is a data.frame with columns term1, term2, similarity and rank 
+#' indicating the similarity between the provided terms in \code{x} and \code{y} 
+#' ordered from high to low similarity and keeping only the top_n most similar records.
 #' @examples 
 #' x <- matrix(rnorm(6), nrow = 2, ncol = 3)
 #' rownames(x) <- c("word1", "word2")
@@ -17,9 +20,13 @@
 #' 
 #' embedding_similarity(x, y, type = "cosine")
 #' embedding_similarity(x, y, type = "dot")
-#' embedding_similarity(x, y, type = "cosine", tidy = TRUE)
-#' embedding_similarity(x, y, type = "dot", tidy = TRUE)
-embedding_similarity <- function(x, y, type = c("cosine", "dot"), tidy = FALSE) {
+#' embedding_similarity(x, y, type = "cosine", top_n = 1)
+#' embedding_similarity(x, y, type = "dot", top_n = 1)
+#' embedding_similarity(x, y, type = "cosine", top_n = 2)
+#' embedding_similarity(x, y, type = "dot", top_n = 2)
+#' embedding_similarity(x, y, type = "cosine", top_n = +Inf)
+#' embedding_similarity(x, y, type = "dot", top_n = +Inf)
+embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) {
   if(!is.matrix(x)){
     x <- matrix(x, nrow = 1)
   }
@@ -35,9 +42,14 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), tidy = FALSE) 
     normy <- sqrt(rowSums(y^2))
     similarities <- tcrossprod(x, y) / (normx %o% normy)
   }
-  if(tidy){
+  if(!missing(top_n)){
     similarities <- as.data.frame.table(similarities)
     colnames(similarities) <- c("term1", "term2", "similarity")
+    similarities <- similarities[order(similarities$term1, similarities$similarity, decreasing = TRUE), ]
+    similarities$rank <- stats::ave(similarities$similarity, similarities$term1, FUN = seq_along)
+    similarities <- similarities[similarities$rank <= top_n, ]
+    rownames(similarities) <- NULL
   }
   similarities
 }
+
