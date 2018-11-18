@@ -65,6 +65,7 @@ Rcpp::List textspace_args(SEXP textspacemodel) {
       Rcpp::Named("saveTempModel") = args->saveTempModel,
       Rcpp::Named("validationPatience") = args->validationPatience,
       Rcpp::Named("normalizeText") = args->normalizeText,
+      Rcpp::Named("batchSize") = args->batchSize,
       Rcpp::Named("trainWord") = args->trainWord,
       Rcpp::Named("wordWeight") = args->wordWeight
     ),
@@ -183,6 +184,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      int ngrams = 1,
                      int trainMode = 0,
                      int K = 5,
+                     int batchSize = 5,
                      bool verbose = false,
                      bool debug = false,
                      bool adagrad = true,
@@ -247,6 +249,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
   args->ngrams = ngrams;
   args->trainMode = trainMode;
   args->K = K;
+  args->batchSize = batchSize;
   args->verbose = verbose;
   args->debug = debug;
   args->adagrad = adagrad;

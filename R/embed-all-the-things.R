@@ -75,6 +75,7 @@
 #' 
 #' \strong{Other:}
 #' \itemize{
+#' \item batchSize:       size of mini batch in training. [5]
 #' \item trainWord:       whether to train word level together with other tasks (for multi-tasking). [0]
 #' \item wordWeight:      if trainWord is true, wordWeight specifies example weight for word level training examples. [0.5]
 #' \item useWeight        whether input file contains weights [0]
@@ -90,7 +91,7 @@
 #' \item data: data-specific Starspace training parameters
 #' \item param: algorithm-specific Starspace training parameters
 #' \item dictionary: parameters which define ths dictionary of words and labels in Starspace
-#' \item options: parameters specific to duration of training and text preparation
+#' \item options: parameters specific to duration of training, the text preparation and the training batch size
 #' \item test: parameters specific to model testing
 #' }
 #' \item iter: a list with element epoch, lr, error and error_validation showing the error after each epoch
