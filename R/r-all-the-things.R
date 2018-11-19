@@ -8,10 +8,10 @@
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
-#' library(tokenizers)
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- tokenize_words(dekamer$text)
+#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
@@ -64,10 +64,10 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' library(udpipe)
-#' library(tokenizers)
 #' data(brussels_reviews, package = "udpipe")
 #' x <- subset(brussels_reviews, language == "nl")
-#' x <- tokenize_words(x$feedback)
+#' x <- strsplit(x$feedback, "\\W")
+#' x <- lapply(x, FUN = function(x) setdiff(x, ""))
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
 #' model <- embed_wordspace(x, p = 0.9, 

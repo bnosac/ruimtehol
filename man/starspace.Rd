@@ -130,10 +130,10 @@ others can be passed on with ... . \cr
 }
 }
 \examples{
-library(tokenizers)
 data(dekamer, package = "ruimtehol")
 dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
-x <- tokenize_words(dekamer$text)
+x <- strsplit(dekamer$text, "\\\\W")
+x <- lapply(x, FUN = function(x) setdiff(x, ""))
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
 \dontrun{

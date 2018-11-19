@@ -24,10 +24,10 @@ an object of class \code{textspace} as returned by \code{\link{starspace}}.
 Build a Starspace model to be used for classification purposes
 }
 \examples{
-library(tokenizers)
 data(dekamer, package = "ruimtehol")
 dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
-dekamer$text <- tokenize_words(dekamer$text)
+dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))
 

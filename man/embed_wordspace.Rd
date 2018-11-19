@@ -23,10 +23,10 @@ Build a Starspace model which calculates word embeddings
 }
 \examples{
 library(udpipe)
-library(tokenizers)
 data(brussels_reviews, package = "udpipe")
 x <- subset(brussels_reviews, language == "nl")
-x <- tokenize_words(x$feedback)
+x <- strsplit(x$feedback, "\\\\W")
+x <- lapply(x, FUN = function(x) setdiff(x, ""))
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
 model <- embed_wordspace(x, p = 0.9, 

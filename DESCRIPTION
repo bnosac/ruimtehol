@@ -14,7 +14,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
 Imports: Rcpp (>= 0.11.5), utils, graphics, stats
-Suggests: udpipe, tokenizers
+Suggests: udpipe
 LinkingTo: Rcpp, BH
 RoxygenNote: 6.0.1
 SystemRequirements: C++11, GNU make
