@@ -124,7 +124,6 @@ others can be passed on with ... . \cr
 
 \strong{Other:}
 \itemize{
-\item batchSize:       size of mini batch in training. [5]
 \item trainWord:       whether to train word level together with other tasks (for multi-tasking). [0]
 \item wordWeight:      if trainWord is true, wordWeight specifies example weight for word level training examples. [0.5]
 \item useWeight        whether input file contains weights [0]

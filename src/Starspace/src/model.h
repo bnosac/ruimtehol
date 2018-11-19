@@ -54,26 +54,35 @@ public:
 		       0.0, 0.0, false);
   }
 
-  float trainOneBatch(std::shared_ptr<InternDataHandler> data,
-                 const std::vector<ParseResults>& batch_exs,
-                 size_t negSearchLimits,
+  float trainOneExample(
+      std::shared_ptr<InternDataHandler> data,
+      const ParseResults& s,
+      int negSearchLimit,
+      Real rate,
+      bool trainWord = false);
+
+  float trainOne(std::shared_ptr<InternDataHandler> data,
+                 const std::vector<Base>& items,
+                 const std::vector<Base>& labels,
+                 size_t maxNegSamples,
                  Real rate,
                  bool trainWord = false);
 
-  float trainNLLBatch(std::shared_ptr<InternDataHandler> data,
-                 const std::vector<ParseResults>& batch_exs,
+  float trainNLL(std::shared_ptr<InternDataHandler> data,
+                 const std::vector<Base>& items,
+                 const std::vector<Base>& labels,
                  int32_t negSearchLimit,
                  Real rate,
                  bool trainWord = false);
 
-  void backward(const std::vector<ParseResults>& batch_exs,
+  void backward(const std::vector<Base>& items,
+                const std::vector<Base>& labels,
                 const std::vector<std::vector<Base>>& negLabels,
-                std::vector<Matrix<Real>> gradW,
-                std::vector<Matrix<Real>> lhs,
-                const std::vector<int>& num_negs,
+                Matrix<Real>& gradW,
+                Matrix<Real>& lhs,
                 Real rate_lhs,
-                const std::vector<Real>& rate_rhsP,
-                const std::vector<std::vector<Real>>& nRate);
+                Real rate_rhsP,
+                const std::vector<Real>& rate_rhsN);
 
   // Querying
   std::vector<std::pair<int32_t, Real>>

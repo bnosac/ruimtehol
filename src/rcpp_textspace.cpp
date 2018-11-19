@@ -65,7 +65,7 @@ Rcpp::List textspace_args(SEXP textspacemodel) {
       Rcpp::Named("saveTempModel") = args->saveTempModel,
       Rcpp::Named("validationPatience") = args->validationPatience,
       Rcpp::Named("normalizeText") = args->normalizeText,
-      Rcpp::Named("batchSize") = args->batchSize,
+      //Rcpp::Named("batchSize") = args->batchSize,
       Rcpp::Named("trainWord") = args->trainWord,
       Rcpp::Named("wordWeight") = args->wordWeight
     ),
@@ -101,21 +101,23 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
       sp->saveModel(filename);
       sp->saveModelTsv(filename + ".tsv");
     }
-    Rcpp::cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
+    Rcpp::cout << ">> Start training epoch " << i << ": learning rate " << rate << endl;
     auto err = sp->model_->train(sp->trainData_, sp->args_->thread,
                                  t_start,  i,
                                  rate, rate - decrPerEpoch);
     train_epoch.push_back(i + 1);
     train_rate.push_back(rate);
     train_error.push_back(err);
+    /*
     Rprintf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
             "Epoch", i, err,
             0xe2, 0x98, 0x83);
-    //Rcpp::cout << "Epoch " << i << " Train error: " << err << endl;
+     */
+    Rcpp::cout << "   - Training data error: " << err << endl;
     if (sp->validData_ != nullptr) {
       auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
       validation_error.push_back(valid_err);
-      Rcpp::cout << "\nValidation error: " << valid_err << endl;
+      Rcpp::cout << "   - Validation data error: " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
         if (impatience > sp->args_->validationPatience) {
@@ -134,6 +136,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
       Rcpp::cout << "MaxTrainTime exceeded." << endl;
       break;
     }
+    Rcpp::checkUserInterrupt();
   }
   Rcpp::List out = Rcpp::List::create(
     Rcpp::Named("epoch") = train_epoch,
@@ -249,7 +252,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
   args->ngrams = ngrams;
   args->trainMode = trainMode;
   args->K = K;
-  args->batchSize = batchSize;
+  //args->batchSize = batchSize;
   args->verbose = verbose;
   args->debug = debug;
   args->adagrad = adagrad;
