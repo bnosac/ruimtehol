@@ -92,6 +92,8 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
   int impatience = 0;
   float best_valid_err = 1e9;
   auto t_start = std::chrono::high_resolution_clock::now();
+  Rcpp::Function format_posixct("format.POSIXct");
+  Rcpp::Function sys_time("Sys.time");
   for (int i = 0; i < sp->args_->epoch; i++) {
     if (sp->args_->saveEveryEpoch && i > 0) {
       auto filename = sp->args_->model;
@@ -101,7 +103,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
       sp->saveModel(filename);
       sp->saveModelTsv(filename + ".tsv");
     }
-    Rcpp::cout << ">> Start training epoch " << i << ": learning rate " << rate << endl;
+    Rcpp::cout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Start training epoch " << i+1 << " with learning rate " << rate << endl;
     auto err = sp->model_->train(sp->trainData_, sp->args_->thread,
                                  t_start,  i,
                                  rate, rate - decrPerEpoch);
@@ -113,11 +115,11 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
             "Epoch", i, err,
             0xe2, 0x98, 0x83);
      */
-    Rcpp::cout << "   - Training data error: " << err << endl;
+    Rcpp::cout << "                     > Training data error   " << err << endl;
     if (sp->validData_ != nullptr) {
       auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
       validation_error.push_back(valid_err);
-      Rcpp::cout << "   - Validation data error: " << valid_err << endl;
+      Rcpp::cout << "                     > Validation data error " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
         if (impatience > sp->args_->validationPatience) {
