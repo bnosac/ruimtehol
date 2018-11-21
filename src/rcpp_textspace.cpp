@@ -103,7 +103,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
       sp->saveModel(filename);
       sp->saveModelTsv(filename + ".tsv");
     }
-    Rcpp::cout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Start training epoch " << i+1 << " with learning rate " << rate << endl;
+    Rcpp::Rcout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Start training epoch " << i+1 << " with learning rate " << rate << endl;
     auto err = sp->model_->train(sp->trainData_, sp->args_->thread,
                                  t_start,  i,
                                  rate, rate - decrPerEpoch);
@@ -115,15 +115,15 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
             "Epoch", i, err,
             0xe2, 0x98, 0x83);
      */
-    Rcpp::cout << "                     > Training data error   " << err << endl;
+    Rcpp::Rcout << "                     > Training data error   " << err << endl;
     if (sp->validData_ != nullptr) {
       auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
       validation_error.push_back(valid_err);
-      Rcpp::cout << "                     > Validation data error " << valid_err << endl;
+      Rcpp::Rcout << "                     > Validation data error " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
         if (impatience > sp->args_->validationPatience) {
-          Rcpp::cout << "Ran out of Patience! Early stopping based on validation set." << endl;
+          Rcpp::Rcout << "Ran out of Patience! Early stopping based on validation set." << endl;
           break;
         }
       } else {
@@ -135,7 +135,7 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
     auto t_end = std::chrono::high_resolution_clock::now();
     auto tot_spent = std::chrono::duration<double>(t_end-t_start).count();
     if (tot_spent > sp->args_->maxTrainTime) {
-      Rcpp::cout << "MaxTrainTime exceeded." << endl;
+      Rcpp::Rcout << "MaxTrainTime exceeded." << endl;
       break;
     }
     Rcpp::checkUserInterrupt();
@@ -199,7 +199,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      bool shareEmb = true,
                      bool useWeight = false,
                      bool trainWord = false,
-                     bool excludeLHS = false) {
+                     bool excludeLHS = false,
+                     bool only_load_from_tsv = false) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = model;
   /*
@@ -221,6 +222,11 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     args->testFile = testFile;
     if(std::ifstream(basedoc))        args->basedoc = basedoc;
     if(std::ifstream(predictionFile)) args->predictionFile = predictionFile;
+  }else if(only_load_from_tsv){
+    args->isTrain = true;  
+    args->initModel = initModel;
+    if(std::ifstream(trainFile))      args->trainFile = trainFile;
+    if(std::ifstream(validationFile)) args->validationFile = validationFile;
   }else{
     Rcpp::stop("No valid trainFile nor testFile. Please check your path and check if the file is not opened.");
   }
@@ -271,31 +277,47 @@ Rcpp::List textspace(std::string model = "textspace.bin",
    */
   Rcpp::XPtr<starspace::StarSpace> sp(new starspace::StarSpace(args), true);
   Rcpp::List out;
-  if(args->isTrain){
-    if(std::ifstream(args->initModel)){
-      sp->initFromSavedModel(args->initModel);
-    }else{
-      sp->init();  
-    }
-    //Rcpp::List iter = sp->train();
-    Rcpp::List iter = textspace_train(sp);
-    if(save){
-      sp->saveModel(args->model);    
-    }
+  if(only_load_from_tsv){
+    //Following code basically does initFromTsv but without the datahandler as that loads training data
+    //sp->initFromTsv(args->initModel); 
+    Rcpp::Rcout << "Build dictionary" << endl;
+    sp->dict_ = make_shared<starspace::Dictionary>(sp->args_);
+    sp->dict_->loadDictFromModel(args->initModel);
+    Rcpp::Rcout << "Load model" << endl;
+    sp->model_ = make_shared<starspace::EmbedModel>(sp->args_, sp->dict_);
+    sp->model_->loadTsv(args->initModel, "\t ");
+    //Rcout << "init data parser" << endl;;
+    //sp->initParser();
+    //sp->initDataHandler();
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
-      Rcpp::Named("args") = textspace_args(sp),
-      Rcpp::Named("iter") = iter);
+      Rcpp::Named("args") = textspace_args(sp));    
   }else{
-    sp->initFromSavedModel(args->model);
-    sp->initDataHandler();
-    sp->evaluate();
-    out = Rcpp::List::create(
-      Rcpp::Named("model") = sp,
-      Rcpp::Named("args") = textspace_args(sp),
-      Rcpp::Named("test") = "UNDER CONSTRUCTION: capture results of sp->evaluate() or write own sp->evaluate");
+    if(args->isTrain){
+      if(std::ifstream(args->initModel)){
+        sp->initFromSavedModel(args->initModel);
+      }else{
+        sp->init();  
+      }
+      //Rcpp::List iter = sp->train();
+      Rcpp::List iter = textspace_train(sp);
+      if(save){
+        sp->saveModel(args->model);    
+      }
+      out = Rcpp::List::create(
+        Rcpp::Named("model") = sp,
+        Rcpp::Named("args") = textspace_args(sp),
+        Rcpp::Named("iter") = iter);
+    }else{
+      sp->initFromSavedModel(args->model);
+      sp->initDataHandler();
+      sp->evaluate();
+      out = Rcpp::List::create(
+        Rcpp::Named("model") = sp,
+        Rcpp::Named("args") = textspace_args(sp),
+        Rcpp::Named("test") = "UNDER CONSTRUCTION: capture results of sp->evaluate() or write own sp->evaluate");
+    } 
   }
-
   /*
    * Return pointer to the model and the used arguments as a list
    */
@@ -457,9 +479,9 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
     sp->loadBaseDocs();
   }
   /*
-  cout << sp->baseDocs_.size() << endl;
+  Rcout << sp->baseDocs_.size() << endl;
   for(int i=0; i < sp->baseDocs_.size(); i++){
-    cout << sp->dict_->getSymbol(sp->baseDocs_[i][0].first) << endl;
+    Rcout << sp->dict_->getSymbol(sp->baseDocs_[i][0].first) << endl;
   }
   */
 
@@ -518,9 +540,9 @@ Rcpp::List textspace_knn(SEXP textspacemodel, const std::string line, int k) {
   /*
   for(int i = 0; i < vec.numRows(); i++){
     for(int j = 0; j < vec.numCols(); j++){
-      cout << vec.cell(i,j) << ' ';    
+      Rcout << vec.cell(i,j) << ' ';    
     }  
-   cout << endl;    
+   Rcout << endl;    
   }
   */
   std::vector<std::pair<int32_t, starspace::Real>> preds = sp->model_->findLHSLike(vec, k);

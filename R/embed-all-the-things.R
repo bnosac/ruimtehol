@@ -299,6 +299,19 @@ starspace_save_model <- function(object, file = "textspace.tsv",  as_tsv = FALSE
   result
 }
 
+if(FALSE){
+  ruimtehol_save_model <- function(model, file = "textspace.tsv"){
+    ## Much quicker version of writing the model to a tsv
+    embeddings <- as.matrix(model)
+    x <- data.table::as.data.table(embeddings)
+    x <- x[, term := rownames(embeddings)]
+    x <- data.table::setcolorder(x, neworder = c("term", setdiff(colnames(x), "term")))
+    write.table(x = x, file = file, sep = "\t ", col.names = FALSE, row.names = FALSE)
+    data.table::fwrite(x, file = file, sep = "\t", col.names = FALSE)
+  }  
+}
+
+
 
 #' @title Get the document or ngram embeddings
 #' @description Get the document or ngram embeddings
