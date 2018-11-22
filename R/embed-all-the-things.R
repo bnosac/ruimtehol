@@ -136,18 +136,21 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
                       minCountLabel = 1,
                       ngrams = 1,
                       thread = 10, ...) {
-  file <- path.expand(file)
+  ldots <- list(...)
+  if(!"embeddings" %in% names(ldots)){
+    file <- path.expand(file)  
+  }else{
+    file <- ""
+  }
   stopifnot(trainMode %in% 0:5 && length(trainMode) == 1)
   fileFormat <- match.arg(fileFormat)
   loss <- match.arg(loss)
   similarity <- match.arg(similarity)
-  ldots <- list(...)
   #wrong <- intersect(c("testFile", "basedoc", "predictionFile", "K", "excludeLHS"), names(ldots))
   wrong <- intersect(c("testFile", "basedoc", "predictionFile", "excludeLHS"), names(ldots))
   if(length(wrong)){
     stop(sprintf("You should not pass the arguments %s as they can only be used when doing starspace_test", paste(wrong, collapse = ", ")))
   }
-  ldots <- list(...)
   ldots$model <- model
   ldots$trainFile <- file
   ldots$trainMode <- as.integer(trainMode)
@@ -286,20 +289,39 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' @title Load a Starspace model
 #' @description Load a Starspace model
 #' @param object either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.
-#' @param is_tsv logical indicating that if \code{object} is a file on disk, it is a tab-separated flat file. 
-#' Defaults to \code{FALSE} indicating it is binary file as created by a call to \code{\link{starspace}}
+#' @param method character indicating the method of loading. Possible values are 'binary', 'tsv-starspace', 'tsv-data.table'. Defaults to 'binary'.
+#' \enumerate{
+#' \item{The first method: \code{'binary'} loads the model which was saved a binary file using the Starspace methods - see \code{\link{starspace_save_model}}}
+#' \item{The second method: \code{'tsv-starspace'} loads the model which was saved as a tab-delimited flat file using the Starspace methods - see \code{\link{starspace_save_model}}}
+#' \item{The third method: \code{'tsv-data.table'} loads the model which was saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
+#' }
+#' @param ... further arguments passed on to \code{\link{starspace}} in case of method 'tsv-data.table'
 #' @export
 #' @return an object of class textspace
-starspace_load_model <- function(object, is_tsv = FALSE){
+starspace_load_model <- function(object, method = c("binary", "tsv-starspace", "tsv-data.table"), ...){
+  method <- match.arg(method)  
   if(inherits(object, "textspace")){
     filename <- object$args$file
-    is_tsv <- FALSE
+    object <- textspace_load_model(filename, is_tsv = FALSE)
   }else{
     stopifnot(is.character(object))
     stopifnot(file.exists(object))
     filename <- object
+    if(method == "binary"){
+      object <- textspace_load_model(filename, is_tsv = FALSE)
+    }else if(method == "tsv-starspace"){
+      object <- textspace_load_model(filename, is_tsv = TRUE)
+    }else if(method == "tsv-data.table"){
+      if(requireNamespace("data.table", quietly = TRUE)){
+        x <- data.table::fread(filename, sep = "\t", encoding = "UTF-8")
+        embeddings <- data.matrix(x[, -1, with = FALSE])
+        rownames(embeddings) <- x$V1
+        object <- starspace(embeddings = embeddings, ...)
+      }else{
+        stop("method tsv-data.table requires the data.table package, which you can install from cran with install.packages('data.table')")
+      }
+    }
   }
-  object <- textspace_load_model(filename, is_tsv)
   class(object) <- "textspace"
   object
 }
@@ -308,21 +330,38 @@ starspace_load_model <- function(object, is_tsv = FALSE){
 #' @description Save a starspace model as a binary or a tab-delimited TSV file
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
 #' @param file character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}
-#' @param as_tsv logical indicating to save the model as a TSV file or as a binary file. Defaults to FALSE indicating to save as a binary file.
+#' @param method character indicating the method of saving. Possible values are 'binary', 'tsv-starspace', 'tsv-data.table'. Defaults to 'binary'.
+#' \enumerate{
+#' \item{The first method: \code{'binary'} saves the model as a binary file using the Starspace methods}
+#' \item{The second method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
+#' \item{The third method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
+#' }
 #' @export
-#' @return the character string with the file of the saved object
-starspace_save_model <- function(object, file = "textspace.tsv",  as_tsv = FALSE){
+#' @return invisibly, the character string with the file of the saved object
+starspace_save_model <- function(object, file = "textspace.tsv",
+                                 method = c("binary", "tsv-starspace", "tsv-data.table")){
   stopifnot(inherits(object, "textspace"))
-  if(as_tsv){
-    result <- textspace_save_model(object$model, file, as_tsv)  
-  }else{
+  method <- match.arg(method)
+  if(method == "binary"){
+    result <- textspace_save_model(object$model, file = file, as_tsv = FALSE)  
+  }else if(method == "tsv-starspace"){
     if(!missing(file)){
-      result <- textspace_save_model(object$model, file, as_tsv)  
+      result <- textspace_save_model(object$model, file = file, as_tsv = TRUE)  
     }else{
-      result <- textspace_save_model(object$model, object$args$file, as_tsv)  
+      result <- textspace_save_model(object$model, file = object$args$file, as_tsv = TRUE)  
+    }
+  }else if(method == "tsv-data.table"){
+    if(requireNamespace("data.table", quietly = TRUE)){
+      ## Much quicker version of writing the model to a tsv
+      embeddings <- as.matrix(object)
+      x <- data.table::as.data.table(embeddings, keep.rownames = TRUE)
+      data.table::fwrite(x, file = file, sep = "\t", col.names = FALSE)    
+      result <- file
+    }else{
+      stop("method tsv-data.table requires the data.table package, which you can install from cran with install.packages('data.table')")
     }
   }
-  result
+  invisible(result)
 }
 
 if(FALSE){
