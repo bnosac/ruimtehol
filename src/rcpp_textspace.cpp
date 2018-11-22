@@ -200,13 +200,18 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      bool useWeight = false,
                      bool trainWord = false,
                      bool excludeLHS = false,
-                     bool only_load_from_tsv = false) {
+                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100)) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = model;
   /*
    * Check if it is training or testing
    */
-  if(trainFile == "" && testFile == ""){
+  bool load_from_r = false;
+  if(embeddings.nrow() > 0){
+    load_from_r = true;
+    dim = embeddings.ncol();
+  }
+  if(trainFile == "" && testFile == "" && !load_from_r){
     Rcpp::stop("Either provide a training file or a test file");
   }
   if(trainFile != "" && testFile != ""){
@@ -222,9 +227,9 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     args->testFile = testFile;
     if(std::ifstream(basedoc))        args->basedoc = basedoc;
     if(std::ifstream(predictionFile)) args->predictionFile = predictionFile;
-  }else if(only_load_from_tsv){
+  }else if(load_from_r){
     args->isTrain = true;  
-    args->initModel = initModel;
+    //if(std::ifstream(initModel))      args->initModel = initModel;
     if(std::ifstream(trainFile))      args->trainFile = trainFile;
     if(std::ifstream(validationFile)) args->validationFile = validationFile;
   }else{
@@ -277,18 +282,30 @@ Rcpp::List textspace(std::string model = "textspace.bin",
    */
   Rcpp::XPtr<starspace::StarSpace> sp(new starspace::StarSpace(args), true);
   Rcpp::List out;
-  if(only_load_from_tsv){
-    //Following code basically does initFromTsv but without the datahandler as that loads training data
-    //sp->initFromTsv(args->initModel); 
-    Rcpp::Rcout << "Build dictionary" << endl;
+  if(load_from_r){
+    Rcpp::List dimnames = embeddings.attr("dimnames");
+    Rcpp::CharacterVector terminology = dimnames[0];
+    Rcpp::Rcout << "Set up dictionary" << endl;
     sp->dict_ = make_shared<starspace::Dictionary>(sp->args_);
-    sp->dict_->loadDictFromModel(args->initModel);
-    Rcpp::Rcout << "Load model" << endl;
+    for (int i = 0; i < terminology.size(); i++){
+      std::string symbol = Rcpp::as<std::string>(terminology[i]);
+      sp->dict_->insert(symbol);
+    }
+    sp->dict_->computeCounts();
+    Rcpp::Rcout << "Load embedding model" << endl;
     sp->model_ = make_shared<starspace::EmbedModel>(sp->args_, sp->dict_);
-    sp->model_->loadTsv(args->initModel, "\t ");
-    //Rcout << "init data parser" << endl;;
-    //sp->initParser();
-    //sp->initDataHandler();
+    for (int i = 0; i < terminology.size(); i++){
+      std::string symbol = Rcpp::as<std::string>(terminology[i]);
+      auto idx = sp->dict_->getId(symbol);  
+      if (idx == -1) {
+        Rcpp::Rcout << "Failed to insert embedding for term " << symbol << endl;
+      }else{
+        auto row = sp->model_->LHSEmbeddings_->row(idx);
+        for (unsigned int j = 0; j < args->dim; j++) {
+          row(j) = (float)(embeddings(i, j));
+        }    
+      }
+    }
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
       Rcpp::Named("args") = textspace_args(sp));    

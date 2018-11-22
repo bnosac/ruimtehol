@@ -163,7 +163,7 @@ public:
   static void normalize(Matrix<Real>::Row row, double maxNorm = 1.0);
   static void normalize(Matrix<Real>& m) { normalize(asRow(m)); }
 
-private:
+//private:
   std::shared_ptr<Dictionary> dict_;
   std::shared_ptr<SparseLinear<Real>> LHSEmbeddings_;
   std::shared_ptr<SparseLinear<Real>> RHSEmbeddings_;

@@ -147,10 +147,36 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
   if(length(wrong)){
     stop(sprintf("You should not pass the arguments %s as they can only be used when doing starspace_test", paste(wrong, collapse = ", ")))
   }
-  object <- textspace(model = model, trainFile = file, trainMode = as.integer(trainMode), fileFormat = fileFormat, label = label, dim = as.integer(dim),
-                      epoch = as.integer(epoch), lr = lr, loss = loss, margin = margin, similarity = similarity, negSearchLimit = as.integer(negSearchLimit), 
-                      adagrad = as.logical(adagrad), ws = as.integer(ws), 
-                      minCount = as.integer(minCount), minCountLabel = as.integer(minCountLabel), ngrams = as.integer(ngrams), thread = as.integer(thread), ...)
+  ldots <- list(...)
+  ldots$model <- model
+  ldots$trainFile <- file
+  ldots$trainMode <- as.integer(trainMode)
+  ldots$fileFormat <- fileFormat
+  ldots$label <- label
+  ldots$dim <- as.integer(dim)
+  ldots$epoch <- as.integer(epoch)
+  ldots$lr <- lr
+  ldots$loss <- loss
+  ldots$margin <- margin
+  ldots$similarity <- similarity
+  ldots$negSearchLimit <- as.integer(negSearchLimit)
+  ldots$adagrad <- as.logical(adagrad)
+  ldots$ws <- as.integer(ws)
+  ldots$minCount <- as.integer(minCount)
+  ldots$minCountLabel <- as.integer(minCountLabel)
+  ldots$ngrams <- as.integer(ngrams)
+  ldots$thread <- as.integer(thread)
+  if(!"embeddings" %in% names(ldots)){
+    ldots$embeddings <- matrix(data = numeric(), nrow = 0, ncol = as.integer(dim)) 
+  }
+  object <- do.call(textspace, ldots)
+  #object <- textspace(model = model, trainFile = file, trainMode = as.integer(trainMode), 
+  #                    fileFormat = fileFormat, label = label, dim = as.integer(dim), epoch = as.integer(epoch), 
+  #                    lr = lr, loss = loss, margin = margin, similarity = similarity, 
+  #                    negSearchLimit = as.integer(negSearchLimit), adagrad = as.logical(adagrad), 
+  #                    ws = as.integer(ws), minCount = as.integer(minCount), 
+  #                    minCountLabel = as.integer(minCountLabel), ngrams = as.integer(ngrams), 
+  #                    thread = as.integer(thread), ...)
   class(object) <- "textspace"
   object
 }
