@@ -26,7 +26,7 @@ the ones from the training data}
 a list with elements 
 \enumerate{
 \item input: the character string passed on to newdata
-\item prediction: data.frame called prediction which has columns called label and similarity indicating the predicted label and the similarity of the input ot the label
+\item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
 \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
 }
 }

@@ -306,6 +306,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
         }    
       }
     }
+    sp->initParser();
+    //sp->initDataHandler();
     out = Rcpp::List::create(
       Rcpp::Named("model") = sp,
       Rcpp::Named("args") = textspace_args(sp));    
@@ -541,7 +543,7 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
   }
   Rcpp::List out = Rcpp::List::create(Rcpp::Named("input") = input, 
                                       Rcpp::Named("prediction") = Rcpp::DataFrame::create(
-                                        Rcpp::Named("label") = label,
+                                        Rcpp::Named("label_starspace") = label,
                                         Rcpp::Named("similarity") = prob,
                                         Rcpp::Named("stringsAsFactors") = false),
                                       Rcpp::Named("terms") = Rcpp::List::create(

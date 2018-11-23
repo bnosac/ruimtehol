@@ -233,7 +233,7 @@ starspace_dictionary <- function(object){
 #' @return a list with elements 
 #' \enumerate{
 #' \item input: the character string passed on to newdata
-#' \item prediction: data.frame called prediction which has columns called label and similarity indicating the predicted label and the similarity of the input ot the label
+#' \item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
 #' \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
 #' }
 predict.textspace <- function(object, newdata, k = 5L, sep = " ", basedoc, ...){
@@ -245,6 +245,9 @@ predict.textspace <- function(object, newdata, k = 5L, sep = " ", basedoc, ...){
   }else{
     capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, k = as.integer(k), basedoc = basedoc))
   }
+  length_label_prefix <- nchar(object$args$dictionary$label)
+  scores$prediction$label <- substr(scores$prediction$label_starspace, length_label_prefix, nchar(scores$prediction$label_starspace))
+  scores$prediction <- scores$prediction[, c("label", "label_starspace", "similarity")]
   scores
 }
 
