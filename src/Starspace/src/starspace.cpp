@@ -273,9 +273,9 @@ void StarSpace::loadBaseDocs() {
           model_->projectRHS({ make_pair(i + dict_->nwords(), 1.0) })
       );
     }
-    cout << "Predictions use " <<  dict_->nlabels() << " known labels." << endl;
+    //cout << "Predictions use " <<  dict_->nlabels() << " known labels." << endl;
   } else {
-    cout << "Loading base docs from file : " << args_->basedoc << endl;
+    //cout << "Loading base docs from file : " << args_->basedoc << endl;
     ifstream fin(args_->basedoc);
     if (!fin.is_open()) {
       std::cerr << "Base doc file cannot be opened for loading!" << std::endl;
@@ -294,7 +294,7 @@ void StarSpace::loadBaseDocs() {
       std::cerr << "ERROR: basedoc file '" << args_->basedoc << "' is empty." << std::endl;
       exit(EXIT_FAILURE);
     }
-    cout << "Finished loading " << baseDocVectors_.size() << " base docs.\n";
+    //cout << "Finished loading " << baseDocVectors_.size() << " base docs.\n";
   }
 }
 
