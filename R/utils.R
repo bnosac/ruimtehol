@@ -43,7 +43,7 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) 
     similarities <- tcrossprod(x, y) / (normx %o% normy)
   }
   if(!missing(top_n)){
-    similarities <- as.data.frame.table(similarities)
+    similarities <- as.data.frame.table(similarities, stringsAsFactors = FALSE)
     colnames(similarities) <- c("term1", "term2", "similarity")
     similarities <- similarities[order(similarities$term1, similarities$similarity, decreasing = TRUE), ]
     similarities$rank <- stats::ave(similarities$similarity, similarities$term1, FUN = seq_along)
