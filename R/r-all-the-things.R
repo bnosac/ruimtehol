@@ -3,7 +3,7 @@
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param y a character vector of classes to predict or a list with the same length of \code{x} with several classes for each respective element of \code{x}
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -17,15 +17,15 @@
 #' 
 #' model <- embed_tagspace(x = dekamer$text, 
 #'                         y = dekamer$question_theme_main, 
-#'                         p = 0.8,
+#'                         early_stopping = 0.8,
 #'                         dim = 10, minCount = 5)
 #' plot(model)
 #' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' predict(model, "de migranten komen naar europa, in asielcentra ...")
 #' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
-embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
-  stopifnot(p >= 0 && p <= 1)
+embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 1, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")
   filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
@@ -43,8 +43,8 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
     targets <- paste(label, y, sep = "")
   }
   x <- paste(targets, x)
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)
@@ -58,7 +58,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
 #' @description Build a Starspace model which calculates word embeddings
 #' @param x a character vector of text where tokens are separated by spaces
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -70,7 +70,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
 #' x <- lapply(x, FUN = function(x) setdiff(x, ""))
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
-#' model <- embed_wordspace(x, p = 0.9, 
+#' model <- embed_wordspace(x, early_stopping = 0.9, 
 #'                          dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
 #' plot(model)
 #' wordvectors <- as.matrix(model)
@@ -81,8 +81,8 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", p = 1, ...) {
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-embed_wordspace <- function(x, model = "wordspace.bin", p = 1, ...) {
-  stopifnot(p >= 0 && p <= 1)
+embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 1, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   ldots <- list(...)
   filename <- tempfile(pattern = "textspace_", fileext = ".txt")   
   filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
@@ -94,8 +94,8 @@ embed_wordspace <- function(x, model = "wordspace.bin", p = 1, ...) {
   if("label" %in% names(ldots)){
     label <- ldots$label
   }
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 5, fileFormat = "fastText", validationFile = filename_validation, ...)
@@ -111,7 +111,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", p = 1, ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -132,8 +132,8 @@ embed_wordspace <- function(x, model = "wordspace.bin", p = 1, ...) {
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 #' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
-  stopifnot(p >= 0 && p <= 1)
+embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping = 1, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
   ldots <- list(...)
@@ -153,8 +153,8 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", validationFile = filename_validation, ...)
@@ -170,7 +170,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
 #' The doc_id is just an article or document identifier, 
 #' the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -180,7 +180,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
-#' model <- embed_articlespace(x, p = 0.8, dim = 15, epoch = 5, minCount = 5)
+#' model <- embed_articlespace(x, early_stopping = 0.8, dim = 15, epoch = 5, minCount = 5)
 #' plot(model)
 #' 
 #' embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
@@ -189,8 +189,8 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", p = 1, ...) {
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 #' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_articlespace <- function(x, model = "articlespace.bin", p = 1, ...) {
-  stopifnot(p >= 0 && p <= 1)
+embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 1, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("doc_id", "sentence_id", "token") %in% colnames(x)))
   ldots <- list(...)
@@ -210,8 +210,8 @@ embed_articlespace <- function(x, model = "articlespace.bin", p = 1, ...) {
     sentences <- sapply(sentences, FUN=function(x) paste(x$token, collapse = " "))
     paste(sentences, collapse = " \t ")
   })
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", validationFile = filename_validation, ...)
@@ -229,7 +229,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", p = 1, ...) {
 #' the text column is a character field which contains words which are part of the doc_id, words should be separated by a space and 
 #' should not contain any tab characters
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -253,10 +253,10 @@ embed_articlespace <- function(x, model = "articlespace.bin", p = 1, ...) {
 #' x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
 #' model <- embed_docspace(x, dim = 10)
 #' plot(model)
-embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", p = 1, ...) {
+embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_stopping = 1, ...) {
   ## user clicks on a web page which has content
   ## trainMode 1, fileFormat labelDoc
-  stopifnot(p >= 0 && p <= 1)
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("user_id", "doc_id", "text") %in% colnames(x)))
   ldots <- list(...)
@@ -274,8 +274,8 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", p = 1, ..
   x <- sapply(x, FUN=function(userdata){
     paste(userdata$text, collapse = " \t ")
   })
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", validationFile = filename_validation, ...)
@@ -289,7 +289,7 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", p = 1, ..
 #' @description Build a Starspace model for interest-based recommendation (pagespace). For example a user clicks on a webpage.
 #' @param x a list where each list element contains a character vector of pages which the user was interested in
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -315,10 +315,10 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", p = 1, ..
 #' mostsimilar <- embedding_similarity(pagevectors, 
 #'                                     pagevectors["__THEME__DEFENSIEBELEID", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", p = 1, ...) {
+embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", early_stopping = 1, ...) {
   ## user clicks or is fan of a webpage
   ## trainMode 1
-  stopifnot(p >= 0 && p <= 1)
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.list(x))
   stopifnot(all(sapply(x, FUN=is.character)))
   ldots <- list(...)
@@ -336,8 +336,8 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", p = 1, .
     pages <- sprintf("%s%s", label, gsub("[[:space:]]", "", unique(x))) 
     paste(pages, collapse = " ")
   })
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "fastText", validationFile = filename_validation, ...)
@@ -352,7 +352,7 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", p = 1, .
 #' @description Build a Starspace model for entity relationship completion (graphspace). 
 #' @param x a data.frame with columns entity_head, entity_tail and relation indicating the relation between the head and tail entity
 #' @param model name of the model which will be saved, passed on to \code{\link{starspace}}
-#' @param p the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
+#' @param early_stopping the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.
 #' @param ... further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
@@ -381,8 +381,8 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", p = 1, .
 #' model <- embed_entityrelationspace(relations, dim = 50)
 #' predict(model, "/m/027rn /location/country/form_of_government")
 #' predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")
-embed_entityrelationspace <- function(x, model = "graphspace.bin", p = 1, ...) {
-  stopifnot(p >= 0 && p <= 1)
+embed_entityrelationspace <- function(x, model = "graphspace.bin", early_stopping = 1, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
   stopifnot(all(c("entity_head", "entity_tail", "relation") %in% colnames(x)))
   ldots <- list(...)
@@ -397,8 +397,8 @@ embed_entityrelationspace <- function(x, model = "graphspace.bin", p = 1, ...) {
     label <- ldots$label
   }
   x <- sprintf("%s\t%s\t%s%s", x$entity_head, x$relation, label, x$entity_tail)
-  if(p < 1){
-    idx <- sample.int(n = length(x), size = round(p * length(x)))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)

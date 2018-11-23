@@ -4,14 +4,14 @@
 \alias{embed_wordspace}
 \title{Build a Starspace model which calculates word embeddings}
 \usage{
-embed_wordspace(x, model = "wordspace.bin", p = 1, ...)
+embed_wordspace(x, model = "wordspace.bin", early_stopping = 1, ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
-\item{p}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-p percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
+\item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -29,7 +29,7 @@ x <- strsplit(x$feedback, "\\\\W")
 x <- lapply(x, FUN = function(x) setdiff(x, ""))
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
-model <- embed_wordspace(x, p = 0.9, 
+model <- embed_wordspace(x, early_stopping = 0.9, 
                          dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
 plot(model)
 wordvectors <- as.matrix(model)
