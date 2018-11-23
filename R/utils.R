@@ -70,6 +70,7 @@ ruimtehol_save_model <- function(object,
 }
 
 ruimtehol_load_model <- function(file){
+  stopifnot(file.exists(file))
   ruimte <- readRDS(file)
   model <- ruimte$object
   model$args$data$testFile <- NULL
