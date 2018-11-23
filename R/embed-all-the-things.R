@@ -391,7 +391,8 @@ starspace_embedding <- function(object, x, type = c("document", "ngram")){
 
 
 #' @export
-as.matrix.textspace <- function(x, ...){
+as.matrix.textspace <- function(x, type = c("all", "labels", "words"), ...){
+  type <- match.arg(type)
   if("tsv" %in% names(list(...))){
     embedding_dimension <- x$args$dim
     filename <- tempfile()
@@ -402,7 +403,20 @@ as.matrix.textspace <- function(x, ...){
     dimnames(x) <- dn  
   }else{
     d <- starspace_dictionary(x)
-    x <- starspace_embedding(object = x, x = d$dictionary$term, type = "ngram")  
+    if(type == "all"){
+      x <- starspace_embedding(object = x, x = d$dictionary$term, type = "ngram")    
+    }else if(type == "labels"){
+      if(length(d$labels) == 0){
+        stop("You did not train the Starspace model with labels")
+      }
+      x <- starspace_embedding(object = x, x = d$labels, type = "ngram")  
+    }else if(type == "words"){
+      words <- d$dictionary$term[d$dictionary$is_word]
+      if(length(words) == 0){
+        stop("Starspace model has no words, you must have trained it only with labels")
+      }
+      x <- starspace_embedding(object = x, x = words, type = "ngram")  
+    }
   }
   x
 }
