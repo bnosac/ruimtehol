@@ -246,7 +246,7 @@ predict.textspace <- function(object, newdata, k = 5L, sep = " ", basedoc, ...){
     capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, k = as.integer(k), basedoc = basedoc))
   }
   length_label_prefix <- nchar(object$args$dictionary$label)
-  scores$prediction$label <- substr(scores$prediction$label_starspace, length_label_prefix, nchar(scores$prediction$label_starspace))
+  scores$prediction$label <- substr(scores$prediction$label_starspace, length_label_prefix + 1L, nchar(scores$prediction$label_starspace))
   scores$prediction <- scores$prediction[, c("label", "label_starspace", "similarity")]
   scores
 }
