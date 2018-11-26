@@ -5,7 +5,8 @@
 \title{Save a starspace model as a binary or tab-delimited TSV file}
 \usage{
 starspace_save_model(object, file = "textspace.tsv", method = c("binary",
-  "tsv-starspace", "tsv-data.table"))
+  "tsv-starspace", "tsv-data.table", "ruimtehol"), labels = data.frame(code =
+  character(), label = character(), stringsAsFactors = FALSE))
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
@@ -17,11 +18,41 @@ starspace_save_model(object, file = "textspace.tsv", method = c("binary",
 \item{The first method: \code{'binary'} saves the model as a binary file using the Starspace methods}
 \item{The second method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
 \item{The third method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
+\item{The fourth method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS}
 }}
+
+\item{labels}{a data.frame with at least columns code and label which will be saved in case \code{method} is \code{'ruimtehol'}. Allowing you to
+save the label identifier. Internally a new column will be added to this data.frame called \code{label_starspace} which combines the 
+Starspace prefix of the label with the code column of your provided data.frame.
+This allows to store the mapping between Starspace labels and your own codes.}
 }
 \value{
 invisibly, the character string with the file of the saved object
 }
 \description{
 Save a starspace model as a binary or a tab-delimited TSV file
+}
+\examples{
+data(dekamer, package = "ruimtehol")
+dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
+dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- sapply(dekamer$text, 
+                       FUN = function(x) paste(x, collapse = " "))
+
+dekamer$target <- as.factor(dekamer$question_theme_main)
+codes <- data.frame(code = seq_along(levels(dekamer$target)), 
+                    label = levels(dekamer$target), stringsAsFactors = FALSE)
+dekamer$target <- as.integer(dekamer$target)
+model <- embed_tagspace(x = dekamer$text, 
+                        y = dekamer$target, 
+                        early_stopping = 0.8,
+                        dim = 10, minCount = 5)
+starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
+                     labels = codes)
+model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+file.remove("textspace.ruimtehol")
+}
+\seealso{
+\code{\link{starspace_load_model}}
 }

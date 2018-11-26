@@ -55,32 +55,3 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) 
 
 
 
-ruimtehol_save_model <- function(object, 
-                                 labels = data.frame(code = character(), 
-                                                     label = character(), stringsAsFactors = FALSE), 
-                                 file = "textspace.ruimtehol"){
-  stopifnot(inherits(object, "textspace"))
-  stopifnot(inherits(labels, "data.frame"))
-  stopifnot(all(c("code", "label") %in% colnames(labels)))
-  ruimte <- list(object = object,
-       labels = labels,
-       embeddings = as.matrix(object))
-  saveRDS(ruimte, file)
-  invisible(file)
-}
-
-ruimtehol_load_model <- function(file){
-  stopifnot(file.exists(file))
-  ruimte <- readRDS(file)
-  model <- ruimte$object
-  model$args$data$testFile <- NULL
-  arguments <- c(file = model$args$file, dim = model$args$dim, 
-                 model$args$data, model$args$param, model$args$dictionary, model$args$options)
-  arguments <- as.list(arguments)
-  arguments$embeddings <- ruimte$embeddings
-  object <- do.call(starspace, arguments)
-  object$labels <- ruimte$labels
-  object$iter <- model$iter
-  object$labels$label_starspace <- as.character(sapply(object$labels$code, FUN=function(code) paste(model$args$dictionary$label, code, sep = "")))
-  object
-}

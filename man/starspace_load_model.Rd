@@ -5,7 +5,7 @@
 \title{Load a Starspace model}
 \usage{
 starspace_load_model(object, method = c("binary", "tsv-starspace",
-  "tsv-data.table"), ...)
+  "tsv-data.table", "ruimtehol"), ...)
 }
 \arguments{
 \item{object}{either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.}
@@ -15,6 +15,7 @@ starspace_load_model(object, method = c("binary", "tsv-starspace",
 \item{The first method: \code{'binary'} loads the model which was saved a binary file using the Starspace methods - see \code{\link{starspace_save_model}}}
 \item{The second method: \code{'tsv-starspace'} loads the model which was saved as a tab-delimited flat file using the Starspace methods - see \code{\link{starspace_save_model}}}
 \item{The third method: \code{'tsv-data.table'} loads the model which was saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
+\item{The fourth method: \code{'ruimtehol'} loads the model, embeddings and labels which were saved with saveRDS by calling \code{\link{starspace_save_model}} and re-initilises a new Starspace model with the embeddings and the same parameters used to build the model}
 }}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} in case of method 'tsv-data.table'}
@@ -24,4 +25,7 @@ an object of class textspace
 }
 \description{
 Load a Starspace model
+}
+\seealso{
+\code{\link{starspace_save_model}}
 }
