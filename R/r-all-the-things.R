@@ -15,15 +15,27 @@
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
-#' model <- embed_tagspace(x = dekamer$text, 
+#' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         early_stopping = 0.8,
 #'                         dim = 10, minCount = 5)
 #' plot(model)
-#' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
+#' predict(model, "de nmbs heeft het treinaanbod uitgebreid", k = 3)
 #' predict(model, "de migranten komen naar europa, in asielcentra ...")
 #' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
+#' 
+#' dekamer$question_themes <- strsplit(dekamer$question_theme, split = " +\\| +")
+#' model <- embed_tagspace(x = tolower(dekamer$text), 
+#'                         y = dekamer$question_themes, 
+#'                         early_stopping = 0.8,
+#'                         dim = 50, minCount = 2, epoch = 50)
+#' plot(model)
+#' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
+#' predict(model, "de migranten komen naar europa, in asielcentra ...")
+#' embeddings_labels <- as.matrix(model, type = "labels")
+#' emb <- starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
+#' embedding_similarity(emb, embeddings_labels, type = "cosine", top_n = 5)
 embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 1, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
   ldots <- list(...)
@@ -69,6 +81,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 1, ...
 #' x <- strsplit(x$feedback, "\\W")
 #' x <- lapply(x, FUN = function(x) setdiff(x, ""))
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
+#' x <- tolower(x)
 #' 
 #' model <- embed_wordspace(x, early_stopping = 0.9, 
 #'                          dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
