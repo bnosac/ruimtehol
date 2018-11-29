@@ -143,7 +143,8 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 1, ...)
 #' dim(embeddings)
 #' 
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
-#' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
+#' embedding_sentence <- starspace_embedding(model, sentence, type = "document")
+#' mostsimilar <- embedding_similarity(embeddings, embedding_sentence)
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping = 1, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
@@ -200,7 +201,8 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' dim(embeddings)
 #' 
 #' sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
-#' mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
+#' embedding_sentence <- starspace_embedding(model, sentence, type = "document")
+#' mostsimilar <- embedding_similarity(embeddings, embedding_sentence)
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 1, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)

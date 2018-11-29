@@ -38,6 +38,7 @@ embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
 dim(embeddings)
 
 sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
-mostsimilar <- embedding_similarity(embeddings, embeddings[sentence, ])
+embedding_sentence <- starspace_embedding(model, sentence, type = "document")
+mostsimilar <- embedding_similarity(embeddings, embedding_sentence)
 head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 }
