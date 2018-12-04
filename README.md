@@ -101,13 +101,11 @@ dictionary <- starspace_dictionary(model)
 
 ```r
 ## Save trained model as a binary file or as TSV so that you can inspect the embeddings e.g. with data.table::fread("wikipedia_embeddings.tsv")
-starspace_save_model(model)
-starspace_save_model(model, file = "wikipedia_embeddings.bin")
+starspace_save_model(model, file = "textspace.ruimtehol",      method = "ruimtehol")
 starspace_save_model(model, file = "wikipedia_embeddings.tsv", method = "tsv-data.table")
-
 ## Load a pre-trained model or pre-trained embeddings
+model <- starspace_load_model("textspace.ruimtehol",      method = "ruimtehol")
 model <- starspace_load_model("wikipedia_embeddings.tsv", method = "tsv-data.table", trainMode = 3)
-model <- starspace_load_model("wikipedia_embeddings.bin")
 
 ## Get the document embedding
 starspace_embedding(model, "The apps to predict / get nearest neighbours are still under construction.")
