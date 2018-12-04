@@ -111,5 +111,7 @@ cbind_embedding_similarity <- function(object, newdata, type = c("cosine", "dot"
 
 remove_label_prefix <- function(object, x){
   length_label_prefix <- nchar(object$args$dictionary$label)
-  substr(x, length_label_prefix + 1L, nchar(x))
+  ifelse(substr(x, 1, length_label_prefix) == object$args$dictionary$label,
+         substr(x, length_label_prefix + 1L, nchar(x)),
+         x)
 }
