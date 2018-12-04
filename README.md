@@ -8,6 +8,7 @@ This repository contains an R package which wraps the StarSpace C++ library (htt
 - Ranking web documents
 - Content-based recommendation (e.g. recommend text/music based on the content)
 - Collaborative filtering based recommendation (e.g. recommend text/music based on interest)
+- Identification of entity relationships
 
 <img src="vignettes/logo-ruimtehol.png" width="600">
 
