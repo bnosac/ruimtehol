@@ -6,7 +6,8 @@ This repository contains an R package which wraps the StarSpace C++ library (htt
 - Learning word, sentence or document level embeddings
 - Finding sentence or document similarity
 - Ranking web documents
-- Content-based or Collaborative filtering-based Recommendation, e.g. recommending music or videos.
+- Content-based recommendation (e.g. recommend text/music based on the content)
+- Collaborative filtering based recommendation (e.g. recommend text/music based on interest)
 
 <img src="vignettes/logo-ruimtehol.png" width="600">
 
