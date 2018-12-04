@@ -257,7 +257,7 @@ plot.textspace <- function(x, ...){
     if(length(x$iter$error_validation) > 0){
       dataset <- rbind(dataset, data.frame(epoch = x$iter$epoch, error = x$iter$error_validation, datatype = "validation"))
     }
-    plot(error ~ epoch, data = dataset, type = "n", xlab = "Epoch", ylab = "Error", ...)
+    plot(error ~ epoch, data = dataset, type = "n", xlab = "Epoch", ylab = "Loss", ...)
     points(x = x$iter$epoch, y = x$iter$error, col = "steelblue", type = "b", pch = 20, lty = 1)
     if(length(x$iter$error_validation) > 0){
       points(x = x$iter$epoch, y = x$iter$error_validation, col = "purple", type = "b", lty = 2, pch = 20)
