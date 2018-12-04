@@ -492,32 +492,38 @@ starspace_embedding <- function(object, x, type = c("document", "ngram")){
 
 
 #' @export
-as.matrix.textspace <- function(x, type = c("all", "labels", "words"), ...){
+as.matrix.textspace <- function(x, type = c("all", "labels", "words"), prefix = TRUE, ...){
   type <- match.arg(type)
+  d <- starspace_dictionary(x)
   if("tsv" %in% names(list(...))){
     embedding_dimension <- x$args$dim
     filename <- tempfile()
     starspace_save_model(x, file = filename, method = "tsv-starspace")
-    x <- utils::read.delim(filename, header = FALSE, stringsAsFactors = FALSE, encoding = "UTF-8", colClasses = c("character", rep("numeric", embedding_dimension)))
-    dn <- list(x$V1, 1:(ncol(x)-1))
-    x <- as.matrix(x[, -1, drop = FALSE])
-    dimnames(x) <- dn  
+    emb <- utils::read.delim(filename, header = FALSE, stringsAsFactors = FALSE, encoding = "UTF-8", colClasses = c("character", rep("numeric", embedding_dimension)))
+    dn <- list(emb$V1, 1:(ncol(emb)-1))
+    emb <- as.matrix(emb[, -1, drop = FALSE])
+    dimnames(emb) <- dn  
   }else{
-    d <- starspace_dictionary(x)
     if(type == "all"){
-      x <- starspace_embedding(object = x, x = d$dictionary$term, type = "ngram")    
+      emb <- starspace_embedding(object = x, x = d$dictionary$term, type = "ngram")    
     }else if(type == "labels"){
       if(length(d$labels) == 0){
         stop("You did not train the Starspace model with labels")
       }
-      x <- starspace_embedding(object = x, x = d$labels, type = "ngram")  
+      emb <- starspace_embedding(object = x, x = d$labels, type = "ngram")  
     }else if(type == "words"){
       words <- d$dictionary$term[d$dictionary$is_word]
       if(length(words) == 0){
         stop("Starspace model has no words, you must have trained it only with labels")
       }
-      x <- starspace_embedding(object = x, x = words, type = "ngram")  
+      emb <- starspace_embedding(object = x, x = words, type = "ngram")  
     }
   }
-  x
+  if(!prefix){
+    idx <- which(rownames(emb) %in% d$labels)
+    if(length(idx) > 0){
+      rownames(emb)[idx] <- remove_label_prefix(x, rownames(emb)[idx])
+    }
+  }
+  emb
 }
