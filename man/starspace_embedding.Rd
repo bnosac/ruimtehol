@@ -11,17 +11,65 @@ starspace_embedding(object, x, type = c("document", "ngram"))
 
 \item{x}{character vector with text to get the embeddings 
 \itemize{
-\item If \code{type} is set to 'document', will assume that a space followed by a tab is used as separator of the sentences of each element of \code{x}.
-\item If \code{type} is set to 'ngram', will assume that a space is used as separator of the words in case \code{x} contains words.
+\item If \code{type} is set to 'document', will assume that a tab or a space is used as separator of each element of \code{x}.
+\item If \code{type} is set to 'ngram', will assume that a space is used as separator of each element of \code{x}.
 }}
 
 \item{type}{the type of embedding requested. Either one of 'document' or 'ngram'. In case of document, 
 the function returns the document embedding, in case of ngram the function returns the embedding of the 
-provided ngram term which is used in the model building.}
+provided ngram term. See the details section}
 }
 \value{
 a matrix of embeddings
 }
 \description{
 Get the document or ngram embeddings
+}
+\details{
+\itemize{
+\item{document embeddings look to the features (e.g. words) present in \code{x} and summate the embeddings of these to get a document embedding and 
+divide this embedding by size^p in case dot similarity is used and the euclidean norm in case cosine similarity is used. 
+Where size is the number of features (e.g. words) in \code{x}. 
+If p=1, it's equivalent to taking average of embeddings while when p=0, it's equivalent to taking sum of embeddings. You can set p and similarity in \code{\link{starspace}} when you train the model.}
+\item{for ngram embeddings, starspace is using a hashing trick to find out in which bucket the ngram lies and then retrieves the embedding of that. Note that if you specify ngram, 
+you need to make sure \code{x} contains less features (e.g. words) then you've set \code{ngram} when you trained your model with \code{\link{starspace}}.}
+}
+}
+\examples{
+data(dekamer, package = "ruimtehol")
+dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
+dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- sapply(dekamer$text, 
+                       FUN = function(x) paste(x, collapse = " "))
+
+model <- embed_tagspace(x = tolower(dekamer$text), 
+                        y = dekamer$question_theme_main, 
+                        similarity = "dot",
+                        early_stopping = 0.8, ngram = 1, p = 0.5,
+                        dim = 10, minCount = 5)
+embedding <- starspace_embedding(model, "federale politie", type = "document")
+embedding_dictionary <- as.matrix(model)
+embedding
+colSums(embedding_dictionary[c("federale", "politie"), ]) / 2^0.5
+
+model <- embed_tagspace(x = tolower(dekamer$text), 
+                        y = dekamer$question_theme_main, 
+                        similarity = "cosine",
+                        early_stopping = 0.8, ngram = 1, 
+                        dim = 10, minCount = 5)
+embedding <- starspace_embedding(model, "federale politie", type = "document")
+embedding_dictionary <- as.matrix(model)
+euclidean_norm <- function(x) sqrt(sum(x^2))
+manual <- colSums(embedding_dictionary[c("federale", "politie"), ])
+manual / euclidean_norm(manual)
+embedding
+
+model <- embed_tagspace(x = tolower(dekamer$text), 
+                        y = dekamer$question_theme_main, 
+                        similarity = "dot",
+                        early_stopping = 0.8, ngram = 3, p = 0,
+                        dim = 10, minCount = 5, bucket = 1)
+starspace_embedding(model, "federale politie", type = "document")
+starspace_embedding(model, "federale politie", type = "ngram")
 }
