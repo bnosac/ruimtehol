@@ -13,7 +13,7 @@
 #' \item 5: word embeddings 
 #' }
 #' @param fileFormat either one of 'fastText' or 'labelDoc'. See the documentation of StarSpace
-#' @param thread integer with the number of threads to use. Defaults to 10.
+#' @param thread integer with the number of threads to use. Defaults to 1.
 #' @param dim the size of the embedding vectors (integer, defaults to 100)
 #' @param epoch number of epochs (integer, defaults to 5)
 #' @param lr learning rate (numeric, defaults to 0.01)
@@ -135,7 +135,7 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
                       minCount = 1,
                       minCountLabel = 1,
                       ngrams = 1,
-                      thread = 10, ...) {
+                      thread = 1, ...) {
   ldots <- list(...)
   if(!"embeddings" %in% names(ldots)){
     file <- path.expand(file)  
