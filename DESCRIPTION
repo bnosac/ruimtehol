@@ -1,6 +1,6 @@
 Package: ruimtehol
 Type: Package
-Title: Learn Text Embeddings with Starspace
+Title: Learn Text 'Embeddings' with 'Starspace'
 Version: 0.1
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
@@ -8,11 +8,11 @@ Authors@R: c(
     person('BNOSAC', role = 'cph', comment = "R wrapper"), 
     person('Facebook, Inc.', role = 'cph', comment = "Starspace (BSD licensed)"))
 Description: Wraps the 'StarSpace' library <https://github.com/facebookresearch/StarSpace> 
-    allowing users to calculate  word, sentence, article, document, webpage, link and entity embeddings. 
-    By using the embeddings, you can perform text based multi-label classification, 
+    allowing users to calculate  word, sentence, article, document, webpage, link and entity 'embeddings'. 
+    By using the 'embeddings', you can perform text based multi-label classification, 
     find similarities between texts and categories, do collaborative-filtering based recommendation 
     as well as content-based recommendation, find out relations between entities, calculate 
-    graph embeddings as well as perform semi-supervised learning and multi-task learning on plain text. 
+    graph 'embeddings' as well as perform semi-supervised learning and multi-task learning on plain text. 
     The techniques are explained in detail in the paper: 'StarSpace: Embed All The Things!', available at <arXiv:1709.03856>.
 License: MPL-2.0
 Encoding: UTF-8
