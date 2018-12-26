@@ -8,7 +8,7 @@ starspace(model = "textspace.bin", file, trainMode = 0,
   fileFormat = c("fastText", "labelDoc"), label = "__label__", dim = 100,
   epoch = 5, lr = 0.01, loss = c("hinge", "softmax"), margin = 0.05,
   similarity = c("cosine", "dot"), negSearchLimit = 50, adagrad = TRUE,
-  ws = 5, minCount = 1, minCountLabel = 1, ngrams = 1, thread = 10,
+  ws = 5, minCount = 1, minCountLabel = 1, ngrams = 1, thread = 1,
   ...)
 }
 \arguments{
@@ -54,7 +54,7 @@ starspace(model = "textspace.bin", file, trainMode = 0,
 
 \item{ngrams}{max length of word ngram (integer, defaults to 1, using only unigrams)}
 
-\item{thread}{integer with the number of threads to use. Defaults to 10.}
+\item{thread}{integer with the number of threads to use. Defaults to 1.}
 
 \item{...}{arguments passed on to ruimtehol:::textspace. See the details below.}
 }
