@@ -97,13 +97,11 @@
 #' }
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' x <- strsplit(dekamer$text, "\\W")
+#' x <- strsplit(dekamer$question, "\\W")
 #' x <- lapply(x, FUN = function(x) setdiff(x, ""))
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
-#' \dontrun{
-#' idx <- sample.int(n = nrow(dekamer), size = 6000)
+#' idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
 #' writeLines(x[idx], con = "traindata.txt")
 #' writeLines(x[-idx], con = "validationdata.txt")
 #' 
@@ -121,7 +119,6 @@
 #' wv
 #' mostsimilar <- embedding_similarity(wordvectors, wv["pensioen", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-#' }
 starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat = c("fastText", "labelDoc"), label = "__label__", 
                       dim = 100,
                       epoch = 5,
@@ -254,8 +251,7 @@ starspace_dictionary <- function(object){
 #' str(scores)
 #' 
 #' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
@@ -455,8 +451,7 @@ starspace_load_model <- function(object, method = c("binary", "tsv-starspace", "
 #' @seealso \code{\link{starspace_load_model}}
 #' @examples
 #' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
@@ -534,8 +529,7 @@ starspace_save_model <- function(object, file = "textspace.tsv",
 #' @return a matrix of embeddings
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))

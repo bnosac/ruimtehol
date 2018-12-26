@@ -131,13 +131,11 @@ others can be passed on with ... . \cr
 }
 \examples{
 data(dekamer, package = "ruimtehol")
-dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
-x <- strsplit(dekamer$text, "\\\\W")
+x <- strsplit(dekamer$question, "\\\\W")
 x <- lapply(x, FUN = function(x) setdiff(x, ""))
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
-\dontrun{
-idx <- sample.int(n = nrow(dekamer), size = 6000)
+idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
 writeLines(x[idx], con = "traindata.txt")
 writeLines(x[-idx], con = "validationdata.txt")
 
@@ -155,7 +153,6 @@ wv <- starspace_embedding(m,
 wv
 mostsimilar <- embedding_similarity(wordvectors, wv["pensioen", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
-}
 }
 \references{
 \url{https://github.com/facebookresearch}

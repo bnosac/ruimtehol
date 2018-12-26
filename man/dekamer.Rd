@@ -21,7 +21,7 @@ The dataset contains the following information:
 \item aut_party / aut_person / aut_language: who asked the question and which political party is he/she a member of + the language of the person who asked the question
 \item question: the question itself (always in Dutch)
 \item question_theme_main: the main theme of the question
-\item question_theme: a pipe-separated list of all themes the question is about
+\item question_theme: a comma-separated list of all themes the question is about
 \item answer: the answer given by the department of the minister (always in Dutch)
 \item answer_deptpres, answer_department, answer_subdepartment: to which ministerial department has the question been raised to and answered by
 }

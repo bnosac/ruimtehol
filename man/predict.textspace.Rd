@@ -51,8 +51,7 @@ scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?",
 str(scores)
 
 data(dekamer, package = "ruimtehol")
-dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
-dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- strsplit(dekamer$question, "\\\\W")
 dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))

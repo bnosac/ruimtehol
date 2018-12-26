@@ -9,8 +9,7 @@
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
@@ -25,14 +24,14 @@
 #' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
 #' 
-#' dekamer$question_themes <- strsplit(dekamer$question_theme, split = " +\\| +")
+#' dekamer$question_themes <- strsplit(dekamer$question_theme, split = ",")
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_themes, 
 #'                         early_stopping = 0.8,
 #'                         dim = 50, minCount = 2, epoch = 50)
 #' plot(model)
 #' predict(model, "de nmbs heeft het treinaanbod uitgebreid")
-#' predict(model, "de migranten komen naar europa, in asielcentra ...")
+#' predict(model, "de migranten komen naar europa , in asielcentra ...")
 #' embeddings_labels <- as.matrix(model, type = "labels")
 #' emb <- starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' embedding_similarity(emb, embeddings_labels, type = "cosine", top_n = 5)
@@ -311,12 +310,8 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_sto
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
 #' x <- subset(dekamer, !is.na(question_theme))
-#' x <- strsplit(x$question_theme, " \\| ")
-#' x <- lapply(x, FUN=function(themes){
-#'   themes <- trimws(themes)
-#'   themes <- unique(themes)
-#'   themes
-#' })
+#' x <- strsplit(x$question_theme, ",")
+#' x <- lapply(x, FUN=unique)
 #' str(x)
 #' model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
 #' plot(model)

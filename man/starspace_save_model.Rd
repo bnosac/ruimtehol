@@ -34,8 +34,7 @@ Save a starspace model as a binary or a tab-delimited TSV file
 }
 \examples{
 data(dekamer, package = "ruimtehol")
-dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
-dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- strsplit(dekamer$question, "\\\\W")
 dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))

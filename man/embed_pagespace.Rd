@@ -24,12 +24,8 @@ Build a Starspace model for interest-based recommendation (pagespace). For examp
 \examples{
 data(dekamer, package = "ruimtehol")
 x <- subset(dekamer, !is.na(question_theme))
-x <- strsplit(x$question_theme, " \\\\| ")
-x <- lapply(x, FUN=function(themes){
-  themes <- trimws(themes)
-  themes <- unique(themes)
-  themes
-})
+x <- strsplit(x$question_theme, ",")
+x <- lapply(x, FUN=unique)
 str(x)
 model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
 plot(model)
