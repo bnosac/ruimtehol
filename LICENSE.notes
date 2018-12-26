@@ -1,6 +1,18 @@
 >> This R package is distributed under the Mozilla Public License version 2.0 license: https://www.mozilla.org/en-US/MPL/2.0/. 
 
->> The data in the data folder are questions asked in Belgian National Parliament and their answers provided by the administration during the year 2017. This data was retrieved from http://data.dekamer.be and is distributed under the CC0 license as indicated by the Belgiam government policy which can be found at http://digitalbelgium.be/wp-content/uploads/2017/07/compressed_NLStrategisch-dossier.pdf as well as communication with the website administrator of http://data.dekamer.be
+>> The data in the data folder are questions asked in Belgian National Parliament and their answers provided by the administration during the year 2017. This data was retrieved from http://data.dekamer.be and is distributed under the CC0 license as indicated by the Belgiam government policy which can be found at http://digitalbelgium.be/wp-content/uploads/2017/07/compressed_NLStrategisch-dossier.pdf as well as communication with the website administrator of http://data.dekamer.be as shown below:
+
+        > Beste,
+        > 
+        > de open data strategie zoals te vinden op http://digitalbelgium.be/wp-content/uploads/2017/07/compressed_NLStrategisch-dossier.pdf schrijft voor om CC0 toe te passen.
+        > 
+        > “Er wordt gebruik gemaakt van eenvoudige gestandaardiseerde licentiemodellen. De “open licentie” (CC0 licentie ) die toelaat dat gegevens gratis kunnen hergebruikt worden voor niet-commerciële en commerciële doeleinden is van toepassing waar mogelijk. Indien van deze licentie wordt afgeweken wordt dit expliciet gemotiveerd door de betrokken overheidsdienst (‘comply or explain’ principe).”
+        > 
+        > De licentie is nog niet automatisch opgenomen in de gegenereerde data.  Dat is één van de talrijke verbeteringen die nog nodig zijn.
+        > 
+        > mvg,
+        > Bruno De Nys,
+        > Kamer van volksvertegenwoordigers.
 
 >> The package also includes 3rd party open source software components which are distributed under the BSD license. 
 The following is a list of these components. The full copies of the license agreements of these components are included below.
