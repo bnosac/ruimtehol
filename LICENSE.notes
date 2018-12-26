@@ -1,6 +1,7 @@
->> This R package is distributed under the Mozilla Public License version 2.0 license: https://www.mozilla.org/en-US/MPL/2.0/. 
+This R package is distributed under the Mozilla Public License version 2.0 license: https://www.mozilla.org/en-US/MPL/2.0/. 
 
->> The data in the data folder are questions asked in Belgian National Parliament and their answers provided by the administration during the year 2017. This data was retrieved from http://data.dekamer.be and is distributed under the CC0 license as indicated by the Belgiam government policy which can be found at http://digitalbelgium.be/wp-content/uploads/2017/07/compressed_NLStrategisch-dossier.pdf as well as communication with the website administrator of http://data.dekamer.be as shown below:
+The data in the data folder are questions asked in Belgian National Parliament and their answers provided by the administration during the year 2017. 
+This data was retrieved from http://data.dekamer.be and is distributed under the CC0 license as indicated by the Belgiam government policy which can be found at http://digitalbelgium.be/wp-content/uploads/2017/07/compressed_NLStrategisch-dossier.pdf as well as communication with the website administrator of http://data.dekamer.be as shown below:
 
         > Beste,
         > 
@@ -14,7 +15,7 @@
         > Bruno De Nys,
         > Kamer van volksvertegenwoordigers.
 
->> The package also includes 3rd party open source software components which are distributed under the BSD license. 
+The package also includes 3rd party open source software components which are distributed under the BSD license. 
 The following is a list of these components. The full copies of the license agreements of these components are included below.
 
 - StarSpace (all code under src/Starspace, as retrieved from https://github.com/facebookresearch/Starspace): BSD license
