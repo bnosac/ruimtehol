@@ -43,6 +43,71 @@ str(dekamer)
 
 ## Text classification
 
+In this example, we will perform text classification. Each question in parliament can be labelled with one or more tags. A tagspace model is constructed which can be used to tag now questions with the learned tagset.
+The following data preparation is done first
+
+- make sure all the text is separated by spaces
+- make sure the response is a list of all categories
+
+```{r}
+dekamer$x <- strsplit(dekamer$question, "\\W")
+dekamer$x <- lapply(dekamer$x, FUN = function(x) setdiff(x, ""))
+dekamer$x <- sapply(dekamer$x, FUN = function(x) paste(x, collapse = " "))
+dekamer$x <- tolower(dekamer$x)
+dekamer$y <- strsplit(dekamer$question_theme, split = ",")
+```
+
+Next a model is constructed. The code below trains a model with arguments
+
+- `early_stopping`: The data is split in a training set (80 percent) and a validation set (20)
+- `dim`: the dimension of the embedding is set 50
+- optimisation is done with `adagrad`, during 40 `epochs`, starting from a learning rate (`lr`) of 0.01 and each time decreasing the learning rate by 1/40. 
+- The `loss` which is optimised is hinge loss. If the loss does not improve after 10 iterations as set with `validationPatience`, training is stopped.
+- Similarity between positive and negative labels is done by `cosine` similarity
+- `negSearchLimit` indicates the number of negative samples which are taken (for each question we now which labels were given (positive) and we sample from the list of labels which were not give a bunch of negatives)
+- model is trained on bigrams and these should occur at least twice
+
+```{r}
+set.seed(321)
+model <- embed_tagspace(x = dekamer$x, 
+                        y = dekamer$y, 
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "hinge", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 1, minCount = 2)
+model
+```
+
+You can see the evolution of the loss. This should generally stabilise on the validation set.
+
+```{r}
+plot(model)
+```
+
+You can get the embedding of the words and the labels as well as document embeddings which are a combination of the word embeddings. Words and labels combined form the dictionary.
+
+```{r}
+dict <- starspace_dictionary(model)
+
+emb <- as.matrix(model, type = "all")
+emb_words  <- as.matrix(model, type = "words")
+emb_labels <- as.matrix(model, type = "labels", prefix = FALSE)
+dim(emb_labels)
+text <- c("de nmbs heeft het treinaanbod uitgebreid via onteigening ...",
+          "de migranten komen naar europa , in asielcentra ...")
+emb_text <- starspace_embedding(model, text)
+dim(emb_text)
+```
+
+You can extract predictions and get embedding similarities for information retrieval.
+
+```{r}
+predict(model, "de migranten komen naar europa , in asielcentra ...")
+embedding_similarity(emb_text, emb_labels, type = "cosine", top_n = 5)
+```
+
+
 ## Embeddings of word, sentences, articles, documents, webpages, links and entities
 
 ## Ranking and information retrieval
