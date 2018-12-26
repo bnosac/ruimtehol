@@ -1,0 +1,52 @@
+---
+title: "Ground control to ruimtehol"
+author: "Jan Wijffels"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    fig_caption: false
+    toc: false
+vignette: >
+  %\VignetteIndexEntry{Starspace with the ruimtehol R package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+options(width = 1000)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA, eval = TRUE)
+```
+
+## General
+
+Ruimtehol is a comprehensive R package which wraps the StarSpace C++ library (https://github.com/facebookresearch/StarSpace). It allows you to do the following Natural Language Processing tasks
+
+- Text classification
+- Learning word, sentence or document level embeddings
+- Finding sentence or document similarity
+- Ranking web documents
+- Content-based recommendation (e.g. recommend text/music based on the content)
+- Collaborative filtering based recommendation (e.g. recommend text/music based on interest)
+- Identification of entity relationships
+
+![Ruimtehol-Starspace](logo-ruimtehol.png)
+
+In what follows below, we showcase some of the use cases of the R package. In order to do that, we will use text with questions and answers from the Belgian parliament. This dataset was collected as open data under the CC0 license from http://data.dekamer.be
+
+The data contains a Dutch questions asked in the year 2017 by persons in the national Belgian parliament. Each question was categorised alongside several themes and the dataset also contains the answer which was given by the department or minister who was responsible for that topic. We also know to which political party the person belonged to who was asking the question.
+
+```{r}
+library(ruimtehol)
+data("dekamer", package = "ruimtehol")
+str(dekamer)
+```
+
+## Text classification
+
+## Embeddings of word, sentences, articles, documents, webpages, links and entities
+
+## Ranking and information retrieval
+
+## Collaborative filtering
+
+
