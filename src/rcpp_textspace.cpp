@@ -180,7 +180,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      int ws = 5,
                      int maxTrainTime = 60*60*24*100,
                      int validationPatience = 10,
-                     int thread = 10,
+                     int thread = 1,
                      int maxNegSamples = 10,
                      int negSearchLimit = 50,
                      int minCount = 1,
@@ -285,14 +285,14 @@ Rcpp::List textspace(std::string model = "textspace.bin",
   if(load_from_r){
     Rcpp::List dimnames = embeddings.attr("dimnames");
     Rcpp::CharacterVector terminology = dimnames[0];
-    Rcpp::Rcout << "Set up dictionary" << endl;
+    //Rcpp::Rcout << "Set up dictionary" << endl;
     sp->dict_ = make_shared<starspace::Dictionary>(sp->args_);
     for (int i = 0; i < terminology.size(); i++){
       std::string symbol = Rcpp::as<std::string>(terminology[i]);
       sp->dict_->insert(symbol);
     }
     sp->dict_->computeCounts();
-    Rcpp::Rcout << "Load embedding model" << endl;
+    //Rcpp::Rcout << "Load embedding model" << endl;
     sp->model_ = make_shared<starspace::EmbedModel>(sp->args_, sp->dict_);
     for (int i = 0; i < terminology.size(); i++){
       std::string symbol = Rcpp::as<std::string>(terminology[i]);
