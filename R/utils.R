@@ -45,7 +45,7 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) 
   if(!missing(top_n)){
     similarities <- as.data.frame.table(similarities, stringsAsFactors = FALSE)
     colnames(similarities) <- c("term1", "term2", "similarity")
-    similarities <- similarities[order(similarities$term1, similarities$similarity, decreasing = TRUE), ]
+    similarities <- similarities[order(factor(similarities$term1), similarities$similarity, decreasing = TRUE), ]
     similarities$rank <- stats::ave(similarities$similarity, similarities$term1, FUN = seq_along)
     similarities <- similarities[similarities$rank <= top_n, ]
     rownames(similarities) <- NULL
@@ -54,64 +54,3 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) 
 }
 
 
-#' @title Add similarities of your text to the labels of a Starspace model
-#' @description Add similarities of your text to the labels of a Starspace model. Similarities are computed with \code{\link{embedding_similarity}}
-#' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
-#' @param newdata a data frame with columns \code{doc_id} and \code{text} indicating the text for which you want to get the similarity to the labels of the Starspace model
-#' @param type either 'cosine' or 'dot'. If 'dot', uses inner-product based similarity, if 'cosine', returns cosine similarity.
-#' Passed on to \code{\link{embedding_similarity}}
-#' @export
-#' @return 
-#' The data frame \code{newdata} where columns are added - one for each label indicating the similarity between the text and each of the labels.
-#' @examples 
-#' data(dekamer, package = "ruimtehol")
-#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
-#' dekamer$text <- strsplit(dekamer$text, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
-#' dekamer$text <- sapply(dekamer$text, 
-#'                        FUN = function(x) paste(x, collapse = " "))
-#' 
-#' idx <- sample(nrow(dekamer), size = round(nrow(dekamer) * 0.9))
-#' traindata <- dekamer[idx, ]
-#' testdata <- dekamer[-idx, ]
-#' model <- embed_tagspace(x = traindata$text, 
-#'                         y = traindata$question_theme_main, 
-#'                         early_stopping = 0.8,
-#'                         dim = 10, minCount = 5)
-#' scores <- cbind_embedding_similarity(model, testdata)
-cbind_embedding_similarity <- function(object, newdata, type = c("cosine", "dot")) {
-  type <- match.arg(type)
-  stopifnot(inherits(object, "textspace"))
-  stopifnot(is.data.frame(newdata))
-  stopifnot(all(c("doc_id", "text") %in% colnames(newdata)))
-  if(!requireNamespace("data.table", quietly = TRUE)){
-    stop("embedding_similarity_labels requires the data.table package, which you can install from cran with install.packages('data.table')")
-  }
-  
-  
-  ## get dictionary
-  d <- starspace_dictionary(object)
-  if(length(d$labels) == 0){
-    stop("You did not train the Starspace model with labels")
-  }
-  ## get embedding of the labels
-  emb_labels <- starspace_embedding(object = object, x = d$labels, type = "ngram")
-  rownames(emb_labels) <- remove_label_prefix(object, rownames(emb_labels))
-
-  ## get similarities of the text with the text with the labels
-  newdata      <- data.table::setDT(newdata)
-  textvectors  <- starspace_embedding(object, x = unique(newdata$text), type = "document")
-  similarities <- embedding_similarity(textvectors, emb_labels, top_n = d$nlabels, type = type)
-  similarities <- data.table::setDT(similarities)
-  similarities <- data.table::dcast.data.table(data = similarities, formula = term1 ~ term2, value.var = "similarity")
-  similarities <- merge(newdata, similarities, by.x = "text", by.y = "term1", sort = FALSE)
-  similarities <- data.table::setDF(similarities)
-  similarities
-}
-
-remove_label_prefix <- function(object, x){
-  length_label_prefix <- nchar(object$args$dictionary$label)
-  ifelse(substr(x, 1, length_label_prefix) == object$args$dictionary$label,
-         substr(x, length_label_prefix + 1L, nchar(x)),
-         x)
-}

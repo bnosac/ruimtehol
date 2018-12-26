@@ -222,33 +222,123 @@ starspace_dictionary <- function(object){
 #' @title Predict using a Starspace model 
 #' @description Predict using a Starspace model 
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
-#' @param newdata a character string of length 1
-#' @param k integer with the number of predictions to make. Defaults to 5.
-#' @param sep character string used to split \code{newdata} using boost::split
+#' @param newdata a character vector with text or a data frame with columns \code{doc_id} and \code{text} 
+#' @param type either 'generic' or 'labelsimilarity'. 
+#' If type is set to \code{'labelsimilarity'} you get the similarity to the labels of the Starspace model as extra columns in \code{newdata}.
+#' If type is set to \code{'generic'}, gets the Starspace predictions in detail. Defaults to \code{'generic'}.
+#' @param k integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'}
+#' @param sep character string used to split \code{newdata} using boost::split. Only used in case \code{type} is set to \code{'generic'}
 #' @param basedoc optional, either a character vector of possible elements to predict or 
 #' the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
-#' the ones from the training data
+#' the ones from the training data. Only used in case \code{type} is set to \code{'generic'}
 #' @param ... not used
 #' @export
-#' @return a list with elements 
+#' @return 
+#' In case type is set to \code{'generic'}: a list, one for each element in \code{x}. Each list element is a list with elements 
 #' \enumerate{
 #' \item input: the character string passed on to newdata
 #' \item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
 #' \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
 #' }
-predict.textspace <- function(object, newdata, k = 5L, sep = " ", basedoc, ...){
-  stopifnot(is.character(newdata))
-  stopifnot(length(newdata) == 1)
-  stopifnot(nchar(newdata) > 0)
-  if(missing(basedoc)){
-    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, k = as.integer(k), basedoc = as.character(c())))
+#' In case type is set to \code{'labelsimilarity'}: the data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
+#' Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities compared to the labels using either cosine or dot product as was used during model training.
+#' @examples
+#' library(udpipe)
+#' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
+#' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
+#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
+#' scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
+#'                   basedoc = unique(x$sentence), k = 3) 
+#' str(scores)
+#' 
+#' data(dekamer, package = "ruimtehol")
+#' dekamer$text <- gsub("\\.([[:digit:]]+)\\.", ". \\1.", x = dekamer$question)
+#' dekamer$text <- strsplit(dekamer$text, "\\W")
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- sapply(dekamer$text, 
+#'                        FUN = function(x) paste(x, collapse = " "))
+#' 
+#' idx <- sample(nrow(dekamer), size = round(nrow(dekamer) * 0.9))
+#' traindata <- dekamer[idx, ]
+#' testdata <- dekamer[-idx, ]
+#' model <- embed_tagspace(x = traindata$text, 
+#'                         y = traindata$question_theme_main, 
+#'                         early_stopping = 0.8,
+#'                         dim = 10, minCount = 5)
+#' scores <- predict(model, testdata, type = "labelsimilarity")
+#' str(scores)
+predict.textspace <- function(object, newdata, type = c("generic", "labelsimilarity"), 
+                              k = 5L, sep = " ", basedoc, ...){
+  type <- match.arg(type)
+  if(is.data.frame(newdata)){
+    stopifnot(all(c("doc_id", "text") %in% colnames(newdata)))
   }else{
-    capture.output(scores <- textspace_predict(object$model, input = newdata, sep = sep, k = as.integer(k), basedoc = basedoc))
+    if(length(names(newdata)) == 0){
+      newdata <- data.frame(doc_id = seq_along(newdata), text = newdata, stringsAsFactors = FALSE)  
+    }else{
+      newdata <- data.frame(doc_id = names(newdata), text = newdata, stringsAsFactors = FALSE)  
+    }
   }
-  scores$prediction$label <- remove_label_prefix(object, scores$prediction$label_starspace)
-  scores$prediction <- scores$prediction[, c("label", "label_starspace", "similarity")]
+  if(type == "generic"){
+    stopifnot(all(nchar(newdata$text) > 0))
+    if(missing(basedoc)){
+      basedoc <- as.character(c())
+    }
+    k <- as.integer(k)
+    scores <- mapply(doc_id = newdata$doc_id, 
+                     text = as.character(newdata$text), 
+                     FUN=function(doc_id, text){
+                       scores <- textspace_predict(object$model, input = text, sep = sep, k = k, basedoc = basedoc)
+                       scores$doc_id <- doc_id
+                       scores$prediction$label <- remove_label_prefix(object, scores$prediction$label_starspace)
+                       scores$prediction <- scores$prediction[, c("label", "label_starspace", "similarity")]
+                       scores[c("doc_id", "input", "prediction", "terms")]
+                     }, SIMPLIFY = FALSE)
+  }else if(type == "labelsimilarity"){
+    scores <- cbind_embedding_similarity(object, newdata = newdata, type = object$args$param$similarity)
+  }
   scores
 }
+
+
+
+cbind_embedding_similarity <- function(object, newdata, type = c("cosine", "dot")) {
+  type <- match.arg(type)
+  stopifnot(inherits(object, "textspace"))
+  stopifnot(is.data.frame(newdata))
+  stopifnot(all(c("doc_id", "text") %in% colnames(newdata)))
+  if(!requireNamespace("data.table", quietly = TRUE)){
+    stop("cbind_embedding_similarity requires the data.table package, which you can install from cran with install.packages('data.table')")
+  }
+  ## get dictionary
+  d <- starspace_dictionary(object)
+  if(length(d$labels) == 0){
+    stop("You did not train the Starspace model with labels")
+  }
+  ## get embedding of the labels
+  emb_labels <- starspace_embedding(object = object, x = d$labels, type = "ngram")
+  rownames(emb_labels) <- remove_label_prefix(object, rownames(emb_labels))
+  
+  ## get similarities of the text with the text with the labels
+  newdata      <- data.table::setDT(newdata)
+  textvectors  <- starspace_embedding(object, x = unique(newdata$text), type = "document")
+  similarities <- embedding_similarity(textvectors, emb_labels, top_n = d$nlabels, type = type)
+  similarities <- data.table::setDT(similarities)
+  similarities <- data.table::dcast.data.table(data = similarities, formula = term1 ~ term2, value.var = "similarity")
+  similarities <- merge(newdata, similarities, by.x = "text", by.y = "term1", sort = FALSE)
+  similarities <- data.table::setDF(similarities)
+  similarities
+}
+
+remove_label_prefix <- function(object, x){
+  length_label_prefix <- nchar(object$args$dictionary$label)
+  ifelse(substr(x, 1, length_label_prefix) == object$args$dictionary$label,
+         substr(x, length_label_prefix + 1L, nchar(x)),
+         x)
+}
+
 
 #' @export
 plot.textspace <- function(x, ...){

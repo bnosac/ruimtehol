@@ -4,32 +4,66 @@
 \alias{predict.textspace}
 \title{Predict using a Starspace model}
 \usage{
-\method{predict}{textspace}(object, newdata, k = 5L, sep = " ", basedoc,
-  ...)
+\method{predict}{textspace}(object, newdata, type = c("generic",
+  "labelsimilarity"), k = 5L, sep = " ", basedoc, ...)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
-\item{newdata}{a character string of length 1}
+\item{newdata}{a character vector with text or a data frame with columns \code{doc_id} and \code{text}}
 
-\item{k}{integer with the number of predictions to make. Defaults to 5.}
+\item{type}{either 'generic' or 'labelsimilarity'. 
+If type is set to \code{'labelsimilarity'} you get the similarity to the labels of the Starspace model as extra columns in \code{newdata}.
+If type is set to \code{'generic'}, gets the Starspace predictions in detail. Defaults to \code{'generic'}.}
 
-\item{sep}{character string used to split \code{newdata} using boost::split}
+\item{k}{integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'}}
+
+\item{sep}{character string used to split \code{newdata} using boost::split. Only used in case \code{type} is set to \code{'generic'}}
 
 \item{basedoc}{optional, either a character vector of possible elements to predict or 
 the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
-the ones from the training data}
+the ones from the training data. Only used in case \code{type} is set to \code{'generic'}}
 
 \item{...}{not used}
 }
 \value{
-a list with elements 
+In case type is set to \code{'generic'}: a list, one for each element in \code{x}. Each list element is a list with elements 
 \enumerate{
 \item input: the character string passed on to newdata
 \item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
 \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
 }
+In case type is set to \code{'labelsimilarity'}: the data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
+Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities compared to the labels using either cosine or dot product as was used during model training.
 }
 \description{
 Predict using a Starspace model
+}
+\examples{
+library(udpipe)
+data(dekamer, package = "ruimtehol")
+dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
+x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
+x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
+scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
+                  basedoc = unique(x$sentence), k = 3) 
+str(scores)
+
+data(dekamer, package = "ruimtehol")
+dekamer$text <- gsub("\\\\.([[:digit:]]+)\\\\.", ". \\\\1.", x = dekamer$question)
+dekamer$text <- strsplit(dekamer$text, "\\\\W")
+dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- sapply(dekamer$text, 
+                       FUN = function(x) paste(x, collapse = " "))
+
+idx <- sample(nrow(dekamer), size = round(nrow(dekamer) * 0.9))
+traindata <- dekamer[idx, ]
+testdata <- dekamer[-idx, ]
+model <- embed_tagspace(x = traindata$text, 
+                        y = traindata$question_theme_main, 
+                        early_stopping = 0.8,
+                        dim = 10, minCount = 5)
+scores <- predict(model, testdata, type = "labelsimilarity")
+str(scores)
 }
