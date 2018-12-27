@@ -18,6 +18,13 @@ This repository contains an R package which wraps the StarSpace C++ library (htt
 
 This package is not on CRAN, you can only install it as follows: `devtools::install_github("bnosac/ruimtehol", build_vignettes = TRUE)`
 
+Look to the vignette and the documentation of the functions
+
+```
+vignette("ground-control-to-ruimtehol", package = "ruimtehol")
+help(package = "ruimtehol")
+```
+
 
 ## Main functionalities
 
