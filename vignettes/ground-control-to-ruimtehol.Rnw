@@ -7,8 +7,8 @@
 \Abstract{
 Ruimtehol is a comprehensive R package which wraps the StarSpace C++ library (\url{https://github.com/facebookresearch/StarSpace}). Starspace is a neural natural language modelling toolkit which allows you to calculate word, sentence, article, document, webpage, link and entity 'embeddings'. By using the 'embeddings', you can perform text based multi-label classification, find similarities between texts and categories, do collaborative-filtering based recommendation as well as content-based recommendation, find out relations between entities, calculate graph 'embeddings' as well as perform semi-supervised learning and multi-task learning on plain text. 
 The techniques are explained in detail in the paper: \emph{StarSpace: Embed All The Things!}, available at (\url{https://arxiv.org/abs/1709.03856}).}
-\Keywords{Starspace, NLP, embed, embedding}
-\Plainkeywords{Starspace, NLP, embed, embedding}
+\Keywords{Starspace, NLP, embed, embedding, neural}
+\Plainkeywords{Starspace, NLP, embed, embedding, neural}
 \Address{
   BNOSAC - Open Analytical Helpers\\
   E-mail: \email{jwijffels@bnosac.be}\\
