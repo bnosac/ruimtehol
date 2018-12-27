@@ -1,0 +1,260 @@
+%\VignetteIndexEntry{Starspace with the ruimtehol R package}
+
+\documentclass[nojss]{jss}
+\title{Starspace with the ruimtehol R package}
+\author{Jan Wijffels}
+\Plainauthor{Jan Wijffels}
+\Abstract{
+Ruimtehol is a comprehensive R package which wraps the StarSpace C++ library (\url{https://github.com/facebookresearch/StarSpace}). Starspace is a neural natural language modelling toolkit which allows you to calculate word, sentence, article, document, webpage, link and entity 'embeddings'. By using the 'embeddings', you can perform text based multi-label classification, find similarities between texts and categories, do collaborative-filtering based recommendation as well as content-based recommendation, find out relations between entities, calculate graph 'embeddings' as well as perform semi-supervised learning and multi-task learning on plain text. 
+The techniques are explained in detail in the paper: \emph{StarSpace: Embed All The Things!}, available at (\url{https://arxiv.org/abs/1709.03856}).}
+\Keywords{Starspace, NLP, embed, embedding}
+\Plainkeywords{Starspace, NLP, embed, embedding}
+\Address{
+  BNOSAC - Open Analytical Helpers\\
+  E-mail: \email{jwijffels@bnosac.be}\\
+  URL: \url{http://www.bnosac.be}\\
+}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(prompt = "R> ", continue = "+   ")
+options(prompt = " ", continue = "   ")
+set.seed(123456789)
+@
+
+\section{Ground control to ruimtehol}
+\subsection{Overview}
+The ruimtehol R package which wraps the StarSpace C++ library (\url{https://github.com/facebookresearch/StarSpace}), focussing on building and utilising embedding models for natural language. 
+It allows you to do the following Natural Language Processing tasks
+
+\begin{itemize}
+\item{Text classification}
+\item{Learning word, sentence or document level embeddings}
+\item{Finding sentence or document similarity}
+\item{Ranking web documents}
+\item{Content-based recommendation (e.g. recommend text/music based on the content)}
+\item{Collaborative filtering based recommendation (e.g. recommend text/music based on interest)}
+\item{Identification of entity relationships}
+\end{itemize}
+
+\subsubsection{Source code repository}
+The source code of the package is on github at \url{https://github.com/bnosac/ruimtehol}.\\
+It uses Starspace version 'STARSPACE-2017-2' cloned in September 2018 to \url{https://github.com/bnosac-dev/StarSpace}. Modifications were done in order to make it CRAN compliant and to make the usage more straightforward for R users. 
+The R package is distributed under the Mozilla Public License version 2.0.
+
+\subsection{Functionalities} \label{functionalities}
+The R package allows you to have a low-level access to the C++ library for fine-grained control and provides as well high-level interfaces for commonly used tasks. Functionalities are also included for saving and loading models, using the models to predict and general embedding similarity and ranking functions.
+
+\begin{tabular}{l | l}
+\hline	
+starspace                    & Low-level interface to build a Starspace model                 \\
+starspace\_load\_model       & Load a pre-trained model or a tab-separated file               \\
+starspace\_save\_model       & Save a Starspace model                                         \\
+starspace\_embedding         & Get embeddings of documents/words/ngrams/labels                \\
+starspace\_knn               & Find k-nearest neighbouring information for new text           \\
+starspace\_dictonary         & Get words/labels part of the model dictionary                  \\
+predict.textspace            & Get predictions along a Starspace model                        \\
+as.matrix                    & Get words and label embeddings                                 \\
+embedding\_similarity        & Cosine/dot product similarity between embeddings - top-n most similar text       \\
+embed\_wordspace             & Build a Starspace model which calculates word/ngram embeddings                   \\
+embed\_sentencespace         & Build a Starspace model which calculates sentence embeddings                     \\
+embed\_articlespace          & Build a Starspace model for embedding articles - sentence-article similarities   \\
+embed\_tagspace              & Build a Starspace model for multi-label classification                           \\
+embed\_docspace              & Build a Starspace model for content-based recommendation                         \\
+embed\_pagespace             & Build a Starspace model for interest-based recommendation                        \\
+embed\_entityrelationspace   & Build a Starspace model for entity relationship completion                       \\
+\hline
+\end{tabular}
+
+\begin{center}
+\includegraphics[width=12cm]{logo-ruimtehol.png}
+\end{center}
+
+\newpage
+\subsection{Example data}
+In what follows below, we showcase some of the use cases of the R package. In order to do that, we will use text with questions and answers from the Belgian parliament. This dataset was collected as open data under the CC0 license from \url{http://data.dekamer.be}
+
+The data contains Dutch questions asked in the year 2017 by members in the National Belgian parliament. Each question was categorised alongside several themes and the dataset also contains the answer which was given by the department or minister who was responsible for that topic. We also know to which political party the person belonged to who was asking the question.
+
+<<>>=
+library(ruimtehol)
+data("dekamer", package = "ruimtehol")
+str(dekamer)
+@
+
+\newpage
+\section{Text classification}
+In this example, we will perform text classification. Each question in parliament can be labelled with one or more tags. A tagspace model is constructed which can be used to tag new questions with the learned tagset.
+
+\subsection{Data preparation}
+The following data preparation is done first
+\begin{itemize}
+  \item make sure all the text is separated by spaces, this is the format which Starspace needs
+  \item make sure the response is a list of all categories in case you do multi-label classification and each category should not contain spaces (in the below example spaces are replaced with a dash)
+\end{itemize}
+The Starspace C++ library internally uses spaces as a separator, make sure each token is separated by a space if you want to include it in the model and that the labels do not contain spaces.
+
+<<>>=
+dekamer$x <- strsplit(dekamer$question, "\\W")
+dekamer$x <- lapply(dekamer$x, FUN = function(x) setdiff(x, ""))
+dekamer$x <- sapply(dekamer$x, FUN = function(x) paste(x, collapse = " "))
+dekamer$x <- tolower(dekamer$x)
+dekamer$y <- strsplit(dekamer$question_theme, split = ",")
+dekamer$y <- lapply(dekamer$y, FUN=function(x) gsub(" ", "-", x))
+dekamer$x[1:2]
+dekamer$y[1:2]
+@
+
+\newpage
+\subsection{Model building}
+
+Next a model is constructed, in this case a tagspace model which is a model which can be used for simple classification as well as multi-label classification (which is the case here).  
+
+<<results=hide>>=
+set.seed(321)
+model <- embed_tagspace(x = dekamer$x, y = dekamer$y, 
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+@
+<<>>=
+model
+@
+
+The code above has trained a model with the following relevant arguments
+
+\begin{itemize}
+\item  \textbf{early\_stopping}: data is split in a training (80 \%) and a validation set (20 \%)
+\item  \textbf{dim}: the dimension of the embedding is set to 50
+\item  optimisation is done with \textbf{adagrad}, during 40 \textbf{epochs}, starting with a learning rate (\textbf{lr}) of 0.01 and each time decreasing the learning rate by 1/epoch. 
+\item  The \textbf{loss} which is optimised is softmax loss. If the loss does not stop decreasing after 10 iterations as set with \textbf{validationPatience}, training is stopped.
+\item  Similarity between positive and negative labels is done by \textbf{cosine} similarity
+\item  \textbf{negSearchLimit} indicates the number of negative samples which are taken (for each question we know which labels were given (positive) and we sample from the list of labels which were not given a bunch of negatives)
+\item  model is trained on bigrams (argument \textbf{ngrams}) and these should occur at least twice (argument \textbf{minCount})
+\end{itemize}
+
+\subsection{Model inspection}
+\subsubsection{Loss evolution}
+The plot shows the evolution of the loss over the epochs on the training set and the validation set. This should generally decrease steadily and stabilise on the validation set which indicates it has learned the embeddings well.
+
+<<fig=TRUE>>=
+plot(model)
+@
+
+\subsubsection{Dictionary}
+Starspace models the embeddings of the labels and the words in the same embedding space allowing you to compute similarities across labels and text. To get the dictionary of all terms in the model (words and labels), you can do the following. 
+
+<<>>=
+dict <- starspace_dictionary(model)
+str(dict)
+length(dict$labels)
+@
+
+The dictionary element contains a data.frame with all words as well as all labels which were found in the data and for which embeddings are calculated.\\ 
+Note that bigrams or ngrams are not stored and you'll also see that labels are prefixed with the text \_\_label\_\_, allowing them to be distinguished from plain words. 
+
+\subsection{Embeddings of the dictionary}
+You can get the learned embeddings of the words and the labels which are part of the dictionary as follows. 
+
+<<>>=
+emb <- as.matrix(model)
+dim(emb)
+@
+
+If you only want embeddings of the words or of the labels, you can set the \emph{type} argument in the function \emph{as.matrix} or you can use the function \emph{starspace\_embedding} directly. Below the embedding of the word 'geld' is retrieved as well as the embedding of the label 'VERVOERBELEID'.
+
+<<>>=
+emb_words  <- as.matrix(model, type = "words")
+emb_labels <- as.matrix(model, type = "labels", prefix = FALSE)
+e <- starspace_embedding(model, x = c("__label__VERVOERBELEID", "geld"), type = "ngram")
+@
+
+If you trained a model with $ngrams > 1$, you can get the embedding of a bigram/ngram also. For this Starspace uses a hashing trick from \emph{fastText} and gets - based on the words which define the bigram/ngram - the embedding of the hashed bucket of the combined term. If you specify to retrieve this type of embedding, you can not have more words than you specified \emph{ngrams} when doing the training.
+
+<<>>=
+e <- starspace_embedding(model, c("nationale loterij"), type = "ngram")
+@
+
+\subsection{Embeddings of full text}
+
+For retrieving embeddings of full text, use \emph{type = 'document'} which is the default of \emph{starspace\_embedding}. It aggregates the embeddings of the words which are part of the text. Note that this aggregation is governed by the normalization parameter p which you can set when you build the model. The sum of the embeddings of the words which are in the text is normalised by dividing by $\#words^p$. If $p=1$, this is equivalent to taking the average of the embeddings. When $p=0$, this is equivalent to taking sum of the embeddings. The default is $p=0.5$ indicating a mixture of both.
+
+<<>>=
+text <- c("de nmbs heeft het treinaanbod uitgebreid via onteigening ...",
+          "de migranten komen naar europa de asielcentra ...")
+emb_text <- starspace_embedding(model, text)
+dim(emb_text)
+@
+
+\subsection{Predict/Similarities/Ranking}
+You can extract predictions and get embedding similarities for information retrieval and ranking.
+Function \emph{predict} gets the document embeddings of the text and find the closest among the labels.
+
+<<>>=
+predict(model, "de migranten komen naar europa de asielcentra ...")
+@
+
+The same can also be achieved with the function \emph{embedding\_similarity} which provides cosine and dot product similarities. They give the same numbers as the predict functionality.
+
+<<>>=
+embedding_similarity(emb_text, emb_labels, type = "cosine", top_n = 5)
+@
+
+Shorthands for the knn Starspace functionality is also provided. This function allows you to answer things like 'What does this look like'. It shows the nearest neighbour of text to the dictionary.
+
+<<>>=
+starspace_knn(model, "de migranten komen naar europa de asielcentra ...", k = 5)
+@
+
+\subsection{Customising}
+
+As the words and labels are in the same embedding space, you can interpret the predict and similarity functionalities in a broad way. This is shown below where the target documents to compare with are changed. 
+
+<<>>=
+targetdocs <- c("__label__FISCALITEIT", 
+                "__label__OVERHEIDSADMINISTRATIE", 
+                "__label__MIGRATIEBELEID", 
+                "__label__POLITIE", 
+                "__label__BUITENLANDS-BELEID", 
+                "__label__ECONOMISCH-BELEID", 
+                "de migranten komen naar europa ZZZ", 
+                "__label__PERSONEEL")
+predict(model, "de migranten komen naar europa de asielcentra ...", 
+        basedoc = targetdocs)
+embedding_similarity(
+  starspace_embedding(model, "de migranten komen naar europa de asielcentra ..."),
+  starspace_embedding(model, targetdocs), top_n = 3)
+@
+
+
+\subsection{Save/Load model}
+Saving the model consists of saving the embeddings of the words and the labels as well as storing the model parameters. The saved model can next be loaded back in and used for information retrieval.
+The following approach is the advised approach to save and reload models.
+
+<<>>=
+starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol")
+model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+@
+
+<<echo=FALSE>>=
+invisible(file.remove("textspace.ruimtehol"))
+@
+
+
+\newpage
+\section{Other models}
+The ruimtehol package contains many more models. It is advised to just inspect the help of the functions listed up in section \ref{functionalities}.
+\begin{itemize}
+  \item Embeddings of word, sentences, articles, documents, webpages, links and entities: See the examples in the package.
+  \item Ranking and information retrieval: See the examples in the package.
+  \item Collaborative filtering: See the examples in the package.
+\end{itemize}
+
+
+
+
+\end{document}
