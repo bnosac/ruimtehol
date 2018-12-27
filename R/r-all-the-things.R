@@ -13,6 +13,7 @@
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
+#' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 #' 
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
@@ -24,7 +25,8 @@
 #' starspace_embedding(model, "de nmbs heeft het treinaanbod uitgebreid")
 #' starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
 #' 
-#' dekamer$question_themes <- strsplit(dekamer$question_theme, split = ",")
+#' dekamer$question_themes <- gsub(" ", "-", dekamer$question_theme)
+#' dekamer$question_themes <- strsplit(dekamer$question_themes, split = ",")
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_themes, 
 #'                         early_stopping = 0.8,
