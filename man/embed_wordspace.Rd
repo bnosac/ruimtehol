@@ -31,7 +31,8 @@ x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 x <- tolower(x)
 
 model <- embed_wordspace(x, early_stopping = 0.9, 
-                         dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+                         dim = 15, ws = 7, epoch = 10, minCount = 5, ngrams = 1,
+                         maxTrainTime = 2) ## maxTrainTime only set for CRAN
 plot(model)
 wordvectors <- as.matrix(model)
 

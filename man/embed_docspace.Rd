@@ -42,7 +42,8 @@ docs <- lapply(docs, FUN=function(x){
 docs <- do.call(rbind, docs)
 
 ## Build a model
-x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
-model <- embed_docspace(x, dim = 10)
+train <- merge(x, docs, by.x = "doc_id", by.y = "theme")
+train <- subset(train, user_id \%in\% sample(levels(train$user_id), 4))
+model <- embed_docspace(train, dim = 10)
 plot(model)
 }

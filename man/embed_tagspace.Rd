@@ -25,6 +25,7 @@ Build a Starspace model to be used for classification purposes
 }
 \examples{
 data(dekamer, package = "ruimtehol")
+dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
 dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 dekamer$text <- sapply(dekamer$text, 
@@ -33,7 +34,7 @@ dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
-                        early_stopping = 0.8,
+                        early_stopping = 0.8, 
                         dim = 10, minCount = 5)
 plot(model)
 predict(model, "de nmbs heeft het treinaanbod uitgebreid", k = 3)

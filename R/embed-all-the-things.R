@@ -553,6 +553,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #' embedding
 #' colSums(embedding_dictionary[c("federale", "politie"), ]) / 2^0.5
 #' 
+#' \dontrun{
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         similarity = "cosine",
@@ -572,6 +573,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #'                         dim = 10, minCount = 5, bucket = 1)
 #' starspace_embedding(model, "federale politie", type = "document")
 #' starspace_embedding(model, "federale politie", type = "ngram")
+#' }
 starspace_embedding <- function(object, x, type = c("document", "ngram")){
   stopifnot(inherits(object, "textspace"))
   stopifnot(is.character(x))

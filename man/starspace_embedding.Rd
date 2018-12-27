@@ -52,6 +52,7 @@ embedding_dictionary <- as.matrix(model)
 embedding
 colSums(embedding_dictionary[c("federale", "politie"), ]) / 2^0.5
 
+\dontrun{
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
                         similarity = "cosine",
@@ -71,4 +72,5 @@ model <- embed_tagspace(x = tolower(dekamer$text),
                         dim = 10, minCount = 5, bucket = 1)
 starspace_embedding(model, "federale politie", type = "document")
 starspace_embedding(model, "federale politie", type = "ngram")
+}
 }

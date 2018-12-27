@@ -9,6 +9,7 @@
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 #' dekamer$text <- sapply(dekamer$text, 
@@ -17,7 +18,7 @@
 #' 
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
-#'                         early_stopping = 0.8,
+#'                         early_stopping = 0.8, 
 #'                         dim = 10, minCount = 5)
 #' plot(model)
 #' predict(model, "de nmbs heeft het treinaanbod uitgebreid", k = 3)
@@ -85,7 +86,8 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 1, ...
 #' x <- tolower(x)
 #' 
 #' model <- embed_wordspace(x, early_stopping = 0.9, 
-#'                          dim = 15, ws = 7, epoch = 5, minCount = 5, ngrams = 1)
+#'                          dim = 15, ws = 7, epoch = 10, minCount = 5, ngrams = 1,
+#'                          maxTrainTime = 2) ## maxTrainTime only set for CRAN
 #' plot(model)
 #' wordvectors <- as.matrix(model)
 #' 
@@ -272,8 +274,9 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 1
 #' docs <- do.call(rbind, docs)
 #' 
 #' ## Build a model
-#' x <- merge(x, docs, by.x = "doc_id", by.y = "theme")
-#' model <- embed_docspace(x, dim = 10)
+#' train <- merge(x, docs, by.x = "doc_id", by.y = "theme")
+#' train <- subset(train, user_id %in% sample(levels(train$user_id), 4))
+#' model <- embed_docspace(train, dim = 10)
 #' plot(model)
 embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_stopping = 1, ...) {
   ## user clicks on a web page which has content
