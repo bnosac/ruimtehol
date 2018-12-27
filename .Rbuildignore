@@ -5,3 +5,4 @@ dev
 .bin
 .tsv
 data/dekamer-2014-2018.RData
+inst/paper
