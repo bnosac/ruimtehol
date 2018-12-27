@@ -130,6 +130,7 @@ others can be passed on with ... . \cr
 }
 }
 \examples{
+\dontrun{
 data(dekamer, package = "ruimtehol")
 x <- strsplit(dekamer$question, "\\\\W")
 x <- lapply(x, FUN = function(x) setdiff(x, ""))
@@ -139,8 +140,7 @@ idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
 writeLines(x[idx], con = "traindata.txt")
 writeLines(x[-idx], con = "validationdata.txt")
 
-m <- starspace(model = "mymodel.bin", 
-               file = "traindata.txt", validationFile = "validationdata.txt", 
+m <- starspace(file = "traindata.txt", validationFile = "validationdata.txt", 
                trainMode = 5, dim = 10, 
                loss = "softmax", lr = 0.01, ngrams = 2, minCount = 5,
                similarity = "cosine", adagrad = TRUE, ws = 7, epoch = 3,
@@ -153,6 +153,11 @@ wv <- starspace_embedding(m,
 wv
 mostsimilar <- embedding_similarity(wordvectors, wv["pensioen", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
+starspace_knn(m, "koning")
+
+## clean up for cran
+file.remove(c("traindata.txt", "validationdata.txt"))
+}
 }
 \references{
 \url{https://github.com/facebookresearch}

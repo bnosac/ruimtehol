@@ -4,21 +4,22 @@
 \alias{starspace_save_model}
 \title{Save a starspace model as a binary or tab-delimited TSV file}
 \usage{
-starspace_save_model(object, file = "textspace.tsv", method = c("binary",
-  "tsv-starspace", "tsv-data.table", "ruimtehol"), labels = data.frame(code =
-  character(), label = character(), stringsAsFactors = FALSE))
+starspace_save_model(object, file = "textspace.ruimtehol",
+  method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"),
+  labels = data.frame(code = character(), label = character(),
+  stringsAsFactors = FALSE))
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
 \item{file}{character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}}
 
-\item{method}{character indicating the method of saving. Possible values are 'binary', 'tsv-starspace', 'tsv-data.table'. Defaults to 'binary'.
+\item{method}{character indicating the method of saving. Possible values are 'ruimtehol', 'binary', 'tsv-starspace' and 'tsv-data.table'. Defaults to 'ruimtehol'.
 \enumerate{
-\item{The first method: \code{'binary'} saves the model as a binary file using the Starspace methods}
-\item{The second method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
-\item{The third method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
-\item{The fourth method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS}
+\item{The first method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS}
+\item{The second: \code{'binary'} saves the model as a binary file using the Starspace methods}
+\item{The third method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
+\item{The fourth method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
 }}
 
 \item{labels}{a data.frame with at least columns code and label which will be saved in case \code{method} is \code{'ruimtehol'}. Allowing you to

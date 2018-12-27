@@ -39,4 +39,7 @@ sentence <- "Wat zijn de cijfers qua doorstroming van 2016?"
 embedding_sentence <- starspace_embedding(model, sentence, type = "document")
 mostsimilar <- embedding_similarity(embeddings, embedding_sentence)
 head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
+
+## clean up for cran
+file.remove(list.files(pattern = ".udpipe$"))
 }

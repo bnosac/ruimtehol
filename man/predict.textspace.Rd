@@ -65,4 +65,7 @@ model <- embed_tagspace(x = traindata$text,
                         dim = 10, minCount = 5)
 scores <- predict(model, testdata, type = "labelsimilarity")
 str(scores)
+
+## clean up for cran
+file.remove(list.files(pattern = ".udpipe$"))
 }
