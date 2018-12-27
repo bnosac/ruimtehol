@@ -46,6 +46,7 @@
 #' \item similarity:      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss. It's only effective if hinge loss is used. [cosine]
 #' \item negSearchLimit:  number of negatives sampled [50]
 #' \item maxNegSamples:   max number of negatives in a batch update [10]
+#' \item p:               normalization parameter: normalize sum of embeddings by dividing Size^p [0.5]
 #' \item adagrad:         whether to use adagrad in training [1]
 #' \item ws:              only used in trainMode 5, the size of the context window for word level training. [5]
 #' \item dropoutLHS:      dropout probability for LHS features. [0]
