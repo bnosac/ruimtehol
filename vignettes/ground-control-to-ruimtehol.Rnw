@@ -214,7 +214,7 @@ starspace_knn(model, "de migranten komen naar europa de asielcentra ...", k = 5)
 
 As the words and labels are in the same embedding space, you can interpret the predict and similarity functionalities in a broad way. This is shown below where the target documents to compare with are changed. 
 
-<<>>=
+<<results=hide>>=
 targetdocs <- c("__label__FISCALITEIT", 
                 "__label__OVERHEIDSADMINISTRATIE", 
                 "__label__MIGRATIEBELEID", 
