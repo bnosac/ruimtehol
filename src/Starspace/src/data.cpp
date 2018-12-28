@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -28,7 +29,7 @@ InternDataHandler::InternDataHandler(shared_ptr<Args> args) {
 }
 
 void InternDataHandler::errorOnZeroExample(const string& fileName) {
-  std::cerr << "ERROR: File '" << fileName
+  Rcpp::Rcerr << "ERROR: File '" << fileName
             << "' does not contain any valid example.\n"
             << "Please check: is the file empty? "
             << "Do the examples contain proper feature and label according to the trainMode? "
@@ -42,12 +43,12 @@ void InternDataHandler::loadFromFile(
 
   ifstream fin(fileName);
   if (!fin.is_open()) {
-    std::cerr << fileName << " cannot be opened for loading!" << std::endl;
+    Rcpp::Rcerr << fileName << " cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
   }
   fin.close();
 
-  cout << "Loading data from file : " << fileName << endl;
+  Rcpp::Rcout << "Loading data from file : " << fileName << endl;
   vector<Corpus> corpora(args_->thread);
   foreach_line(
     fileName,
@@ -69,7 +70,7 @@ void InternDataHandler::loadFromFile(
     std::copy(subcorp.begin(), subcorp.end(), examples_.begin() + destCursor);
     destCursor += subcorp.size();
   }
-  cout << "Total number of examples loaded : " << examples_.size() << endl;
+  Rcpp::Rcout << "Total number of examples loaded : " << examples_.size() << endl;
   size_ = examples_.size();
   if (size_ == 0) {
     errorOnZeroExample(fileName);
@@ -94,13 +95,15 @@ void InternDataHandler::convert(
     // lhs is the same, pick one random label as rhs
     assert(example.LHSTokens.size() > 0);
     assert(example.RHSTokens.size() > 0);
-    auto idx = rand() % example.RHSTokens.size();
+    //auto idx = rand() % example.RHSTokens.size();
+    unsigned int idx = static_cast<unsigned int>(floor(R::runif(0, 1) * example.RHSTokens.size()));
     rslt.RHSTokens.push_back(example.RHSTokens[idx]);
   } else {
     assert(example.RHSTokens.size() > 1);
     if (args_->trainMode == 1) {
       // pick one random label as rhs and the rest is lhs
-      auto idx = rand() % example.RHSTokens.size();
+      //auto idx = rand() % example.RHSTokens.size();
+      unsigned int idx = static_cast<unsigned int>(floor(R::runif(0, 1) * example.RHSTokens.size()));
       for (unsigned int i = 0; i < example.RHSTokens.size(); i++) {
         auto tok = example.RHSTokens[i];
         if (i == idx) {
@@ -112,7 +115,8 @@ void InternDataHandler::convert(
     } else
     if (args_->trainMode == 2) {
       // pick one random label as lhs and the rest is rhs
-      auto idx = rand() % example.RHSTokens.size();
+      //auto idx = rand() % example.RHSTokens.size();
+      unsigned int idx = static_cast<unsigned int>(floor(R::runif(0, 1) * example.RHSTokens.size()));
       for (unsigned int i = 0; i < example.RHSTokens.size(); i++) {
         auto tok = example.RHSTokens[i];
         if (i == idx) {
@@ -124,10 +128,12 @@ void InternDataHandler::convert(
     } else
     if (args_->trainMode == 3) {
       // pick two random labels, one as lhs and the other as rhs
-      auto idx = rand() % example.RHSTokens.size();
+      //auto idx = rand() % example.RHSTokens.size();
+      unsigned int idx = static_cast<unsigned int>(floor(R::runif(0, 1) * example.RHSTokens.size()));
       unsigned int idx2;
       do {
-        idx2 = rand() % example.RHSTokens.size();
+        //idx2 = rand() % example.RHSTokens.size();
+        idx2 = static_cast<unsigned int>(floor(R::runif(0, 1) * example.RHSTokens.size()));
       } while (idx2 == idx);
       rslt.LHSTokens.push_back(example.RHSTokens[idx]);
       rslt.RHSTokens.push_back(example.RHSTokens[idx2]);
@@ -192,7 +198,8 @@ void InternDataHandler::getNextExample(ParseResults& rslt) {
 
 void InternDataHandler::getRandomExample(ParseResults& rslt) const {
   assert(size_ > 0);
-  int32_t idx = rand() % size_;
+  //int32_t idx = rand() % size_;
+  int32_t idx = static_cast<int32_t>(floor(R::runif(0, 1) * size_));
   convert(examples_[idx], rslt);
 }
 
@@ -234,8 +241,11 @@ void InternDataHandler::initWordNegatives() {
 
 Base InternDataHandler::genRandomWord() const {
   assert(size_ > 0);
-  auto& ex = examples_[rand() % size_];
-  int r = rand() % ex.LHSTokens.size();
+  unsigned int j = static_cast<unsigned int>(floor(R::runif(0, 1) * size_));
+  //auto& ex = examples_[rand() % size_];
+  auto& ex = examples_[j];
+  //int r = rand() % ex.LHSTokens.size();
+  int r = static_cast<int>(floor(R::runif(0, 1) * ex.LHSTokens.size()));
   return ex.LHSTokens[r];
 }
 
@@ -244,8 +254,11 @@ Base InternDataHandler::genRandomWord() const {
 void InternDataHandler::getRandomRHS(vector<Base>& results) const {
   assert(size_ > 0);
   results.clear();
-  auto& ex = examples_[rand() % size_];
-  unsigned int r = rand() % ex.RHSTokens.size();
+  //auto& ex = examples_[rand() % size_];
+  unsigned int j = static_cast<unsigned int>(floor(R::runif(0, 1) * size_));
+  auto& ex = examples_[j];
+  //unsigned int r = rand() % ex.RHSTokens.size();
+  unsigned int r = static_cast<unsigned int>(floor(R::runif(0, 1) * ex.RHSTokens.size()));
   if (args_->trainMode == 2) {
     for (unsigned int i = 0; i < ex.RHSTokens.size(); i++) {
       if (i != r) {

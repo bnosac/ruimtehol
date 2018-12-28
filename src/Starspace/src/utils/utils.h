@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -51,7 +52,7 @@ struct Metrics {
   }
 
   void print() {
-    std::cout << "Evaluation Metrics : \n"
+    Rcpp::Rcout << "Evaluation Metrics : \n"
          << "hit@1: " << hit1
          << " hit@10: " << hit10
          << " hit@20: " << hit20

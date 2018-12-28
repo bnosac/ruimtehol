@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -35,7 +36,7 @@ void StarSpace::initParser() {
   } else if (args_->fileFormat == "labelDoc") {
     parser_ = make_shared<LayerDataParser>(dict_, args_);
   } else {
-    cerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
+    Rcpp::Rcerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
     exit(EXIT_FAILURE);
   }
 }
@@ -63,7 +64,7 @@ shared_ptr<InternDataHandler> StarSpace::initData() {
   } else if (args_->fileFormat == "labelDoc") {
     return make_shared<LayerDataHandler>(args_);
   } else {
-    cerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
+    Rcpp::Rcerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
     exit(EXIT_FAILURE);
   }
   return nullptr;
@@ -71,7 +72,7 @@ shared_ptr<InternDataHandler> StarSpace::initData() {
 
 // initialize dict and load data
 void StarSpace::init() {
-  cout << "Start to initialize starspace model.\n";
+  Rcpp::Rcout << "Start to initialize starspace model.\n";
   assert(args_ != nullptr);
 
   // build dict
@@ -80,7 +81,7 @@ void StarSpace::init() {
   auto filename = args_->trainFile;
   dict_->readFromFile(filename, parser_);
   parser_->resetDict(dict_);
-  if (args_->debug) {dict_->save(cout);}
+  if (args_->debug) {dict_->save(Rcpp::Rcout);}
 
   // init train data class
   trainData_ = initData();
@@ -97,10 +98,10 @@ void StarSpace::init() {
 }
 
 void StarSpace::initFromSavedModel(const string& filename) {
-  cout << "Start to load a trained starspace model.\n";
+  Rcpp::Rcout << "Start to load a trained starspace model.\n";
   std::ifstream in(filename, std::ifstream::binary);
   if (!in.is_open()) {
-    std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    Rcpp::Rcerr << "Model file cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
   }
   string magic;
@@ -108,9 +109,9 @@ void StarSpace::initFromSavedModel(const string& filename) {
   while ((c = in.get()) != 0) {
     magic.push_back(c);
   }
-  cout << magic << endl;
+  Rcpp::Rcout << magic << endl;
   if (magic != kMagic) {
-    std::cerr << "Magic signature does not match!" << std::endl;
+    Rcpp::Rcerr << "Magic signature does not match!" << std::endl;
     exit(EXIT_FAILURE);
   }
   // load args
@@ -123,7 +124,7 @@ void StarSpace::initFromSavedModel(const string& filename) {
   // init and load model
   model_ = make_shared<EmbedModel>(args_, dict_);
   model_->load(in);
-  cout << "Model loaded.\n";
+  Rcpp::Rcout << "Model loaded.\n";
 
   // init data parser
   initParser();
@@ -131,11 +132,11 @@ void StarSpace::initFromSavedModel(const string& filename) {
 }
 
 void StarSpace::initFromTsv(const string& filename) {
-  cout << "Start to load a trained embedding model in tsv format.\n";
+  Rcpp::Rcout << "Start to load a trained embedding model in tsv format.\n";
   assert(args_ != nullptr);
   ifstream in(filename);
   if (!in.is_open()) {
-    std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    Rcpp::Rcerr << "Model file cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
   }
   // Test dimension of first line, adjust args appropriately
@@ -147,14 +148,14 @@ void StarSpace::initFromTsv(const string& filename) {
   int dim = pieces.size() - 1;
   if ((int)(args_->dim) != dim) {
     args_->dim = dim;
-    cout << "Setting dim from Tsv file to: " << dim << endl;
+    Rcpp::Rcout << "Setting dim from Tsv file to: " << dim << endl;
   }
   in.close();
 
   // build dict
   dict_ = make_shared<Dictionary>(args_);
   dict_->loadDictFromModel(filename);
-  if (args_->debug) {dict_->save(cout);}
+  if (args_->debug) {dict_->save(Rcpp::Rcout);}
 
   // load Model
   model_ = make_shared<EmbedModel>(args_, dict_);
@@ -181,7 +182,7 @@ void StarSpace::train() {
       saveModel(filename);
       saveModelTsv(filename + ".tsv");
     }
-    cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
+    Rcpp::Rcout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
     auto err = model_->train(trainData_, args_->thread,
            t_start,  i,
            rate, rate - decrPerEpoch);
@@ -190,11 +191,11 @@ void StarSpace::train() {
            0xe2, 0x98, 0x83);
     if (validData_ != nullptr) {
       auto valid_err = model_->test(validData_, args_->thread);
-      cout << "\nValidation error: " << valid_err << endl;
+      Rcpp::Rcout << "\nValidation error: " << valid_err << endl;
       if (valid_err > best_valid_err) {
         impatience += 1;
         if (impatience > args_->validationPatience) {
-          cout << "Ran out of Patience! Early stopping based on validation set." << endl;
+          Rcpp::Rcout << "Ran out of Patience! Early stopping based on validation set." << endl;
           break;
         }
       } else {
@@ -206,7 +207,7 @@ void StarSpace::train() {
     auto t_end = std::chrono::high_resolution_clock::now();
     auto tot_spent = std::chrono::duration<double>(t_end-t_start).count();
     if (tot_spent >args_->maxTrainTime) {
-      cout << "MaxTrainTime exceeded." << endl;
+      Rcpp::Rcout << "MaxTrainTime exceeded." << endl;
       break;
     }
   }
@@ -232,7 +233,7 @@ MatrixRow StarSpace::getNgramVector(const string& phrase) {
   vector<string> tokens;
   boost::split(tokens, phrase, boost::is_any_of(string(" ")));
   if (tokens.size() > (unsigned int)(args_->ngrams)) {
-    std::cerr << "Error! Input ngrams size is greater than model ngrams size.\n";
+    Rcpp::Rcerr << "Error! Input ngrams size is greater than model ngrams size.\n";
     exit(EXIT_FAILURE);
   }
   if (tokens.size() == 1) {
@@ -257,14 +258,14 @@ void StarSpace::nearestNeighbor(const string& line, int k) {
   auto vec = getDocVector(line, " ");
   auto preds = model_->findLHSLike(vec, k);
   for (auto n : preds) {
-    cout << dict_->getSymbol(n.first) << ' ' << n.second << endl;
+    Rcpp::Rcout << dict_->getSymbol(n.first) << ' ' << n.second << endl;
   }
 }
 
 void StarSpace::loadBaseDocs() {
   if (args_->basedoc.empty()) {
     if (args_->fileFormat == "labelDoc") {
-      std::cerr << "Must provide base labels when label is featured.\n";
+      Rcpp::Rcerr << "Must provide base labels when label is featured.\n";
       exit(EXIT_FAILURE);
     }
     for (int i = 0; i < dict_->nlabels(); i++) {
@@ -273,12 +274,12 @@ void StarSpace::loadBaseDocs() {
           model_->projectRHS({ make_pair(i + dict_->nwords(), 1.0) })
       );
     }
-    //cout << "Predictions use " <<  dict_->nlabels() << " known labels." << endl;
+    //Rcpp::Rcout << "Predictions use " <<  dict_->nlabels() << " known labels." << endl;
   } else {
-    //cout << "Loading base docs from file : " << args_->basedoc << endl;
+    //Rcpp::Rcout << "Loading base docs from file : " << args_->basedoc << endl;
     ifstream fin(args_->basedoc);
     if (!fin.is_open()) {
-      std::cerr << "Base doc file cannot be opened for loading!" << std::endl;
+      Rcpp::Rcerr << "Base doc file cannot be opened for loading!" << std::endl;
       exit(EXIT_FAILURE);
     }
     string line;
@@ -291,10 +292,10 @@ void StarSpace::loadBaseDocs() {
     }
     fin.close();
     if (baseDocVectors_.size() == 0) {
-      std::cerr << "ERROR: basedoc file '" << args_->basedoc << "' is empty." << std::endl;
+      Rcpp::Rcerr << "ERROR: basedoc file '" << args_->basedoc << "' is empty." << std::endl;
       exit(EXIT_FAILURE);
     }
-    //cout << "Finished loading " << baseDocVectors_.size() << " base docs.\n";
+    //Rcpp::Rcout << "Finished loading " << baseDocVectors_.size() << " base docs.\n";
   }
 }
 
@@ -343,7 +344,8 @@ Metrics StarSpace::evaluateOne(
     if (cur_score > score) {
       rank++;
     } else if (cur_score == score) {
-      float flip = (float) rand() / RAND_MAX;
+      //float flip = (float) rand() / RAND_MAX;
+      float flip = (float) R::runif(0, 1);
       if (flip > 0.5) {
         rank++;
       }
@@ -390,7 +392,7 @@ void StarSpace::printDoc(ostream& ofs, const vector<Base>& tokens) {
 void StarSpace::evaluate() {
   // check that it is not in trainMode 5
   if (args_->trainMode == 5) {
-    std::cerr << "Test is undefined in trainMode 5. Please use other trainMode for testing.\n";
+    Rcpp::Rcerr << "Test is undefined in trainMode 5. Please use other trainMode for testing.\n";
     exit(EXIT_FAILURE);
   }
 
@@ -463,10 +465,10 @@ void StarSpace::evaluate() {
 }
 
 void StarSpace::saveModel(const string& filename) {
-  cout << "Saving model to file : " << filename << endl;
+  Rcpp::Rcout << "Saving model to file : " << filename << endl;
   std::ofstream ofs(filename, std::ofstream::binary);
   if (!ofs.is_open()) {
-    std::cerr << "Model file cannot be opened for saving!" << std::endl;
+    Rcpp::Rcerr << "Model file cannot be opened for saving!" << std::endl;
     exit(EXIT_FAILURE);
   }
   // sign model
@@ -479,7 +481,7 @@ void StarSpace::saveModel(const string& filename) {
 }
 
 void StarSpace::saveModelTsv(const string& filename) {
-  cout << "Saving model in tsv format : " << filename << endl;
+  Rcpp::Rcout << "Saving model in tsv format : " << filename << endl;
   ofstream fout(filename);
   model_->saveTsv(fout, '\t');
   fout.close();
