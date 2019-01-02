@@ -61,6 +61,7 @@ The following functions are made available.
 
 ```r
 library(ruimtehol)
+set.seed(123456789)
 
 ## Get some training data
 download.file("https://s3.amazonaws.com/fair-data/starspace/wikipedia_train250k.tgz", "wikipedia_train250k.tgz")
@@ -72,7 +73,8 @@ writeLines(text = x, sep = "\n", con = "wikipedia_train10k.txt")
 
 ```r
 ## Train
-model <- starspace(file = "wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
+set.seed(123456789)
+model <- starspace(file = "dev/wikipedia_train10k.txt", fileFormat = "labelDoc", dim = 10, trainMode = 3)
 model
 
 Object of class textspace
@@ -100,9 +102,9 @@ Object of class textspace
 embedding <- as.matrix(model)
 embedding[c("school", "house"), ]
 
-               1           2            3         4           5          6          7          8          9        10
-school 0.0201249 -0.00478271 -0.018693000 0.0155070  0.01113670 -0.0184385 0.00892674 0.00549661 -0.0144082 0.0056668
-house  0.0123371  0.01406140 -0.000166073 0.0313477 -0.00962703 -0.0237911 0.00225086 0.03393420  0.0035634 0.0160656
+              [,1]         [,2]        [,3]        [,4]         [,5]        [,6]       [,7]       [,8]         [,9]       [,10]
+school 0.008395348  0.002858619 0.004770191 -0.03791502 -0.016193179 0.008368539 -0.0221493 0.01587386 -0.002012054 0.029385706
+house  0.005371093 -0.007831781 0.010563998  0.01040361  0.000616577 0.005770847 -0.0097075 0.01678141 -0.004738560 0.009139475
 dictionary <- starspace_dictionary(model)
 ```
 
@@ -115,10 +117,10 @@ model <- starspace_load_model("textspace.ruimtehol",      method = "ruimtehol")
 model <- starspace_load_model("wikipedia_embeddings.tsv", method = "tsv-data.table", trainMode = 3)
 
 ## Get the document embedding
-starspace_embedding(model, "The apps to predict / get nearest neighbours are still under construction.")
+starspace_embedding(model, "get the embedding of a full document")
 
-           [,1]      [,2]        [,3]       [,4]       [,5]       [,6]       [,7]     [,8]      [,9]      [,10]
-[1,] -0.4213823 0.4987145 -0.08066317 -0.6519815 -0.1743725 0.09401496 0.02670185 0.262726 0.1761705 0.04599866
+                                          [,1]        [,2]      [,3]       [,4]      [,5]      [,6]       [,7]      [,8]     [,9]     [,10]
+get the embedding of a full document 0.1489144 -0.09543591 0.1242385 -0.1080941 0.6971645 0.3131362 -0.3405705 0.3293449 0.231894 -0.281555
 ```
 
 The following functionalities do similar things. They see what is the closest word or sentence to a provided sentence.
