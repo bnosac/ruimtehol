@@ -5,33 +5,39 @@
 \title{Save a starspace model as a binary or tab-delimited TSV file}
 \usage{
 starspace_save_model(object, file = "textspace.ruimtehol",
-  method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"),
+  method = c("ruimtehol", "tsv-data.table", "binary", "tsv-starspace"),
   labels = data.frame(code = character(), label = character(),
   stringsAsFactors = FALSE))
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
-\item{file}{character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}}
+\item{file}{character string with the path to the file where to save the model}
 
 \item{method}{character indicating the method of saving. Possible values are 'ruimtehol', 'binary', 'tsv-starspace' and 'tsv-data.table'. Defaults to 'ruimtehol'.
-\enumerate{
-\item{The first method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS}
-\item{The second: \code{'binary'} saves the model as a binary file using the Starspace methods}
-\item{The third method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
-\item{The fourth method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
+\itemize{
+\item{The first method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS. This object can be loaded back in with \code{\link{starspace_load_model}}.}
+\item{The second method: \code{'tsv-data.table'} saves the model embeddings as a tab-delimited flat file using the fast data.table fwrite function}
+\item{The third method: \code{'binary'} saves the model as a binary file using the original methods of the Starspace authors}
+\item{The fourth method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the original methods of the Starspace authors}
 }}
 
-\item{labels}{a data.frame with at least columns code and label which will be saved in case \code{method} is \code{'ruimtehol'}. Allowing you to
-save the label identifier. Internally a new column will be added to this data.frame called \code{label_starspace} which combines the 
-Starspace prefix of the label with the code column of your provided data.frame.
-This allows to store the mapping between Starspace labels and your own codes.}
+\item{labels}{a data.frame with at least columns code and label which will be saved in case \code{method} is set to \code{'ruimtehol'}. 
+This allows to store the mapping between Starspace labels and your own codes alongside the model, 
+where code is your internal code and label is your label.\cr
+A new column will be added to this data.frame called \code{label_starspace} which combines the 
+Starspace prefix of the label with the code column of your provided data.frame, as this combination is the label starspace uses internally.}
 }
 \value{
 invisibly, the character string with the file of the saved object
 }
 \description{
 Save a starspace model as a binary or a tab-delimited TSV file
+}
+\note{
+It is advised to always use method 'ruimtehol' method as it works nicely together with the 
+\code{\link{starspace_load_model}} function. It is the advised method unless you need to provide non-R users the models 
+and you prefer using the methods provided by the Starspace authors instead of the faster and more portable 'ruimtehol' method.
 }
 \examples{
 data(dekamer, package = "ruimtehol")

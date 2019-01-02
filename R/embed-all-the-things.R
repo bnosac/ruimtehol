@@ -436,13 +436,11 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 
 #' @title Load a Starspace model
 #' @description Load a Starspace model
-#' @param object either the path to a Starspace model on disk or an object of class \code{textspace} which you want to reload.
-#' @param method character indicating the method of loading. Possible values are 'ruimtehol', 'binary', 'tsv-starspace' and 'tsv-data.table'. Defaults to 'ruimtehol'.
-#' \enumerate{
-#' \item{The first method: \code{'ruimtehol'} loads the model, embeddings and labels which were saved with saveRDS by calling \code{\link{starspace_save_model}} and re-initilises a new Starspace model with the embeddings and the same parameters used to build the model}
-#' \item{The second method: \code{'binary'} loads the model which was saved a binary file using the Starspace methods - see \code{\link{starspace_save_model}}}
-#' \item{The third method: \code{'tsv-starspace'} loads the model which was saved as a tab-delimited flat file using the Starspace methods - see \code{\link{starspace_save_model}}}
-#' \item{The fourth method: \code{'tsv-data.table'} loads the model which was saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
+#' @param object the path to a Starspace model on disk
+#' @param method character indicating the method of loading. Possible values are 'ruimtehol' and 'tsv-data.table'. Defaults to 'ruimtehol'.
+#' \itemize{
+#' \item{method \code{'ruimtehol'} loads the model, embeddings and labels which were saved with saveRDS by calling \code{\link{starspace_save_model}} and re-initilises a new Starspace model with the embeddings and the same parameters used to build the model}
+#' \item{method \code{'tsv-data.table'} loads the embedding which were saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
 #' }
 #' @param ... further arguments passed on to \code{\link{starspace}} in case of method 'tsv-data.table'
 #' @export
@@ -470,44 +468,39 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' 
 #' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
-starspace_load_model <- function(object, method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"), ...){
+starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table"), ...){
   method <- match.arg(method)  
-  if(inherits(object, "textspace")){
-    filename <- object$args$file
+  stopifnot(is.character(object))
+  stopifnot(file.exists(object))
+  filename <- object
+  if(method == "binary"){
     object <- textspace_load_model(filename, is_tsv = FALSE)
-  }else{
-    stopifnot(is.character(object))
-    stopifnot(file.exists(object))
-    filename <- object
-    if(method == "binary"){
-      object <- textspace_load_model(filename, is_tsv = FALSE)
-    }else if(method == "tsv-starspace"){
-      object <- textspace_load_model(filename, is_tsv = TRUE)
-    }else if(method == "tsv-data.table"){
-      if(requireNamespace("data.table", quietly = TRUE)){
-        x <- data.table::fread(filename, sep = "\t", encoding = "UTF-8")
-        embeddings <- data.matrix(x[, -1, with = FALSE])
-        rownames(embeddings) <- x$V1
-        object <- starspace(embeddings = embeddings, ...)
-      }else{
-        stop("method tsv-data.table requires the data.table package, which you can install from cran with install.packages('data.table')")
-      }
-    }else if(method == "ruimtehol"){
-      ruimte <- readRDS(filename)
-      model <- ruimte$object
-      model$args$data$testFile <- NULL
-      arguments <- c(file = model$args$file, dim = model$args$dim, 
-                     model$args$data, model$args$param, model$args$dictionary, model$args$options)
-      arguments <- as.list(arguments)
-      arguments$embeddings <- ruimte$embeddings
-      object <- do.call(starspace, arguments)
-      object$labels <- ruimte$labels
-      if(!"label_starspace" %in% colnames(object$labels)){
-        object$labels$label_starspace <- as.character(sapply(object$labels$code, FUN=function(code) paste(model$args$dictionary$label, code, sep = "")))  
-      }
-      object$iter <- model$iter
-      object
+  }else if(method == "tsv-starspace"){
+    object <- textspace_load_model(filename, is_tsv = TRUE)
+  }else if(method == "tsv-data.table"){
+    if(requireNamespace("data.table", quietly = TRUE)){
+      x <- data.table::fread(filename, sep = "\t", encoding = "UTF-8")
+      embeddings <- data.matrix(x[, -1, with = FALSE])
+      rownames(embeddings) <- x$V1
+      object <- starspace(embeddings = embeddings, ...)
+    }else{
+      stop("method tsv-data.table requires the data.table package, which you can install from cran with install.packages('data.table')")
     }
+  }else if(method == "ruimtehol"){
+    ruimte <- readRDS(filename)
+    model <- ruimte$object
+    model$args$data$testFile <- NULL
+    arguments <- c(file = model$args$file, dim = model$args$dim, 
+                   model$args$data, model$args$param, model$args$dictionary, model$args$options)
+    arguments <- as.list(arguments)
+    arguments$embeddings <- ruimte$embeddings
+    object <- do.call(starspace, arguments)
+    object$labels <- ruimte$labels
+    if(!"label_starspace" %in% colnames(object$labels)){
+      object$labels$label_starspace <- as.character(sapply(object$labels$code, FUN=function(code) paste(model$args$dictionary$label, code, sep = "")))  
+    }
+    object$iter <- model$iter
+    object
   }
   class(object) <- "textspace"
   object
@@ -516,19 +509,23 @@ starspace_load_model <- function(object, method = c("ruimtehol", "binary", "tsv-
 #' @title Save a starspace model as a binary or tab-delimited TSV file
 #' @description Save a starspace model as a binary or a tab-delimited TSV file
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
-#' @param file character string with the path to the file where to save the model, in case as_tsv is set to \code{TRUE}
+#' @param file character string with the path to the file where to save the model
 #' @param method character indicating the method of saving. Possible values are 'ruimtehol', 'binary', 'tsv-starspace' and 'tsv-data.table'. Defaults to 'ruimtehol'.
-#' \enumerate{
-#' \item{The first method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS}
-#' \item{The second: \code{'binary'} saves the model as a binary file using the Starspace methods}
-#' \item{The third method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the Starspace methods}
-#' \item{The fourth method: \code{'tsv-data.table'} saves the model as a tab-delimited flat file using the fast data.table fread function}
+#' \itemize{
+#' \item{The first method: \code{'ruimtehol'} saves the R object and the embeddings and optionally the label definitions with saveRDS. This object can be loaded back in with \code{\link{starspace_load_model}}.}
+#' \item{The second method: \code{'tsv-data.table'} saves the model embeddings as a tab-delimited flat file using the fast data.table fwrite function}
+#' \item{The third method: \code{'binary'} saves the model as a binary file using the original methods of the Starspace authors}
+#' \item{The fourth method: \code{'tsv-starspace'} saves the model as a tab-delimited flat file using the original methods of the Starspace authors}
 #' }
-#' @param labels a data.frame with at least columns code and label which will be saved in case \code{method} is \code{'ruimtehol'}. Allowing you to
-#' save the label identifier. Internally a new column will be added to this data.frame called \code{label_starspace} which combines the 
-#' Starspace prefix of the label with the code column of your provided data.frame.
-#' This allows to store the mapping between Starspace labels and your own codes.
+#' @param labels a data.frame with at least columns code and label which will be saved in case \code{method} is set to \code{'ruimtehol'}. 
+#' This allows to store the mapping between Starspace labels and your own codes alongside the model, 
+#' where code is your internal code and label is your label.\cr
+#' A new column will be added to this data.frame called \code{label_starspace} which combines the 
+#' Starspace prefix of the label with the code column of your provided data.frame, as this combination is the label starspace uses internally.
 #' @export
+#' @note It is advised to always use method 'ruimtehol' method as it works nicely together with the 
+#' \code{\link{starspace_load_model}} function. It is the advised method unless you need to provide non-R users the models 
+#' and you prefer using the methods provided by the Starspace authors instead of the faster and more portable 'ruimtehol' method.
 #' @return invisibly, the character string with the file of the saved object
 #' @seealso \code{\link{starspace_load_model}}
 #' @examples
@@ -554,7 +551,7 @@ starspace_load_model <- function(object, method = c("ruimtehol", "binary", "tsv-
 #' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
 starspace_save_model <- function(object, file = "textspace.ruimtehol",
-                                 method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"),
+                                 method = c("ruimtehol", "tsv-data.table", "binary", "tsv-starspace"),
                                  labels = data.frame(code = character(), label = character(), stringsAsFactors = FALSE)){
   stopifnot(inherits(object, "textspace"))
   method <- match.arg(method)
