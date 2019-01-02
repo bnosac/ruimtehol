@@ -546,10 +546,11 @@ starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table
 #' starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
 #'                      labels = codes)
 #' model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
-#' 
+#' starspace_save_model(model, file = "embeddings.tsv", method = "tsv-data.table")
 #' 
 #' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
+#' file.remove("embeddings.tsv")
 starspace_save_model <- function(object, file = "textspace.ruimtehol",
                                  method = c("ruimtehol", "tsv-data.table", "binary", "tsv-starspace"),
                                  labels = data.frame(code = character(), label = character(), stringsAsFactors = FALSE)){
