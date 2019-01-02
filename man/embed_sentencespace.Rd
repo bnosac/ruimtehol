@@ -26,8 +26,21 @@ Build a Starspace model to be used for sentence embedding
 }
 \examples{
 library(udpipe)
+data(brussels_reviews_anno, package = "udpipe")
+x <- subset(brussels_reviews_anno, language == "nl")
+x$token <- x$lemma
+x <- x[, c("doc_id", "sentence_id", "token")]
+model <- embed_sentencespace(x, dim = 15, epoch = 15, 
+                             negSearchLimit = 1, maxNegSamples = 2)
+plot(model)
+sentences <- c("ook de keuken zijn zeer goed uitgerust .",
+               "het appartement zijn met veel smaak inrichten en zeer proper .")
+predict(model, sentences, type = "embedding")
+starspace_embedding(model, sentences)
+
+\dontrun{
+library(udpipe)
 data(dekamer, package = "ruimtehol")
-dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
@@ -45,4 +58,5 @@ head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 
 ## clean up for cran
 file.remove(list.files(pattern = ".udpipe$"))
+}
 }

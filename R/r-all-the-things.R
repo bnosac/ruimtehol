@@ -133,8 +133,21 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' library(udpipe)
+#' data(brussels_reviews_anno, package = "udpipe")
+#' x <- subset(brussels_reviews_anno, language == "nl")
+#' x$token <- x$lemma
+#' x <- x[, c("doc_id", "sentence_id", "token")]
+#' model <- embed_sentencespace(x, dim = 15, epoch = 15, 
+#'                              negSearchLimit = 1, maxNegSamples = 2)
+#' plot(model)
+#' sentences <- c("ook de keuken zijn zeer goed uitgerust .",
+#'                "het appartement zijn met veel smaak inrichten en zeer proper .")
+#' predict(model, sentences, type = "embedding")
+#' starspace_embedding(model, sentences)
+#' 
+#' \dontrun{
+#' library(udpipe)
 #' data(dekamer, package = "ruimtehol")
-#' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 #' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
@@ -152,6 +165,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #' 
 #' ## clean up for cran
 #' file.remove(list.files(pattern = ".udpipe$"))
+#' }
 embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping = 0.75, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
@@ -199,7 +213,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' data(dekamer, package = "ruimtehol")
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
-#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' x <- x[, c("doc_id", "sentence_id", "token")]
 #' model <- embed_articlespace(x, early_stopping = 0.8, dim = 15, epoch = 5, minCount = 5)
 #' plot(model)
 #' 

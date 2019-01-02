@@ -29,7 +29,7 @@ library(udpipe)
 data(dekamer, package = "ruimtehol")
 dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
-x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+x <- x[, c("doc_id", "sentence_id", "token")]
 model <- embed_articlespace(x, early_stopping = 0.8, dim = 15, epoch = 5, minCount = 5)
 plot(model)
 

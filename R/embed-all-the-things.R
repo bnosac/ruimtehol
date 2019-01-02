@@ -280,16 +280,6 @@ starspace_dictionary <- function(object){
 #' k-nearest neighbouring (most similar) elements of the model dictionary compared to your input text as returned by \code{\link{starspace_knn}}
 #' }
 #' @examples
-#' library(udpipe)
-#' data(dekamer, package = "ruimtehol")
-#' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
-#' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
-#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
-#' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
-#' scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
-#'                   basedoc = unique(x$sentence), k = 3) 
-#' str(scores)
-#' 
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
 #' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
@@ -303,13 +293,27 @@ starspace_dictionary <- function(object){
 #'                         y = traindata$question_theme_main, 
 #'                         early_stopping = 0.8,
 #'                         dim = 10, minCount = 5)
+#' scores <- predict(model, testdata)                        
 #' scores <- predict(model, testdata, type = "labels")
 #' str(scores)
 #' emb <- predict(model, testdata[, c("doc_id", "text")], type = "embedding")
-#' knn <- predict(model, testdata[, c("doc_id", "text")], type = "knn", k=3)
+#' knn <- predict(model, testdata[1:5, c("doc_id", "text")], type = "knn", k=3)
 #' 
-#' ## clean up for cran
+#' 
+#' \dontrun{
+#' library(udpipe)
+#' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
+#' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
+#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
+#' scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
+#'                   basedoc = unique(x$sentence), k = 3) 
+#' str(scores)
+#' 
+#' #' ## clean up for cran
 #' file.remove(list.files(pattern = ".udpipe$"))
+#' }
 predict.textspace <- function(object, newdata, type = c("generic", "labels", "knn", "embedding"), 
                               k = 5L, sep = " ", basedoc, ...){
   type <- match.arg(type)
