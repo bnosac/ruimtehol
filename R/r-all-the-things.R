@@ -276,7 +276,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0
 #' ## Build a model
 #' train <- merge(x, docs, by.x = "doc_id", by.y = "theme")
 #' train <- subset(train, user_id %in% sample(levels(train$user_id), 4))
-#' model <- embed_docspace(train, dim = 10)
+#' model <- embed_docspace(train, dim = 10, early_stopping = 1)
 #' plot(model)
 embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_stopping = 0.75, ...) {
   ## user clicks on a web page which has content
