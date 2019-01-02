@@ -141,6 +141,7 @@ idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
 writeLines(x[idx], con = "traindata.txt")
 writeLines(x[-idx], con = "validationdata.txt")
 
+set.seed(123456789)
 m <- starspace(file = "traindata.txt", validationFile = "validationdata.txt", 
                trainMode = 5, dim = 10, 
                loss = "softmax", lr = 0.01, ngrams = 2, minCount = 5,

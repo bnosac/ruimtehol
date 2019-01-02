@@ -30,6 +30,7 @@ x <- lapply(x, FUN = function(x) setdiff(x, ""))
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 x <- tolower(x)
 
+set.seed(123456789)
 model <- embed_wordspace(x, early_stopping = 0.9, 
                          dim = 15, ws = 7, epoch = 10, minCount = 5, ngrams = 1,
                          maxTrainTime = 2) ## maxTrainTime only set for CRAN

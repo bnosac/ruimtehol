@@ -30,6 +30,7 @@ data(brussels_reviews_anno, package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x$token <- x$lemma
 x <- x[, c("doc_id", "sentence_id", "token")]
+set.seed(123456789)
 model <- embed_sentencespace(x, dim = 15, epoch = 15, 
                              negSearchLimit = 1, maxNegSamples = 2)
 plot(model)
@@ -43,6 +44,7 @@ library(udpipe)
 data(dekamer, package = "ruimtehol")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+set.seed(123456789)
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 plot(model)
 predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 

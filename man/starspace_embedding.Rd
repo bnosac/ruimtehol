@@ -42,6 +42,7 @@ dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))
 
+set.seed(123456789)
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
                         similarity = "dot",
@@ -53,6 +54,7 @@ embedding
 colSums(embedding_dictionary[c("federale", "politie"), ]) / 2^0.5
 
 \dontrun{
+set.seed(123456789)
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
                         similarity = "cosine",
@@ -65,6 +67,7 @@ manual <- colSums(embedding_dictionary[c("federale", "politie"), ])
 manual / euclidean_norm(manual)
 embedding
 
+set.seed(123456789)
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
                         similarity = "dot",

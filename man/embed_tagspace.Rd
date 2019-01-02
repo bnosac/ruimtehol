@@ -32,6 +32,7 @@ dekamer$text <- sapply(dekamer$text,
                        FUN = function(x) paste(x, collapse = " "))
 dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 
+set.seed(123456789)
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_theme_main, 
                         early_stopping = 0.8, 
@@ -44,6 +45,7 @@ starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
 
 dekamer$question_themes <- gsub(" ", "-", dekamer$question_theme)
 dekamer$question_themes <- strsplit(dekamer$question_themes, split = ",")
+set.seed(123456789)
 model <- embed_tagspace(x = tolower(dekamer$text), 
                         y = dekamer$question_themes, 
                         early_stopping = 0.8,

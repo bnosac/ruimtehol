@@ -107,6 +107,7 @@
 #' writeLines(x[idx], con = "traindata.txt")
 #' writeLines(x[-idx], con = "validationdata.txt")
 #' 
+#' set.seed(123456789)
 #' m <- starspace(file = "traindata.txt", validationFile = "validationdata.txt", 
 #'                trainMode = 5, dim = 10, 
 #'                loss = "softmax", lr = 0.01, ngrams = 2, minCount = 5,
@@ -225,6 +226,7 @@ print.textspace <- function(x, ...){
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 #' 
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         early_stopping = 0.8, 
@@ -289,6 +291,7 @@ starspace_dictionary <- function(object){
 #' idx <- sample(nrow(dekamer), size = round(nrow(dekamer) * 0.9))
 #' traindata <- dekamer[idx, ]
 #' testdata <- dekamer[-idx, ]
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = traindata$text, 
 #'                         y = traindata$question_theme_main, 
 #'                         early_stopping = 0.8,
@@ -306,6 +309,7 @@ starspace_dictionary <- function(object){
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' set.seed(123456789)
 #' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 #' scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
 #'                   basedoc = unique(x$sentence), k = 3) 
@@ -461,6 +465,7 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' codes <- data.frame(code = seq_along(levels(dekamer$target)), 
 #'                     label = levels(dekamer$target), stringsAsFactors = FALSE)
 #' dekamer$target <- as.integer(dekamer$target)
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = dekamer$text, 
 #'                         y = dekamer$target, 
 #'                         early_stopping = 0.8,
@@ -543,6 +548,7 @@ starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table
 #' codes <- data.frame(code = seq_along(levels(dekamer$target)), 
 #'                     label = levels(dekamer$target), stringsAsFactors = FALSE)
 #' dekamer$target <- as.integer(dekamer$target)
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = dekamer$text, 
 #'                         y = dekamer$target, 
 #'                         early_stopping = 0.8,
@@ -621,6 +627,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         similarity = "dot",
@@ -632,6 +639,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #' colSums(embedding_dictionary[c("federale", "politie"), ]) / 2^0.5
 #' 
 #' \dontrun{
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         similarity = "cosine",
@@ -644,6 +652,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #' manual / euclidean_norm(manual)
 #' embedding
 #' 
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         similarity = "dot",

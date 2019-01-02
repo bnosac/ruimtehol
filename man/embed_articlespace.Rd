@@ -26,10 +26,27 @@ Build a Starspace model for learning the mapping between sentences and articles 
 }
 \examples{
 library(udpipe)
+data(brussels_reviews_anno, package = "udpipe")
+x <- subset(brussels_reviews_anno, language == "nl")
+x$token <- x$lemma
+x <- x[, c("doc_id", "sentence_id", "token")]
+set.seed(123456789)
+model <- embed_articlespace(x, early_stopping = 1,
+                            dim = 25, epoch = 25, minCount = 2,
+                            negSearchLimit = 1, maxNegSamples = 2)
+plot(model)
+sentences <- c("ook de keuken zijn zeer goed uitgerust .",
+               "het appartement zijn met veel smaak inrichten en zeer proper .")
+predict(model, sentences, type = "embedding")
+starspace_embedding(model, sentences)
+
+\dontrun{
+library(udpipe)
 data(dekamer, package = "ruimtehol")
 dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
-x <- x[, c("doc_id", "sentence_id", "token")]
+x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+set.seed(123456789)
 model <- embed_articlespace(x, early_stopping = 0.8, dim = 15, epoch = 5, minCount = 5)
 plot(model)
 
@@ -43,4 +60,5 @@ head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 
 ## clean up for cran
 file.remove(list.files(pattern = ".udpipe$"))
+}
 }

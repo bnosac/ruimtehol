@@ -16,6 +16,7 @@
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 #' 
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_theme_main, 
 #'                         early_stopping = 0.8, 
@@ -28,6 +29,7 @@
 #' 
 #' dekamer$question_themes <- gsub(" ", "-", dekamer$question_theme)
 #' dekamer$question_themes <- strsplit(dekamer$question_themes, split = ",")
+#' set.seed(123456789)
 #' model <- embed_tagspace(x = tolower(dekamer$text), 
 #'                         y = dekamer$question_themes, 
 #'                         early_stopping = 0.8,
@@ -85,6 +87,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' x <- tolower(x)
 #' 
+#' set.seed(123456789)
 #' model <- embed_wordspace(x, early_stopping = 0.9, 
 #'                          dim = 15, ws = 7, epoch = 10, minCount = 5, ngrams = 1,
 #'                          maxTrainTime = 2) ## maxTrainTime only set for CRAN
@@ -137,6 +140,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #' x <- subset(brussels_reviews_anno, language == "nl")
 #' x$token <- x$lemma
 #' x <- x[, c("doc_id", "sentence_id", "token")]
+#' set.seed(123456789)
 #' model <- embed_sentencespace(x, dim = 15, epoch = 15, 
 #'                              negSearchLimit = 1, maxNegSamples = 2)
 #' plot(model)
@@ -150,6 +154,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #' data(dekamer, package = "ruimtehol")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 #' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' set.seed(123456789)
 #' model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 #' plot(model)
 #' predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
@@ -210,10 +215,27 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' library(udpipe)
+#' data(brussels_reviews_anno, package = "udpipe")
+#' x <- subset(brussels_reviews_anno, language == "nl")
+#' x$token <- x$lemma
+#' x <- x[, c("doc_id", "sentence_id", "token")]
+#' set.seed(123456789)
+#' model <- embed_articlespace(x, early_stopping = 1,
+#'                             dim = 25, epoch = 25, minCount = 2,
+#'                             negSearchLimit = 1, maxNegSamples = 2)
+#' plot(model)
+#' sentences <- c("ook de keuken zijn zeer goed uitgerust .",
+#'                "het appartement zijn met veel smaak inrichten en zeer proper .")
+#' predict(model, sentences, type = "embedding")
+#' starspace_embedding(model, sentences)
+#' 
+#' \dontrun{
+#' library(udpipe)
 #' data(dekamer, package = "ruimtehol")
 #' dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 #' x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
-#' x <- x[, c("doc_id", "sentence_id", "token")]
+#' x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+#' set.seed(123456789)
 #' model <- embed_articlespace(x, early_stopping = 0.8, dim = 15, epoch = 5, minCount = 5)
 #' plot(model)
 #' 
@@ -227,6 +249,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' 
 #' ## clean up for cran
 #' file.remove(list.files(pattern = ".udpipe$"))
+#' }
 embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0.75, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
   stopifnot(is.data.frame(x))
@@ -290,6 +313,7 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0
 #' ## Build a model
 #' train <- merge(x, docs, by.x = "doc_id", by.y = "theme")
 #' train <- subset(train, user_id %in% sample(levels(train$user_id), 4))
+#' set.seed(123456789)
 #' model <- embed_docspace(train, dim = 10, early_stopping = 1)
 #' plot(model)
 embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_stopping = 0.75, ...) {
@@ -338,6 +362,7 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_sto
 #' x <- strsplit(x$question_theme, ",")
 #' x <- lapply(x, FUN=unique)
 #' str(x)
+#' set.seed(123456789)
 #' model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
 #' plot(model)
 #' predict(model, "__THEME__MARINE __THEME__DEFENSIEBELEID")
@@ -402,6 +427,7 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", early_st
 #'                 stringsAsFactors = FALSE)
 #' head(x)
 #' 
+#' set.seed(123456789)
 #' model <- embed_entityrelationspace(x, dim = 50)
 #' plot(model)
 #' 
@@ -413,6 +439,7 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", early_st
 #' x_reverse$relation <- sprintf("REVERSE_%s", x_reverse$relation)
 #' 
 #' relations <- rbind(x, x_reverse)
+#' set.seed(123456789)
 #' model <- embed_entityrelationspace(relations, dim = 50)
 #' predict(model, "/m/027rn /location/country/form_of_government")
 #' predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")

@@ -69,6 +69,7 @@ dekamer$text <- sapply(dekamer$text,
 idx <- sample(nrow(dekamer), size = round(nrow(dekamer) * 0.9))
 traindata <- dekamer[idx, ]
 testdata <- dekamer[-idx, ]
+set.seed(123456789)
 model <- embed_tagspace(x = traindata$text, 
                         y = traindata$question_theme_main, 
                         early_stopping = 0.8,
@@ -86,6 +87,7 @@ data(dekamer, package = "ruimtehol")
 dekamer <- subset(dekamer, question_theme_main == "DEFENSIEBELEID")
 x <- udpipe(dekamer$question, "dutch", tagger = "none", parser = "none", trace = 100)
 x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
+set.seed(123456789)
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 scores <- predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
                   basedoc = unique(x$sentence), k = 3) 

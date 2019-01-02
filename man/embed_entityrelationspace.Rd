@@ -33,6 +33,7 @@ x <- read.delim(filename, header = FALSE, nrows = 1000,
                 stringsAsFactors = FALSE)
 head(x)
 
+set.seed(123456789)
 model <- embed_entityrelationspace(x, dim = 50)
 plot(model)
 
@@ -44,6 +45,7 @@ colnames(x_reverse) <- c("entity_tail", "relation", "entity_head")
 x_reverse$relation <- sprintf("REVERSE_\%s", x_reverse$relation)
 
 relations <- rbind(x, x_reverse)
+set.seed(123456789)
 model <- embed_entityrelationspace(relations, dim = 50)
 predict(model, "/m/027rn /location/country/form_of_government")
 predict(model, "/m/06cx9 REVERSE_/location/country/form_of_government")

@@ -50,6 +50,7 @@ dekamer$target <- as.factor(dekamer$question_theme_main)
 codes <- data.frame(code = seq_along(levels(dekamer$target)), 
                     label = levels(dekamer$target), stringsAsFactors = FALSE)
 dekamer$target <- as.integer(dekamer$target)
+set.seed(123456789)
 model <- embed_tagspace(x = dekamer$text, 
                         y = dekamer$target, 
                         early_stopping = 0.8,
