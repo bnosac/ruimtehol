@@ -57,10 +57,11 @@ model <- embed_tagspace(x = dekamer$text,
 starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
                      labels = codes)
 model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
-
+starspace_save_model(model, file = "embeddings.tsv", method = "tsv-data.table")
 
 ## clean up for cran
 file.remove("textspace.ruimtehol")
+file.remove("embeddings.tsv")
 }
 \seealso{
 \code{\link{starspace_load_model}}
