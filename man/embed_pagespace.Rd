@@ -4,14 +4,14 @@
 \alias{embed_pagespace}
 \title{Build a Starspace model for interest-based recommendation}
 \usage{
-embed_pagespace(x, model = "pagespace.bin", early_stopping = 1, ...)
+embed_pagespace(x, model = "pagespace.bin", early_stopping = 0.75, ...)
 }
 \arguments{
 \item{x}{a list where each list element contains a character vector of pages which the user was interested in}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
-\item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 1.}
+\item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 0.75.}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
