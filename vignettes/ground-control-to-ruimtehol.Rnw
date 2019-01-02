@@ -236,8 +236,8 @@ Saving the model consists of saving the embeddings of the words and the labels a
 The following approach is the advised approach to save and reload models.
 
 <<>>=
-starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol")
-model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+starspace_save_model(model, file = "textspace.ruimtehol")
+model <- starspace_load_model("textspace.ruimtehol")
 @
 
 <<echo=FALSE>>=
@@ -253,8 +253,5 @@ The ruimtehol package contains many more models. It is advised to just inspect t
   \item Ranking and information retrieval: See the examples in the package.
   \item Collaborative filtering: See the examples in the package.
 \end{itemize}
-
-
-
 
 \end{document}
