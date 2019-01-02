@@ -4,19 +4,17 @@
 \alias{predict.textspace}
 \title{Predict using a Starspace model}
 \usage{
-\method{predict}{textspace}(object, newdata, type = c("generic",
-  "labelsimilarity"), k = 5L, sep = " ", basedoc, ...)
+\method{predict}{textspace}(object, newdata, type = c("generic", "labels",
+  "knn", "embedding"), k = 5L, sep = " ", basedoc, ...)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}
 
-\item{newdata}{a character vector with text or a data frame with columns \code{doc_id} and \code{text}}
+\item{newdata}{a data frame with columns \code{doc_id} and \code{text} or a character vector with text where the names of the character vector represent an identifier of that text}
 
-\item{type}{either 'generic' or 'labelsimilarity'. 
-If type is set to \code{'labelsimilarity'} you get the similarity to the labels of the Starspace model as extra columns in \code{newdata}.
-If type is set to \code{'generic'}, gets the Starspace predictions in detail. Defaults to \code{'generic'}.}
+\item{type}{character string: either 'generic', 'labels', 'embedding', 'knn'. Defaults to 'generic'}
 
-\item{k}{integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'}}
+\item{k}{integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'} or \code{'knn'}}
 
 \item{sep}{character string used to split \code{newdata} using boost::split. Only used in case \code{type} is set to \code{'generic'}}
 
@@ -27,17 +25,39 @@ the ones from the training data. Only used in case \code{type} is set to \code{'
 \item{...}{not used}
 }
 \value{
-In case type is set to \code{'generic'}: a list, one for each element in \code{x}. Each list element is a list with elements 
-\enumerate{
-\item input: the character string passed on to newdata
-\item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
-\item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
+The following is returned, depending on the argument \code{type}:
+\itemize{
+\item In case type is set to \code{'generic'}: a list, one for each row or element in \code{newdata}. 
+Each list element is a list with elements 
+\itemize{
+\item doc_id: the identifier of the text
+\item text: the character string with the text
+\item prediction: data.frame with columns label, label_starspace and similarity 
+indicating the predicted label and the similarity of the text to the label
+\item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms 
+which are part of the dictionary which are used to find the similarity
 }
-In case type is set to \code{'labelsimilarity'}: the data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
-Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities compared to the labels using either cosine or dot product as was used during model training.
+\item In case type is set to \code{'labels'}: a data.frame is returned namely:\cr
+The data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
+These columns contain the similarities of the text to the label. 
+Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities 
+of the text compared to the labels using either cosine or dot product as was used during model training.
+\item In case type is set to \code{'embedding'}: \cr
+A matrix of document embeddings, one embedding for each text in \code{newdata} as returned by \code{\link{starspace_embedding}}. 
+The rownames of this matrix are set to the document identifiers of \code{newdata}.
+\item In case type is set to \code{'knn'}: a list of data.frames, one for each row or element in \code{newdata} \cr
+Each of these data frames contains the columns doc_id, label, similarity and rank indicating the
+k-nearest neighbouring (most similar) elements of the model dictionary compared to your input text as returned by \code{\link{starspace_knn}}
+}
 }
 \description{
-Predict using a Starspace model
+The prediction functionality allows you to retrieve the following types of elements from a Starspace model:
+\itemize{
+\item \code{generic}: get general Starspace predictions in detail
+\item \code{labels}: get similarity of your text to all the labels of the Starspace model
+\item \code{embedding}: document embeddings of your text (shorthand for \code{\link{starspace_embedding}})
+\item \code{knn}: k-nearest neighbouring (most similar) elements of the model dictionary compared to your input text (shorthand for \code{\link{starspace_knn}})
+}
 }
 \examples{
 library(udpipe)
@@ -63,8 +83,10 @@ model <- embed_tagspace(x = traindata$text,
                         y = traindata$question_theme_main, 
                         early_stopping = 0.8,
                         dim = 10, minCount = 5)
-scores <- predict(model, testdata, type = "labelsimilarity")
+scores <- predict(model, testdata, type = "labels")
 str(scores)
+emb <- predict(model, testdata[, c("doc_id", "text")], type = "embedding")
+knn <- predict(model, testdata[, c("doc_id", "text")], type = "knn", k=3)
 
 ## clean up for cran
 file.remove(list.files(pattern = ".udpipe$"))

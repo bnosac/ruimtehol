@@ -51,6 +51,9 @@ model <- embed_tagspace(x = dekamer$text,
 starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
                      labels = codes)
 model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+
+
+## clean up for cran
 file.remove("textspace.ruimtehol")
 }
 \seealso{

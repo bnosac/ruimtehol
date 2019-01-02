@@ -216,6 +216,21 @@ print.textspace <- function(x, ...){
 #' \item{dictionary: }{A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
 #' for each term if it is a word or a label}
 #' }
+#' @examples 
+#' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- sapply(dekamer$text, 
+#'                        FUN = function(x) paste(x, collapse = " "))
+#' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
+#' 
+#' model <- embed_tagspace(x = tolower(dekamer$text), 
+#'                         y = dekamer$question_theme_main, 
+#'                         early_stopping = 0.8, 
+#'                         dim = 10, minCount = 5)
+#' dict <- starspace_dictionary(model)
+#' str(dict)
 starspace_dictionary <- function(object){
   stopifnot(inherits(object, "textspace"))
   textspace_dictionary(object$model)
@@ -223,28 +238,47 @@ starspace_dictionary <- function(object){
 
 
 #' @title Predict using a Starspace model 
-#' @description Predict using a Starspace model 
+#' @description The prediction functionality allows you to retrieve the following types of elements from a Starspace model:
+#' \itemize{
+#' \item \code{generic}: get general Starspace predictions in detail
+#' \item \code{labels}: get similarity of your text to all the labels of the Starspace model
+#' \item \code{embedding}: document embeddings of your text (shorthand for \code{\link{starspace_embedding}})
+#' \item \code{knn}: k-nearest neighbouring (most similar) elements of the model dictionary compared to your input text (shorthand for \code{\link{starspace_knn}})
+#' }
 #' @param object an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
-#' @param newdata a character vector with text or a data frame with columns \code{doc_id} and \code{text} 
-#' @param type either 'generic' or 'labelsimilarity'. 
-#' If type is set to \code{'labelsimilarity'} you get the similarity to the labels of the Starspace model as extra columns in \code{newdata}.
-#' If type is set to \code{'generic'}, gets the Starspace predictions in detail. Defaults to \code{'generic'}.
-#' @param k integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'}
+#' @param newdata a data frame with columns \code{doc_id} and \code{text} or a character vector with text where the names of the character vector represent an identifier of that text
+#' @param type character string: either 'generic', 'labels', 'embedding', 'knn'. Defaults to 'generic'  
+#' @param k integer with the number of predictions to make. Defaults to 5. Only used in case \code{type} is set to \code{'generic'} or \code{'knn'}
 #' @param sep character string used to split \code{newdata} using boost::split. Only used in case \code{type} is set to \code{'generic'}
 #' @param basedoc optional, either a character vector of possible elements to predict or 
 #' the path to a file in labelDoc format, containing basedocs which are set of possible things to predict, if different than 
 #' the ones from the training data. Only used in case \code{type} is set to \code{'generic'}
 #' @param ... not used
 #' @export
-#' @return 
-#' In case type is set to \code{'generic'}: a list, one for each element in \code{x}. Each list element is a list with elements 
-#' \enumerate{
-#' \item input: the character string passed on to newdata
-#' \item prediction: data.frame called prediction which has columns called label, label_starspace and similarity indicating the predicted label and the similarity of the input ot the label
-#' \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms which are part of the dictionary which are used to find the similarity
+#' @return The following is returned, depending on the argument \code{type}:
+#' \itemize{
+#' \item In case type is set to \code{'generic'}: a list, one for each row or element in \code{newdata}. 
+#' Each list element is a list with elements 
+#' \itemize{
+#' \item doc_id: the identifier of the text
+#' \item text: the character string with the text
+#' \item prediction: data.frame with columns label, label_starspace and similarity 
+#' indicating the predicted label and the similarity of the text to the label
+#' \item terms: a list with elements basedoc_index and basedoc_terms indicating the position in basedoc and the terms 
+#' which are part of the dictionary which are used to find the similarity
 #' }
-#' In case type is set to \code{'labelsimilarity'}: the data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
-#' Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities compared to the labels using either cosine or dot product as was used during model training.
+#' \item In case type is set to \code{'labels'}: a data.frame is returned namely:\cr
+#' The data.frame \code{newdata} where several columns are added, one for each label in the Starspace model. 
+#' These columns contain the similarities of the text to the label. 
+#' Similarities are computed with \code{\link{embedding_similarity}} indicating embedding similarities 
+#' of the text compared to the labels using either cosine or dot product as was used during model training.
+#' \item In case type is set to \code{'embedding'}: \cr
+#' A matrix of document embeddings, one embedding for each text in \code{newdata} as returned by \code{\link{starspace_embedding}}. 
+#' The rownames of this matrix are set to the document identifiers of \code{newdata}.
+#' \item In case type is set to \code{'knn'}: a list of data.frames, one for each row or element in \code{newdata} \cr
+#' Each of these data frames contains the columns doc_id, label, similarity and rank indicating the
+#' k-nearest neighbouring (most similar) elements of the model dictionary compared to your input text as returned by \code{\link{starspace_knn}}
+#' }
 #' @examples
 #' library(udpipe)
 #' data(dekamer, package = "ruimtehol")
@@ -269,12 +303,14 @@ starspace_dictionary <- function(object){
 #'                         y = traindata$question_theme_main, 
 #'                         early_stopping = 0.8,
 #'                         dim = 10, minCount = 5)
-#' scores <- predict(model, testdata, type = "labelsimilarity")
+#' scores <- predict(model, testdata, type = "labels")
 #' str(scores)
+#' emb <- predict(model, testdata[, c("doc_id", "text")], type = "embedding")
+#' knn <- predict(model, testdata[, c("doc_id", "text")], type = "knn", k=3)
 #' 
 #' ## clean up for cran
 #' file.remove(list.files(pattern = ".udpipe$"))
-predict.textspace <- function(object, newdata, type = c("generic", "labelsimilarity"), 
+predict.textspace <- function(object, newdata, type = c("generic", "labels", "knn", "embedding"), 
                               k = 5L, sep = " ", basedoc, ...){
   type <- match.arg(type)
   if(is.data.frame(newdata)){
@@ -297,12 +333,25 @@ predict.textspace <- function(object, newdata, type = c("generic", "labelsimilar
                      FUN=function(doc_id, text){
                        scores <- textspace_predict(object$model, input = text, sep = sep, k = k, basedoc = basedoc)
                        scores$doc_id <- doc_id
+                       scores$text <- text
                        scores$prediction$label <- remove_label_prefix(object, scores$prediction$label_starspace)
                        scores$prediction <- scores$prediction[, c("label", "label_starspace", "similarity")]
-                       scores[c("doc_id", "input", "prediction", "terms")]
+                       scores[c("doc_id", "text", "prediction", "terms")]
                      }, SIMPLIFY = FALSE)
-  }else if(type == "labelsimilarity"){
+  }else if(type == "labels"){
     scores <- cbind_embedding_similarity(object, newdata = newdata, type = object$args$param$similarity)
+  }else if(type == "knn"){
+    scores <- mapply(doc_id = newdata$doc_id, 
+                     text = as.character(newdata$text), 
+                     FUN=function(doc_id, text){
+                       scores <- starspace_knn(object, newdata = text, k = k)
+                       scores <- scores$prediction
+                       scores$doc_id <- rep(doc_id, nrow(scores))
+                       scores[, c("doc_id", "label", "similarity", "rank")]
+                     }, SIMPLIFY = FALSE)
+  }else if(type == "embedding"){
+    scores <- starspace_embedding(object, x = newdata$text, type = "document")
+    rownames(scores) <- newdata$doc_id
   }
   scores
 }
@@ -373,14 +422,16 @@ plot.textspace <- function(x, ...){
 #' @param k integer with the number of nearest neighbours
 #' @param ... not used
 #' @export
-#' @return a list with elements input and a data.frame called prediction which has columns called label and similarity
+#' @return a list with elements input and a data.frame called prediction which has columns called label, similarity and rank
 starspace_knn <- function(object, newdata, k = 5, ...){
   stopifnot(inherits(object, "textspace"))
   stopifnot(is.character(newdata))
   stopifnot(length(newdata) == 1)
   stopifnot(nchar(newdata) > 0)
   k <- as.integer(k)
-  textspace_knn(object$model, newdata, k)
+  knn <- textspace_knn(object$model, newdata, k)
+  knn$prediction$rank <- seq_len(nrow(knn$prediction))
+  knn
 }
 
 #' @title Load a Starspace model
@@ -397,6 +448,28 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' @export
 #' @return an object of class textspace
 #' @seealso \code{\link{starspace_save_model}}
+#' @examples
+#' data(dekamer, package = "ruimtehol")
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- sapply(dekamer$text, 
+#'                        FUN = function(x) paste(x, collapse = " "))
+#' 
+#' dekamer$target <- as.factor(dekamer$question_theme_main)
+#' codes <- data.frame(code = seq_along(levels(dekamer$target)), 
+#'                     label = levels(dekamer$target), stringsAsFactors = FALSE)
+#' dekamer$target <- as.integer(dekamer$target)
+#' model <- embed_tagspace(x = dekamer$text, 
+#'                         y = dekamer$target, 
+#'                         early_stopping = 0.8,
+#'                         dim = 10, minCount = 5)
+#' starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
+#'                      labels = codes)
+#' model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+#' 
+#' 
+#' ## clean up for cran
+#' file.remove("textspace.ruimtehol")
 starspace_load_model <- function(object, method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"), ...){
   method <- match.arg(method)  
   if(inherits(object, "textspace")){
@@ -476,6 +549,9 @@ starspace_load_model <- function(object, method = c("ruimtehol", "binary", "tsv-
 #' starspace_save_model(model, file = "textspace.ruimtehol", method = "ruimtehol",
 #'                      labels = codes)
 #' model <- starspace_load_model("textspace.ruimtehol", method = "ruimtehol")
+#' 
+#' 
+#' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
 starspace_save_model <- function(object, file = "textspace.ruimtehol",
                                  method = c("ruimtehol", "binary", "tsv-starspace", "tsv-data.table"),
