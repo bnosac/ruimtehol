@@ -149,20 +149,27 @@ embedding_similarity(
 Below Starspace is used for classification
 
 ```r
-library(fastrtext)
 library(ruimtehol)
-data(train_sentences, package = "fastrtext")
+data("dekamer", package = "ruimtehol")
+dekamer$x <- strsplit(dekamer$question, "\\W")
+dekamer$x <- sapply(dekamer$x, FUN = function(x) paste(setdiff(x, ""), collapse = " "))
+dekamer$x <- tolower(dekamer$x)
+dekamer$y <- strsplit(dekamer$question_theme, split = ",")
+dekamer$y <- lapply(dekamer$y, FUN=function(x) gsub(" ", "-", x))
 
-filename <- tempfile()
-writeLines(text = paste(paste0("__label__", train_sentences$class.text),  tolower(train_sentences$text)),
-           con = filename)
-
-model <- starspace(file = filename, 
-                   trainMode = 0, label = "__label__", 
-                   similarity = "dot", verbose = TRUE, initRandSd = 0.01, adagrad = FALSE, 
-                   ngrams = 1, lr = 0.01, epoch = 5, thread = 20, dim = 10, negSearchLimit = 5, maxNegSamples = 3)
-predict(model, "We developed a two-level machine learning approach that in the first level considers two different 
-                properties important for protein-protein binding derived from structural models of V3 and V3 sequences.", k = 3)                   
+set.seed(123456789)
+model <- embed_tagspace(x = dekamer$x, y = dekamer$y,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+plot(model)                        
+            
+text <- c("de nmbs heeft het treinaanbod uitgebreid via onteigening ...",
+          "de migranten komen naar europa de asielcentra ...")                   
+predict(model, text, k = 3)  
+predict(model, "koning filip", k = 10, type = "knn")
+predict(model, "koning filip", k = 10, type = "embedding")
 ```
 
 ## Notes
