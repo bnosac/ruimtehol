@@ -20,7 +20,7 @@ The package also includes 3rd party open source software components which are di
 The following is a list of these components. The full copies of the license agreements of these components are included below.
 
 - StarSpace (all code under src/Starspace, as retrieved from https://github.com/facebookresearch/Starspace): BSD license
-
+  This software is also accompanied with a PATENTS file which you can find in this repository either under the inst/PATENTS file or under the PATENTS file.
 
 BSD License
 

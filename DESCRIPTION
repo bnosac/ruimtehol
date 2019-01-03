@@ -1,7 +1,7 @@
 Package: ruimtehol
 Type: Package
 Title: Learn Text 'Embeddings' with 'Starspace'
-Version: 0.1
+Version: 0.1.1
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -13,8 +13,9 @@ Description: Wraps the 'StarSpace' library <https://github.com/facebookresearch/
     find similarities between texts and categories, do collaborative-filtering based recommendation 
     as well as content-based recommendation, find out relations between entities, calculate 
     graph 'embeddings' as well as perform semi-supervised learning and multi-task learning on plain text. 
-    The techniques are explained in detail in the paper: 'StarSpace: Embed All The Things!' by Ledell et al. (2017), available at <arXiv:1709.03856>.
+    The techniques are explained in detail in the paper: 'StarSpace: Embed All The Things!' by Wu et al. (2017), available at <arXiv:1709.03856>.
 License: MPL-2.0
+URL: https://github.com/bnosac/ruimtehol
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
