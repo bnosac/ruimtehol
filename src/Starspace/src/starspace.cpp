@@ -186,9 +186,9 @@ void StarSpace::train() {
     auto err = model_->train(trainData_, args_->thread,
            t_start,  i,
            rate, rate - decrPerEpoch);
-    //printf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
-    //       "Epoch", i, err,
-    //       0xe2, 0x98, 0x83);
+    Rprintf("\n ---+++ %20s %4d Train error : %3.8f +++--- %c%c%c\n",
+           "Epoch", i, err,
+           0xe2, 0x98, 0x83);
     if (validData_ != nullptr) {
       auto valid_err = model_->test(validData_, args_->thread);
       Rcpp::Rcout << "\nValidation error: " << valid_err << endl;
