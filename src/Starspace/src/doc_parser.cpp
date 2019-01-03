@@ -22,7 +22,7 @@ namespace starspace {
 LayerDataParser::LayerDataParser(
     shared_ptr<Dictionary> dict,
     shared_ptr<Args> args)
-: DataParser(dict, args) {};
+: DataParser(dict, args) {}
 
 bool LayerDataParser::parse(
     string& s,

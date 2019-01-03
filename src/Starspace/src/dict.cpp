@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -135,10 +136,10 @@ void Dictionary::readFromFile(
     const std::string& file,
     shared_ptr<DataParser> parser) {
 
-  cout << "Build dict from input file : " << file << endl;
+  Rcpp::Rcout << "Build dict from input file : " << file << endl;
   ifstream fin(file);
   if (!fin.is_open()) {
-    cerr << "Input file cannot be opened!" << endl;
+    Rcpp::Rcerr << "Input file cannot be opened!" << endl;
     exit(EXIT_FAILURE);
   }
   int64_t minThreshold = 1;
@@ -151,7 +152,7 @@ void Dictionary::readFromFile(
     for (auto token : tokens) {
       insert(token);
       if ((ntokens_ % 1000000 == 0) && args_->verbose) {
-        std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
+        Rcpp::Rcerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
       }
       if (size_ > 0.75 * MAX_VOCAB_SIZE) {
         minThreshold++;
@@ -163,15 +164,15 @@ void Dictionary::readFromFile(
 
   threshold(args_->minCount, args_->minCountLabel);
 
-  std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
-  std::cerr << "Number of words in dictionary:  " << nwords_ << std::endl;
-  std::cerr << "Number of labels in dictionary: " << nlabels_ << std::endl;
+  Rcpp::Rcout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
+  Rcpp::Rcout << "Number of words in dictionary:  " << nwords_ << std::endl;
+  Rcpp::Rcout << "Number of labels in dictionary: " << nlabels_ << std::endl;
   if (lines_read == 0) {
-    std::cerr << "ERROR: Empty file." << std::endl;
+    Rcpp::Rcerr << "ERROR: Empty file." << std::endl;
     exit(EXIT_FAILURE);
   }
   if (size_ == 0) {
-    std::cerr << "Empty vocabulary. Try a smaller -minCount value."
+    Rcpp::Rcerr << "Empty vocabulary. Try a smaller -minCount value."
               << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -209,7 +210,7 @@ void Dictionary::computeCounts() {
 
 // Given a model saved in .tsv format, build the dictionary from model.
 void Dictionary::loadDictFromModel(const string& modelfile) {
-  cout << "Loading dict from model file : " << modelfile << endl;
+  Rcpp::Rcout << "Loading dict from model file : " << modelfile << endl;
   ifstream fin(modelfile);
   string line;
   while (getline(fin, line)) {
@@ -221,8 +222,8 @@ void Dictionary::loadDictFromModel(const string& modelfile) {
   fin.close();
   computeCounts();
 
-  std::cout << "Number of words in dictionary:  " << nwords_ << std::endl;
-  std::cout << "Number of labels in dictionary: " << nlabels_ << std::endl;
+  Rcpp::Rcout << "Number of words in dictionary:  " << nwords_ << std::endl;
+  Rcpp::Rcout << "Number of labels in dictionary: " << nlabels_ << std::endl;
 }
 
 } // namespace

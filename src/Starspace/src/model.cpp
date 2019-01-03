@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -101,7 +102,7 @@ void EmbedModel::initModelWeights() {
   }
 
   if (args_->verbose) {
-    cout << "Initialized model weights. Model size :\n"
+    Rcpp::Rcout << "Initialized model weights. Model size :\n"
          << "matrix : " << LHSEmbeddings_->numRows() << ' '
          << LHSEmbeddings_->numCols() << endl;
   }
@@ -172,14 +173,14 @@ Real EmbedModel::trainOneExample(
 
   if (args_->debug) {
     auto printVec = [&](const vector<Base>& vec) {
-      cout << "vec : ";
-      for (auto v : vec) {cout << v.first << ':' << v.second << ' ';}
-      cout << endl;
+      Rcpp::Rcout << "vec : ";
+      for (auto v : vec) {Rcpp::Rcout << v.first << ':' << v.second << ' ';}
+      Rcpp::Rcout << endl;
     };
 
     printVec(s.LHSTokens);
     printVec(s.RHSTokens);
-    cout << endl;
+    Rcpp::Rcout << endl;
   }
 
   Real wRate = s.weight * rate;
@@ -201,6 +202,8 @@ Real EmbedModel::trainOneExample(
   }
 }
 
+inline int randWrapper(const int n) { return floor(unif_rand()*n); }
+
 Real EmbedModel::train(shared_ptr<InternDataHandler> data,
                        int numThreads,
                       std::chrono::time_point<std::chrono::high_resolution_clock> t_start,
@@ -218,7 +221,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     int i = 0;
     for (auto& idx: indices) idx = i++;
   }
-  std::random_shuffle(indices.begin(), indices.end());
+  std::random_shuffle(indices.begin(), indices.end(), randWrapper);
 
   // Compute word negatives
   if (args_->trainMode == 5 || args_->trainWord) {
@@ -351,6 +354,9 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     for (int i = 0; !doneTraining; i++) {
       auto wIdx = i % LHSEmbeddings_->numRows();
       trunc(LHSEmbeddings_->row(wIdx), args_->norm);
+      if(doneTraining){
+        doneTraining = true;
+      }
     }
   });
   for (auto& t: threads) t.join();
@@ -698,29 +704,29 @@ void EmbedModel::loadTsvLine(string& line, int lineNum,
   }
   boost::split(pieces, line, boost::is_any_of(sep));
   if (pieces.size() > (unsigned int)(cols + 1)) {
-    cout << "Hmm, truncating long (" << pieces.size() <<
+    Rcpp::Rcout << "Hmm, truncating long (" << pieces.size() <<
         ") record at line " << lineNum;
     if (true) {
       for (size_t i = cols; i < pieces.size(); i++) {
-        cout << "Warning excess fields " << pieces[i]
+        Rcpp::Rcout << "Warning excess fields " << pieces[i]
                       << "; misformatted file?";
       }
     }
     pieces.resize(cols + 1);
   }
   if (pieces.size() == (unsigned int)cols) {
-    cout << "Missing record at line " << lineNum <<
+    Rcpp::Rcout << "Missing record at line " << lineNum <<
       "; assuming empty string";
     pieces.insert(pieces.begin(), "");
   }
   while (pieces.size() < (unsigned int)(cols + 1)) {
-    cout << "Zero-padding short record at line " << lineNum;
+    Rcpp::Rcout << "Zero-padding short record at line " << lineNum;
     pieces.push_back(zero);
   }
   auto idx = dict_->getId(pieces[0]);
   if (idx == -1) {
     if (pieces[0].size() > 0) {
-      cerr << "Failed to insert record: " << line << "\n";
+      Rcpp::Rcerr << "Failed to insert record: " << line << "\n";
     }
     return;
   }
@@ -731,7 +737,7 @@ void EmbedModel::loadTsvLine(string& line, int lineNum,
 }
 
 void EmbedModel::loadTsv(const char* fname, const string sep) {
-  cout << "Loading model from file " << fname << endl;
+  Rcpp::Rcout << "Loading model from file " << fname << endl;
   auto cols = args_->dim;
 
   std::ifstream ifs(fname);
@@ -778,7 +784,7 @@ void EmbedModel::loadTsv(const char* fname, const string sep) {
     t.join();
   }
 
-  cout << "Model loaded.\n";
+  Rcpp::Rcout << "Model loaded.\n";
 }
 
 void EmbedModel::loadTsv(istream& in, const string sep) {

@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -69,7 +70,7 @@ bool Args::isTrue(string arg) {
 
 void Args::parseArgs(int argc, char** argv) {
   if (argc <= 1) {
-    cerr << "Usage: need to specify whether it is train or test.\n";
+    Rcpp::Rcerr << "Usage: need to specify whether it is train or test.\n";
     printHelp();
     exit(EXIT_FAILURE);
   }
@@ -78,18 +79,18 @@ void Args::parseArgs(int argc, char** argv) {
   } else if (strcmp(argv[1], "test") == 0) {
     isTrain = false;
   } else if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-help") == 0) {
-    std::cerr << "Here is the help! Usage:" << std::endl;
+    Rcpp::Rcerr << "Here is the help! Usage:" << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   } else {
-    cerr << "Usage: the first argument should be either train or test.\n";
+    Rcpp::Rcerr << "Usage: the first argument should be either train or test.\n";
     printHelp();
     exit(EXIT_FAILURE);
   }
   int i = 2;
   while (i < argc) {
     if (argv[i][0] != '-') {
-      cout << "Provided argument without a dash! Usage:" << endl;
+      Rcpp::Rcout << "Provided argument without a dash! Usage:" << endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
@@ -100,7 +101,7 @@ void Args::parseArgs(int argc, char** argv) {
     }
 
     if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
-      std::cerr << "Here is the help! Usage:" << std::endl;
+      Rcpp::Rcerr << "Here is the help! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     } else if (strcmp(argv[i], "-trainFile") == 0) {
@@ -192,7 +193,7 @@ void Args::parseArgs(int argc, char** argv) {
     } else if (strcmp(argv[i], "-excludeLHS") == 0) {
       excludeLHS = isTrue(string(argv[i + 1]));
     } else {
-      cerr << "Unknown argument: " << argv[i] << std::endl;
+      Rcpp::Rcerr << "Unknown argument: " << argv[i] << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
@@ -200,47 +201,47 @@ void Args::parseArgs(int argc, char** argv) {
   }
   if (isTrain) {
     if (trainFile.empty() || model.empty()) {
-      cerr << "Empty train file or output model path." << endl;
+      Rcpp::Rcerr << "Empty train file or output model path." << endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
   } else {
     if (testFile.empty() || model.empty()) {
-      cerr << "Empty test file or model path." << endl;
+      Rcpp::Rcerr << "Empty test file or model path." << endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
   }
   // check for trainMode
   if ((trainMode < 0) || (trainMode > 5)) {
-    cerr << "Uknown trainMode. We currently support the follow train modes:\n";
-    cerr << "trainMode 0: at training time, one label from RHS is picked as true label; LHS is the same from input.\n";
-    cerr << "trainMode 1: at training time, one label from RHS is picked as true label; LHS is the bag of the rest RHS labels.\n";
-    cerr << "trainMode 2: at training time, one label from RHS is picked as LHS; the bag of the rest RHS labels becomes the true label.\n";
-    cerr << "trainMode 3: at training time, one label from RHS is picked as true label and another label from RHS is picked as LHS.\n";
-    cerr << "trainMode 4: at training time, the first label from RHS is picked as LHS and the second one picked as true label.\n";
-    cerr << "trainMode 5: continuous bag of words training.\n";
+    Rcpp::Rcerr << "Uknown trainMode. We currently support the follow train modes:\n";
+    Rcpp::Rcerr << "trainMode 0: at training time, one label from RHS is picked as true label; LHS is the same from input.\n";
+    Rcpp::Rcerr << "trainMode 1: at training time, one label from RHS is picked as true label; LHS is the bag of the rest RHS labels.\n";
+    Rcpp::Rcerr << "trainMode 2: at training time, one label from RHS is picked as LHS; the bag of the rest RHS labels becomes the true label.\n";
+    Rcpp::Rcerr << "trainMode 3: at training time, one label from RHS is picked as true label and another label from RHS is picked as LHS.\n";
+    Rcpp::Rcerr << "trainMode 4: at training time, the first label from RHS is picked as LHS and the second one picked as true label.\n";
+    Rcpp::Rcerr << "trainMode 5: continuous bag of words training.\n";
     exit(EXIT_FAILURE);
   }
   // check for loss type
   if (!(loss == "hinge" || loss == "softmax")) {
-    cerr << "Unsupported loss type: " << loss << endl;
+    Rcpp::Rcerr << "Unsupported loss type: " << loss << endl;
     exit(EXIT_FAILURE);
   }
   // check for similarity type
   if (!(similarity == "cosine" || similarity == "dot")) {
-    cerr << "Unsupported similarity type. Should be either dot or cosine.\n";
+    Rcpp::Rcerr << "Unsupported similarity type. Should be either dot or cosine.\n";
     exit(EXIT_FAILURE);
   }
   // check for file format
   if (!(fileFormat == "fastText" || fileFormat == "labelDoc")) {
-    cerr << "Unsupported file format type. Should be either fastText or labelDoc.\n";
+    Rcpp::Rcerr << "Unsupported file format type. Should be either fastText or labelDoc.\n";
     exit(EXIT_FAILURE);
   }
 }
 
 void Args::printHelp() {
-  cout << "\n"
+  Rcpp::Rcout << "\n"
        << "\"starspace train ...\"  or \"starspace test ...\"\n\n"
        << "The following arguments are mandatory for train: \n"
        << "  -trainFile       training file path\n"
@@ -296,7 +297,7 @@ void Args::printHelp() {
 }
 
 void Args::printArgs() {
-  cout << "Arguments: \n"
+  Rcpp::Rcout << "Arguments: \n"
        << "lr: " << lr << endl
        << "dim: " << dim << endl
        << "epoch: " << epoch << endl
