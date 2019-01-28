@@ -1,6 +1,7 @@
 CXX_STD = CXX11
 PKG_LIBS = -pthread
 PKG_CPPFLAGS = -pthread -DSTRICT_R_HEADERS -DBOOST_NO_AUTO_PTR -include compliance.h -I./Starspace/src
+PKG_CXXFLAGS = -funroll-loops 
 PKG_CXX1XFLAGS = -funroll-loops
 PKG_CXX11FLAGS = -funroll-loops
 
