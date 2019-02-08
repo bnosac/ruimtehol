@@ -144,7 +144,11 @@ starspace <- function(model = "textspace.bin", file, trainMode = 0, fileFormat =
   if(!"embeddings" %in% names(ldots)){
     file <- path.expand(file)  
   }else{
-    file <- ""
+    if("embeddings_optimise" %in% names(ldots)){
+      file <- path.expand(file) 
+    }else{
+      file <- ""  
+    }
   }
   stopifnot(trainMode %in% 0:5 && length(trainMode) == 1)
   fileFormat <- match.arg(fileFormat)

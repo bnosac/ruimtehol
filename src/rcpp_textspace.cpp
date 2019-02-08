@@ -200,7 +200,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      bool useWeight = false,
                      bool trainWord = false,
                      bool excludeLHS = false,
-                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100)) {
+                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100),
+                     bool embeddings_optimise = false) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = model;
   /*
@@ -307,10 +308,22 @@ Rcpp::List textspace(std::string model = "textspace.bin",
       }
     }
     sp->initParser();
-    //sp->initDataHandler();
-    out = Rcpp::List::create(
-      Rcpp::Named("model") = sp,
-      Rcpp::Named("args") = textspace_args(sp));    
+    if(embeddings_optimise){
+      sp->parser_->resetDict(sp->dict_);
+      sp->initDataHandler();
+      Rcpp::List iter = textspace_train(sp);
+      if(save){
+        sp->saveModel(args->model);    
+      }
+      out = Rcpp::List::create(
+        Rcpp::Named("model") = sp,
+        Rcpp::Named("args") = textspace_args(sp),
+        Rcpp::Named("iter") = iter);
+    }else{
+      out = Rcpp::List::create(
+        Rcpp::Named("model") = sp,
+        Rcpp::Named("args") = textspace_args(sp)); 
+    }
   }else{
     if(args->isTrain){
       if(std::ifstream(args->initModel)){
