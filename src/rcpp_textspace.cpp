@@ -200,8 +200,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      bool useWeight = false,
                      bool trainWord = false,
                      bool excludeLHS = false,
-                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100),
-                     bool embeddings_optimise = false) {
+                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100)) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = model;
   /*
@@ -229,9 +228,12 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     if(std::ifstream(basedoc))        args->basedoc = basedoc;
     if(std::ifstream(predictionFile)) args->predictionFile = predictionFile;
   }else if(load_from_r){
-    args->isTrain = true;  
+    args->isTrain = false;  
     //if(std::ifstream(initModel))      args->initModel = initModel;
-    if(std::ifstream(trainFile))      args->trainFile = trainFile;
+    if(std::ifstream(trainFile)){
+      args->isTrain = true;  
+      args->trainFile = trainFile; 
+    }
     if(std::ifstream(validationFile)) args->validationFile = validationFile;
   }else{
     Rcpp::stop("No valid trainFile nor testFile. Please check your path and check if the file is not opened.");
@@ -308,7 +310,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
       }
     }
     sp->initParser();
-    if(embeddings_optimise){
+    if(args->isTrain){
       sp->parser_->resetDict(sp->dict_);
       sp->initDataHandler();
       Rcpp::List iter = textspace_train(sp);
