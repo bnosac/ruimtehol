@@ -54,11 +54,16 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
     label <- ldots$label
   }
   if(is.list(y)){
-    targets <- sapply(y, FUN=function(x) paste(paste(label, x, sep = ""), collapse = " "))
+    targets <- sapply(y, FUN=function(x){
+      if(length(x) == 0){
+        return(NA_character_)
+      }
+      paste(paste(label, x, sep = ""), collapse = " ") 
+    })
   }else{
-    targets <- paste(label, y, sep = "")
+    targets <- ifelse(is.na(y), NA_character_, paste(label, y, sep = ""))
   }
-  x <- paste(targets, x)
+  x <- ifelse(is.na(targets), x, paste(targets, x, sep = " "))
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
