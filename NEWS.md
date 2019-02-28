@@ -1,6 +1,7 @@
 ## CHANGES IN rumitehol VERSION 0.2
 
-- Allow to pass an embedding matrix and keep on training based on that matrix
+- Allow to do transfer learning by passing an embedding matrix and keep on training based on that matrix 
+- Allow to do semi-supervised learning easily with embed_tagspace
 
 ## CHANGES IN rumitehol VERSION 0.1.2
 
