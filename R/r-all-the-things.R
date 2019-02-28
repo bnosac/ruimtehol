@@ -471,10 +471,35 @@ embed_entityrelationspace <- function(x, model = "graphspace.bin", early_stoppin
 }
 
 
-if(FALSE){
-  embed_imagespace <- function() {
-    .NotYetImplemented()
+## TODO: need better way of working with x if x is a matrix, now assuming data is already put into right format where image output is put in vector
+embed_imagespace <- function(x, y, model = "imagespace.bin", early_stopping = 0.75, useWeight=TRUE, ...) {
+  stopifnot(early_stopping >= 0 && early_stopping <= 1)
+  ldots <- list(...)
+  filename <- tempfile(pattern = "textspace_", fileext = ".txt")
+  filename_validation <- tempfile(pattern = "textspace_validation_", fileext = ".txt")
+  on.exit({
+    if(file.exists(filename)) file.remove(filename) 
+    if(file.exists(filename_validation)) file.remove(filename_validation)
+  })
+  label <- "__label__"
+  if("label" %in% names(ldots)){
+    label <- ldots$label
   }
+  x <- ifelse(is.na(y), x, paste(x, paste(label, y, sep = ""), sep = " "))
+  if(early_stopping < 1){
+    idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
+    writeLines(text = x[idx], con = filename)
+    writeLines(text = x[-idx], con = filename_validation)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, useWeight=useWeight, ...)
+  }else{
+    writeLines(text = x, con = filename)
+    starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", useWeight=useWeight, ...)
+  }
+}
+
+
+
+if(FALSE){
   TagSpace <- embed_tagspace
   WordSpace <- embed_wordspace
   SentenceSpace <- embed_sentencespace
@@ -484,3 +509,6 @@ if(FALSE){
   GraphSpace <- embed_entityrelationspace
   ImageSpace <- embed_imagespace
 }
+
+
+
