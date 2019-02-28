@@ -55,7 +55,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
   }
   if(is.list(y)){
     targets <- sapply(y, FUN=function(x){
-      if(length(x) == 0){
+      if(length(x) == 0 || all(is.na(x))){
         return(NA_character_)
       }
       paste(paste(label, x, sep = ""), collapse = " ") 
