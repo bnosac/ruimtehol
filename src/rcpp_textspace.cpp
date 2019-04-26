@@ -94,6 +94,21 @@ Rcpp::List textspace_train(SEXP textspacemodel) {
   auto t_start = std::chrono::high_resolution_clock::now();
   Rcpp::Function format_posixct("format.POSIXct");
   Rcpp::Function sys_time("Sys.time");
+  
+  // Also collecting error at start before training (added with respect to Starspace code)
+  Rcpp::Rcout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Initialising with learning rate " << rate << endl;
+  train_epoch.push_back(0);
+  train_rate.push_back(rate);
+  auto err = sp->model_->test(sp->trainData_, sp->args_->thread);
+  train_error.push_back(err);
+  Rcpp::Rcout << "                     > Training data error   " << err << endl;
+  if (sp->validData_ != nullptr) {
+    auto valid_err = sp->model_->test(sp->validData_, sp->args_->thread);
+    validation_error.push_back(valid_err);
+    Rcpp::Rcout << "                     > Validation data error " << valid_err << endl;
+  }
+  // Done collecting error at start before training (added with respect to Starspace code)
+  
   for (int i = 0; i < sp->args_->epoch; i++) {
     if (sp->args_->saveEveryEpoch && i > 0) {
       auto filename = sp->args_->model;
