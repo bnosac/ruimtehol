@@ -522,6 +522,9 @@ starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table
       object$labels$label_starspace <- as.character(sapply(object$labels$code, FUN=function(code) paste(model$args$dictionary$label, code, sep = "")))  
     }
     object$iter <- model$iter
+    for(att in setdiff(names(attributes(ruimte$object)), c("names", "class"))){
+      attr(object, which = att) <- attr(ruimte$object, which = att)
+    }
     object
   }
   class(object) <- "textspace"

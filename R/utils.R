@@ -54,3 +54,46 @@ embedding_similarity <- function(x, y, type = c("cosine", "dot"), top_n = +Inf) 
 }
 
 
+#' @title Get the scale of embedding similarities alongside a Starspace model
+#' @description Calculates embedding similarities between 2 embedding matrices and gets the range of resulting similarities.
+#' @param x an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}
+#' @param from an embedding matrix. Defaults to the embeddings of all the labels and the words from the model.
+#' @param to an embedding matrix. Defaults to the embeddings of all the labels.
+#' @param probs numeric vector of probabilities ranging from 0-1. Passed on to \code{\link[stats]{quantile}}
+#' @param breaks passed on to \code{\link[graphics]{hist}}
+#' @param ... other parameters passed on to \code{\link[graphics]{hist}}
+#' @return a list with elements 
+#' \itemize{
+#' \item{range: the range of the embedding similarities between \code{from} and \code{to}}
+#' \item{quantile: the quantiles of the embedding similarities between \code{from} and \code{to}}
+#' \item{hist: the histogram of the embedding similarities between \code{from} and \code{to}}
+#' }
+#' @export
+#' @examples 
+#' data(dekamer, package = "ruimtehol")
+#' dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
+#' dekamer$text <- strsplit(dekamer$question, "\\W")
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- sapply(dekamer$text, 
+#'                        FUN = function(x) paste(x, collapse = " "))
+#' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
+#' 
+#' set.seed(123456789)
+#' model <- embed_tagspace(x = tolower(dekamer$text), 
+#'                         y = dekamer$question_theme_main, 
+#'                         early_stopping = 0.8, 
+#'                         dim = 10, minCount = 5)
+#' ranges <- scale(model)
+#' ranges$range
+#' ranges$quantile
+#' plot(ranges$hist, main = "Histogram of embedding similarities")                         
+scale.textspace <- function(x, from = as.matrix(x), to = as.matrix(x, type = "labels"), 
+                            probs = seq(0, 1, by = 0.01), breaks = "scott", ...){
+  similarities <- embedding_similarity(from, to, type = x$args$param$similarity)
+  result <- list(range = range(similarities, na.rm = TRUE),
+                 quantile = stats::quantile(similarities, probs = probs, na.rm = TRUE),
+                 hist = graphics::hist(similarities, breaks = breaks, plot = FALSE))
+  result
+}
+
+
