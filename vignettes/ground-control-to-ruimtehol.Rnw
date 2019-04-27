@@ -131,7 +131,7 @@ The code above has trained a model with the following relevant arguments
 \item  \textbf{early\_stopping}: data is split in a training (80 \%) and a validation set (20 \%)
 \item  \textbf{dim}: the dimension of the embedding is set to 50
 \item  optimisation is done with \textbf{adagrad}, during 40 \textbf{epochs}, starting with a learning rate (\textbf{lr}) of 0.01 and each time decreasing the learning rate by 1/epoch. 
-\item  The \textbf{loss} which is optimised is softmax loss. If the loss does not stop decreasing after 10 iterations as set with \textbf{validationPatience}, training is stopped.
+\item  The \textbf{loss} which is optimised is softmax loss. If the loss has not decreased during 10 epochs as set with \textbf{validationPatience}, training is stopped.
 \item  Similarity between positive and negative labels is done by \textbf{cosine} similarity
 \item  \textbf{negSearchLimit} indicates the number of negative samples which are taken (for each question we know which labels were given (positive) and we sample from the list of labels which were not given a bunch of negatives)
 \item  model is trained on bigrams (argument \textbf{ngrams}) and these should occur at least twice (argument \textbf{minCount})
