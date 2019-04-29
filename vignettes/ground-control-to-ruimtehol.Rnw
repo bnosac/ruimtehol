@@ -108,7 +108,7 @@ dekamer$y[1:2]
 @
 
 \newpage
-\subsection{Model building}
+\subsection{Model building} \label{embedtagspace}
 
 Next a model is constructed, in this case a tagspace model which is a model which can be used for simple classification as well as multi-label classification (which is the case here).  
 
@@ -179,7 +179,7 @@ If you trained a model with $ngrams > 1$, you can get the embedding of a bigram/
 e <- starspace_embedding(model, c("nationale loterij"), type = "ngram")
 @
 
-\subsection{Embeddings of full text}
+\subsection{Embeddings of full text} \label{embeddingsfulltext}
 
 For retrieving embeddings of full text, use \emph{type = 'document'} which is the default of \emph{starspace\_embedding}. It aggregates the embeddings of the words which are part of the text. Note that this aggregation is governed by the normalization parameter p which you can set when you build the model. The sum of the embeddings of the words which are in the text is normalised by dividing by $\#words^p$. If $p=1$, this is equivalent to taking the average of the embeddings. When $p=0$, this is equivalent to taking sum of the embeddings. The default is $p=0.5$ indicating a mixture of both.
 
@@ -253,5 +253,97 @@ The ruimtehol package contains many more models. It is advised to just inspect t
   \item Ranking and information retrieval: See the examples in the package.
   \item Collaborative filtering: See the examples in the package.
 \end{itemize}
+
+\section{Semi-supervised learning}
+In the example in this vignette on classification modelling (\emph{embed\_tagspace} shown in section \ref{embedtagspace}), Starspace was used in a completely supervised setting. If you have a look at the documentation of the functions \emph{embed\_wordspace}, \emph{embed\_sentencespace}, \emph{embed\_articlespace}, you will notice that these are completely unsupervised. Starspace also allows to do a combination of both, namely you can perform semi-supervised learning. This is shown below where we randomly remove some data with text and some data of the labels as well and still learn on the full data. As long as we have information on the labels or on the terms or both, we can learn embeddings.
+
+<<results=hide>>=
+set.seed(321)
+dekamer <- dekamer[order(rnorm(n = nrow(dekamer))), ]
+X <- dekamer$x
+Y <- dekamer$y
+X[1:250]   <- NA
+Y[251:500] <- NA
+model <- embed_tagspace(x = X, y = Y, 
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+@
+
+\newpage
+\section{Transfer learning}
+The ruimtehol R package also allows to do transfer learning. In transfer learning, knowledge gained while learning on other data can be transferred to new data. The typical use case of this is the case where we have already pretrained embeddings available. Several authors have provided embeddings which were trained on different sources (e.g. Wikipedia / Open databases / Google or Bing queries / Gigaword / Open CONLLU corpora). These are mostly monolingual resources but also cross-lingual embeddings are common now. There are 2 use cases of such pretrained embeddings, namely.
+\begin{enumerate}
+  \item You can use these embedding as is
+  \item You can use these embedding as starting point to train and customise them on your data (transfer learning)
+\end{enumerate}
+In the examples below, both will be shown. In either case, we need to provide the argument \emph{embeddings} which should be a pretrained embedding matrix where the rownames of the matrix are the terms or labels from the model. 
+
+\subsection{Transfer learning - use embeddings as is}
+In order to show the first use case we generate some random embedding matrix and feed it to function \emph{starspace} which is the main workhorse behind all embed\_ \ldots functions.
+The important arguments that you need to give are
+\begin{itemize}
+  \item embeddings: a matrix of embeddings where the row names indicate the terms or label
+  \item similarity: how you want to calculate similarities between embeddings and documents
+  \item ngrams: when calculating similarities, shall we consider more than unigrams only
+  \item p: normalisation parameter as explained in section \ref{embeddingsfulltext}
+  \item trainMode: either 0 (tagspace), 1 (pagespace), 2 (articlespace), 3 (sentence space), 4 (multi-relational graphspace), 5 (word embeddings)
+\end{itemize}
+
+<<>>=
+pretrained <- matrix(data = rnorm(1000 * 100), nrow = 1000, ncol = 100, 
+                     dimnames = list(term = sprintf("word%s", 1:1000)))
+model <- starspace(embeddings = pretrained, 
+                   similarity = "cosine", p = 0.5, ngrams = 1, trainMode = 5)
+predict(model, newdata = c("word5 word1 word5 word3"), type = "knn")
+@
+
+\subsection{Transfer learning - use embeddings as starting values for training}
+Now for the second use case: \textbf{transfer learning}. What we will do as an example is build a simple wordspace model to get word embeddings and pass these embeddings on as starting values for anoather tagspace model.
+
+<<results=hide>>=
+set.seed(321)
+model <- embed_wordspace(dekamer$x, 
+                         dim = 50, ws = 7, epoch = 5, ngrams = 2, adagrad = FALSE,
+                         margin = 0.8, negSearchLimit = 10)
+pretrained_words  <- as.matrix(model)
+@
+
+It's important to note that we need to pass on pretrained embeddings \textbf{for all terms as well as all labels which we want to keep training upon}. Starspace uses the default prefix \_\_label\_\_ for identifying a label, which we need to add as prefix to the label embeddings. As we haven't got the embeddings of the labels, in the example below, we assign some random staring values to the embedding of the labels. (Small note: in business settings it makes sense to let these labels start from a sensible combination of the embeddings of words which you think are similar to that label).
+
+<<>>=
+labels            <- sort(unique(unlist(dekamer$y)))
+pretrained_labels <- matrix(data = rnorm(n = length(labels) * 50, 
+                                         mean = mean(pretrained_words), 
+                                         sd = sd(pretrained_words)), 
+                            nrow = length(labels), 
+                            ncol = 50, 
+                            dimnames = list(term = sprintf("__label__%s", labels)))
+pretrained        <- rbind(pretrained_words, pretrained_labels)
+@
+
+Once we have these pretrained embeddings, we can use them as starting values for the training.
+Note that we do not need to provide the dim argument as this argument is governed by the dimension of the pretrained embedding matrix.
+
+<<results=hide>>=
+set.seed(321)
+model <- embed_tagspace(x = dekamer$x, y = dekamer$y, 
+                        embeddings = pretrained,
+                        early_stopping = 0.8, validationPatience = 10,
+                        dim = 50, 
+                        lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
+                        similarity = "cosine", negSearchLimit = 50,
+                        ngrams = 2, minCount = 2)
+embedding <- as.matrix(model)
+@
+
+<<>>=
+plot(model)
+starspace_knn(model, "__label__FISCALITEIT")
+@
+
+And now we have the model ready for doing further work based on the enhanced embedding matrix.
 
 \end{document}
