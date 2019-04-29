@@ -255,7 +255,7 @@ The ruimtehol package contains many more models. It is advised to just inspect t
 \end{itemize}
 
 \section{Semi-supervised learning}
-In the example in this vignette on classification modelling (\emph{embed\_tagspace} shown in section \ref{embedtagspace}), Starspace was used in a completely supervised setting. If you have a look at the documentation of the functions \emph{embed\_wordspace}, \emph{embed\_sentencespace}, \emph{embed\_articlespace}, you will notice that these are completely unsupervised. Starspace also allows to do a combination of both, namely you can perform semi-supervised learning. This is shown below where we randomly remove some data with text and some data of the labels as well and still learn on the full data. As long as we have information on the labels or on the terms or both, we can learn embeddings.
+In the example in this vignette on classification modelling (embed\_tagspace shown in section \ref{embedtagspace}), Starspace was used in a completely supervised setting. If you have a look at the documentation of the functions embed\_wordspace, embed\_sentencespace, embed\_articlespace, you will notice that these are completely unsupervised. Starspace also allows to do a combination of both, namely you can perform semi-supervised learning. This is shown below where we randomly remove some data with text and some data of the labels as well and still learn on the full data. As long as we have information on the labels or on the terms or both, we can learn embeddings.
 
 <<results=hide>>=
 set.seed(321)
@@ -301,7 +301,7 @@ predict(model, newdata = c("word5 word1 word5 word3"), type = "knn")
 @
 
 \subsection{Transfer learning - use embeddings as starting values for training}
-Now for the second use case: \textbf{transfer learning}. What we will do as an example is build a simple wordspace model to get word embeddings and pass these embeddings on as starting values for anoather tagspace model.
+Now for the second use case: \textbf{transfer learning}. Below we build a simple wordspace model to extract word embeddings. These embeddings will be passed on as starting values for another tagspace model.
 
 <<results=hide>>=
 set.seed(321)
@@ -311,7 +311,7 @@ model <- embed_wordspace(dekamer$x,
 pretrained_words  <- as.matrix(model)
 @
 
-It's important to note that we need to pass on pretrained embeddings \textbf{for all terms as well as all labels which we want to keep training upon}. Starspace uses the default prefix \_\_label\_\_ for identifying a label, which we need to add as prefix to the label embeddings. As we haven't got the embeddings of the labels, in the example below, we assign some random staring values to the embedding of the labels. (Small note: in business settings it makes sense to let these labels start from a sensible combination of the embeddings of words which you think are similar to that label).
+It's important to note that we need to pass on pretrained embeddings \textbf{for all terms as well as all labels which we want to keep training upon}. As we haven't got the embeddings of the labels, in the example below, we assign some random starting values to the embedding of the labels. (Small note: in business settings it makes sense to let these labels start from a sensible combination of the embeddings of words which you think are similar to that label). Starspace uses the default prefix \_\_label\_\_ for identifying a label, which we need to add as prefix to the rownames from the label embeddings. 
 
 <<>>=
 labels            <- sort(unique(unlist(dekamer$y)))
@@ -339,9 +339,9 @@ model <- embed_tagspace(x = dekamer$x, y = dekamer$y,
 embedding <- as.matrix(model)
 @
 
-<<>>=
+<<fig=TRUE>>=
 plot(model)
-starspace_knn(model, "__label__FISCALITEIT")
+starspace_knn(model, "__label__FISCALITEIT", k = 10)
 @
 
 And now we have the model ready for doing further work based on the enhanced embedding matrix.
