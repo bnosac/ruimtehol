@@ -339,7 +339,7 @@ model <- embed_tagspace(x = dekamer$x, y = dekamer$y,
 embedding <- as.matrix(model)
 @
 
-<<fig=TRUE>>=
+<<fig=TRUE, fig.align="center", out.width="3cm">>=
 plot(model)
 starspace_knn(model, "__label__FISCALITEIT", k = 10)
 @
