@@ -2,11 +2,11 @@ CXX_STD = CXX11
 PKG_LIBS = -pthread
 PKG_CPPFLAGS = -pthread -DSTRICT_R_HEADERS -DBOOST_NO_AUTO_PTR -include compliance.h -I./Starspace/src
 
-SOURCES = Starspace/src/utils/args.cpp Starspace/src/utils/normalize.cpp Starspace/src/utils/utils.cpp
-SOURCES += Starspace/src/data.cpp Starspace/src/dict.cpp Starspace/src/doc_data.cpp Starspace/src/doc_parser.cpp Starspace/src/model.cpp Starspace/src/parser.cpp Starspace/src/proj.cpp Starspace/src/starspace.cpp
-SOURCES += rcpp_textspace.cpp
-SOURCES += compliance.cpp
-SOURCES += RcppExports.cpp
+SOURCES = Starspace/src/utils/args.cpp Starspace/src/utils/normalize.cpp Starspace/src/utils/utils.cpp  \
+          Starspace/src/data.cpp Starspace/src/dict.cpp Starspace/src/doc_data.cpp Starspace/src/doc_parser.cpp Starspace/src/model.cpp Starspace/src/parser.cpp Starspace/src/proj.cpp Starspace/src/starspace.cpp  \
+          rcpp_textspace.cpp  \
+          compliance.cpp  \
+          RcppExports.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 

@@ -1,3 +1,7 @@
+## CHANGES IN ruimtehol VERSION 0.2.1
+
+- remove the GNU make as part of the SystemRequirements
+
 ## CHANGES IN ruimtehol VERSION 0.2
 
 - Allow to do transfer learning by passing an embedding matrix and keep on training based on that matrix 
