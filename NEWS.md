@@ -1,3 +1,7 @@
+## CHANGES IN ruimtehol VERSION 0.2.2
+
+- fix for embed_sentencespace & embed_docspace & embed_articlespace, sentences should be separated by "\t", not " \t " in order to avoid having "" in the dictionary
+
 ## CHANGES IN ruimtehol VERSION 0.2.1
 
 - remove the GNU make as part of the SystemRequirements
