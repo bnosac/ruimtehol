@@ -4,8 +4,9 @@
 \alias{range.textspace}
 \title{Get the scale of embedding similarities alongside a Starspace model}
 \usage{
-\method{range}{textspace}(x, from = as.matrix(x), to = as.matrix(x, type =
-  "labels"), probs = seq(0, 1, by = 0.01), breaks = "scott", ...)
+\method{range}{textspace}(x, from = as.matrix(x), to = as.matrix(x,
+  type = "labels"), probs = seq(0, 1, by = 0.01), breaks = "scott",
+  ...)
 }
 \arguments{
 \item{x}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}

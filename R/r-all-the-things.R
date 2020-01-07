@@ -65,6 +65,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
   }
   x <- ifelse(is.na(targets), x, paste(targets, x, sep = " "))
   if(early_stopping < 1){
+    ## TODO: need to check training and test data have same targets
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
     writeLines(text = x[idx], con = filename)
     writeLines(text = x[-idx], con = filename_validation)

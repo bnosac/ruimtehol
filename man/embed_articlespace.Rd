@@ -4,8 +4,8 @@
 \alias{embed_articlespace}
 \title{Build a Starspace model for learning the mapping between sentences and articles (articlespace)}
 \usage{
-embed_articlespace(x, model = "articlespace.bin", early_stopping = 0.75,
-  ...)
+embed_articlespace(x, model = "articlespace.bin",
+  early_stopping = 0.75, ...)
 }
 \arguments{
 \item{x}{a data.frame with sentences containing the columns doc_id, sentence_id and token 

@@ -4,8 +4,8 @@
 \alias{embed_sentencespace}
 \title{Build a Starspace model to be used for sentence embedding}
 \usage{
-embed_sentencespace(x, model = "sentencespace.bin", early_stopping = 0.75,
-  ...)
+embed_sentencespace(x, model = "sentencespace.bin",
+  early_stopping = 0.75, ...)
 }
 \arguments{
 \item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token 
