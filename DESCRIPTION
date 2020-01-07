@@ -22,5 +22,5 @@ Depends: R (>= 2.10)
 Imports: Rcpp (>= 0.11.5), utils, graphics, stats
 Suggests: udpipe, data.table
 LinkingTo: Rcpp, BH
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 SystemRequirements: C++11
