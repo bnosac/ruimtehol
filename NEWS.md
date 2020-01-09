@@ -1,3 +1,8 @@
+## CHANGES IN ruimtehol VERSION 0.2.3
+
+- Changes to src/Makevars
+    - Changes in src/Starspace/src/model.cpp (EmbedModel::train). On Mac, no longer use threads as on CRAN that seems to make the package FAIL (while on Travis it did not - see issue #10)
+
 ## CHANGES IN ruimtehol VERSION 0.2.2
 
 - fix for embed_sentencespace & embed_docspace & embed_articlespace, sentences should be separated by "\t", not " \t " in order to avoid having "" in the dictionary

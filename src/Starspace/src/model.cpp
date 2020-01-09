@@ -213,6 +213,13 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
                        bool verbose) {
   assert(rate >= finishRate);
   assert(rate >= 0.0);
+  
+  #ifdef __APPLE__
+  if(numThreads > 1){
+    Rcpp::Rcerr << "Mac OS does not work with threads > 1, will perform training using 1 thread instead." << "\n";
+  }
+  #endif
+  
 
   // Use a layer of indirection when accessing the corpus to allow shuffling.
   auto numSamples = data->getSize();
@@ -336,9 +343,14 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     assert(b >= indices.begin());
     assert(e >= b);
     assert(e <= indices.end());
-    threads.emplace_back(thread([=] {
+    #ifdef __APPLE__
       trainThread(i, b, e);
-    }));
+    #else
+      threads.emplace_back(thread([=] {
+        trainThread(i, b, e);
+      }));
+    #endif
+    
   }
 
   // .. and a norm truncation thread. It's not worth it to slow
@@ -359,11 +371,16 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
       }
     }
   };
+  #ifdef __APPLE__
+  doneTraining = true;
+  normThread();
+  #else
   std::thread truncator(normThread);
   for (auto& t: threads) t.join();
   // All done. Shut the truncator down.
   doneTraining = true;
   truncator.join();
+  #endif
 
   Real totLoss = std::accumulate(losses.begin(), losses.end(), 0.0);
   long totCount = std::accumulate(counts.begin(), counts.end(), 0);
