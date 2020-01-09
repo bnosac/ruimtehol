@@ -344,7 +344,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
   // .. and a norm truncation thread. It's not worth it to slow
   // down every update with truncation, so just work our way through
   // truncating as needed on a separate thread.
-  std::thread truncator([&] {
+  auto normThread = [&] {
     auto trunc = [](Matrix<Real>::Row row, double maxNorm) {
       auto norm = norm2(row);
       if (norm > maxNorm) {
@@ -358,7 +358,8 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
         doneTraining = true;
       }
     }
-  });
+  };
+  std::thread truncator(normThread);
   for (auto& t: threads) t.join();
   // All done. Shut the truncator down.
   doneTraining = true;
