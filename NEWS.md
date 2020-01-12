@@ -1,3 +1,7 @@
+## CHANGES IN ruimtehol VERSION 0.2.4
+
+- Changes to vignette: specify maxTrainTime in examples to avoid issues at CRAN caused by randomisation of starting values.
+
 ## CHANGES IN ruimtehol VERSION 0.2.3
 
 - Changes to src/Makevars

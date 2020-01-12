@@ -254,10 +254,10 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     assert(start >= indices.begin());
     assert(end >= start);
     assert(end <= indices.end());
-    /*
+    
     bool amMaster = idx == 0;
     auto t_epoch_start = std::chrono::high_resolution_clock::now();
-     */
+    
     losses[idx] = 0.0;
     counts[idx] = 0;
     for (auto ip = start; ip < end; ip++) {
@@ -286,46 +286,46 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
       if ((i % kDecrStep) == (kDecrStep - 1)) {
         rate -= decrPerKSample;
       }
-      /*
+      
       if (amMaster && ((ip - indices.begin()) % 100 == 99 || (ip + 1) == end)) {
         auto t_end = std::chrono::high_resolution_clock::now();
-        auto t_epoch_spent =
-          std::chrono::duration<double>(t_end-t_epoch_start).count();
-        double ex_done_this_epoch = ip - indices.begin();
-        int ex_left = ((end - start) * (args_->epoch - epochs_done))
-                      - ex_done_this_epoch;
-        double ex_done = epochs_done * (end - start) + ex_done_this_epoch;
-        double time_per_ex = double(t_epoch_spent) / ex_done_this_epoch;
-        int eta = int(time_per_ex * double(ex_left));
         auto tot_spent = std::chrono::duration<double>(t_end-t_start).count();
         if (tot_spent > args_->maxTrainTime) {
           break;
         }
-        double epoch_progress = ex_done_this_epoch / (end - start);
-        double progress = ex_done / (ex_done + ex_left);
-        if (eta > args_->maxTrainTime - tot_spent) {
-          eta = args_->maxTrainTime - tot_spent;
-          progress = tot_spent / (eta + tot_spent);
-        }
-        int etah = eta / 3600;
-        int etam = (eta - etah * 3600) / 60;
-        int toth = int(tot_spent) / 3600;
-        int totm = (tot_spent - toth * 3600) / 60;
-        int tots = (tot_spent - toth * 3600 - totm * 60);
-        std::cerr << std::fixed;
-        std::cerr << "\rEpoch: " << std::setprecision(1) << 100 * epoch_progress << "%";
-        std::cerr << "  lr: " << std::setprecision(6) << rate;
-        std::cerr << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx];
-        if (eta < 60) {
-          std::cerr << "  eta: <1min ";
-        } else {
-          std::cerr << "  eta: " << std::setprecision(3) << etah << "h" << etam << "m";
-        }
-        std::cerr << "  tot: " << std::setprecision(3) << toth << "h" << totm << "m"  << tots << "s ";
-        std::cerr << " (" << std::setprecision(1) << 100 * progress << "%)";
-        std::cerr << std::flush;
+        // auto t_epoch_spent =
+        //   std::chrono::duration<double>(t_end-t_epoch_start).count();
+        // double ex_done_this_epoch = ip - indices.begin();
+        // int ex_left = ((end - start) * (args_->epoch - epochs_done))
+        //   - ex_done_this_epoch;
+        // double ex_done = epochs_done * (end - start) + ex_done_this_epoch;
+        // double time_per_ex = double(t_epoch_spent) / ex_done_this_epoch;
+        // int eta = int(time_per_ex * double(ex_left));
+        // double epoch_progress = ex_done_this_epoch / (end - start);
+        // double progress = ex_done / (ex_done + ex_left);
+        // if (eta > args_->maxTrainTime - tot_spent) {
+        //   eta = args_->maxTrainTime - tot_spent;
+        //   progress = tot_spent / (eta + tot_spent);
+        // }
+        // int etah = eta / 3600;
+        // int etam = (eta - etah * 3600) / 60;
+        // int toth = int(tot_spent) / 3600;
+        // int totm = (tot_spent - toth * 3600) / 60;
+        // int tots = (tot_spent - toth * 3600 - totm * 60);
+        // std::cerr << std::fixed;
+        // std::cerr << "\rEpoch: " << std::setprecision(1) << 100 * epoch_progress << "%";
+        // std::cerr << "  lr: " << std::setprecision(6) << rate;
+        // std::cerr << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx];
+        // if (eta < 60) {
+        //   std::cerr << "  eta: <1min ";
+        // } else {
+        //   std::cerr << "  eta: " << std::setprecision(3) << etah << "h" << etam << "m";
+        // }
+        // std::cerr << "  tot: " << std::setprecision(3) << toth << "h" << totm << "m"  << tots << "s ";
+        // std::cerr << " (" << std::setprecision(1) << 100 * progress << "%)";
+        // std::cerr << std::flush;
       }
-      */
+      
     }
   };
 

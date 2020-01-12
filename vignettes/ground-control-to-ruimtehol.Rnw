@@ -119,7 +119,8 @@ model <- embed_tagspace(x = dekamer$x, y = dekamer$y,
                         dim = 50, 
                         lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
                         similarity = "cosine", negSearchLimit = 50,
-                        ngrams = 2, minCount = 2)
+                        ngrams = 2, minCount = 2,
+                        maxTrainTime = 2 * 60)
 @
 <<>>=
 model
@@ -135,6 +136,7 @@ The code above has trained a model with the following relevant arguments
 \item  Similarity between positive and negative labels is done by \textbf{cosine} similarity
 \item  \textbf{negSearchLimit} indicates the number of negative samples which are taken (for each question we know which labels were given (positive) and we sample from the list of labels which were not given a bunch of negatives)
 \item  model is trained on bigrams (argument \textbf{ngrams}) and these should occur at least twice (argument \textbf{minCount})
+\item  model is trained for maximum 120 seconds (argument \textbf{maxTrainTime}))
 \end{itemize}
 
 \subsection{Model inspection}
@@ -269,7 +271,8 @@ model <- embed_tagspace(x = X, y = Y,
                         dim = 50, 
                         lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
                         similarity = "cosine", negSearchLimit = 50,
-                        ngrams = 2, minCount = 2)
+                        ngrams = 2, minCount = 2,
+                        maxTrainTime = 2 * 60)
 @
 
 \newpage
@@ -307,7 +310,8 @@ Now for the second use case: \textbf{transfer learning}. Below we build a simple
 set.seed(321)
 model <- embed_wordspace(dekamer$x, 
                          dim = 50, ws = 7, epoch = 5, ngrams = 2, adagrad = FALSE,
-                         margin = 0.8, negSearchLimit = 10)
+                         margin = 0.8, negSearchLimit = 10,
+                         maxTrainTime = 2 * 60)
 pretrained_words  <- as.matrix(model)
 @
 
@@ -335,7 +339,8 @@ model <- embed_tagspace(x = dekamer$x, y = dekamer$y,
                         dim = 50, 
                         lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
                         similarity = "cosine", negSearchLimit = 50,
-                        ngrams = 2, minCount = 2)
+                        ngrams = 2, minCount = 2,
+                        maxTrainTime = 2 * 60)
 embedding <- as.matrix(model)
 @
 
