@@ -67,11 +67,11 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
   if(early_stopping < 1){
     ## TODO: need to check training and test data have same targets
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", ...)
   }
 }
@@ -121,11 +121,11 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
   }
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 5, fileFormat = "fastText", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 5, fileFormat = "fastText", ...)
   }
 }
@@ -200,11 +200,11 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 3, fileFormat = "labelDoc", ...)
   }
 }
@@ -279,11 +279,11 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 2, fileFormat = "labelDoc", ...)
   }
 }
@@ -345,11 +345,11 @@ embed_docspace <- embed_webpage <- function(x, model = "docspace.bin", early_sto
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "labelDoc", ...)
   }
 }
@@ -404,11 +404,11 @@ embed_pagespace <- embed_clicks <- function(x, model = "pagespace.bin", early_st
   })
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "fastText", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 1, fileFormat = "fastText", ...)
   }
 }
@@ -477,11 +477,11 @@ embed_entityrelationspace <- function(x, model = "graphspace.bin", early_stoppin
   x <- sprintf("%s\t%s\t%s%s", x$entity_head, x$relation, label, x$entity_tail)
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", ...)
   }
 }
@@ -504,11 +504,11 @@ embed_imagespace <- function(x, y, model = "imagespace.bin", early_stopping = 0.
   x <- ifelse(is.na(y), x, paste(x, paste(label, y, sep = ""), sep = " "))
   if(early_stopping < 1){
     idx <- sample.int(n = length(x), size = round(early_stopping * length(x)))
-    writeLines(text = x[idx], con = filename)
-    writeLines(text = x[-idx], con = filename_validation)
+    writeLines(text = x[idx], con = filename, useBytes=TRUE)
+    writeLines(text = x[-idx], con = filename_validation, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", validationFile = filename_validation, useWeight=useWeight, ...)
   }else{
-    writeLines(text = x, con = filename)
+    writeLines(text = x, con = filename, useBytes=TRUE)
     starspace(model = model, file = filename, trainMode = 0, fileFormat = "fastText", useWeight=useWeight, ...)
   }
 }
