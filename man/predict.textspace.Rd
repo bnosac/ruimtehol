@@ -4,8 +4,15 @@
 \alias{predict.textspace}
 \title{Predict using a Starspace model}
 \usage{
-\method{predict}{textspace}(object, newdata, type = c("generic",
-  "labels", "knn", "embedding"), k = 5L, sep = " ", basedoc, ...)
+\method{predict}{textspace}(
+  object,
+  newdata,
+  type = c("generic", "labels", "knn", "embedding"),
+  k = 5L,
+  sep = " ",
+  basedoc,
+  ...
+)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}

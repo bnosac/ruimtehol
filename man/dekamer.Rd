@@ -5,7 +5,7 @@
 \alias{dekamer}
 \title{Dataset from 2017 with Questions and Answers in the Belgium Federal Parliament}
 \source{
-\url{http://data.dekamer.be}, data is provided by \url{http://www.dekamer.be} in the public domain (CC0).
+\url{http://data.dekamer.be}, data is provided by www.dekamer.be in the public domain (CC0).
 }
 \description{
 Dataset from 2017 with Questions asked by members of the Belgian Federal Parliament 

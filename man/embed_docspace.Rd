@@ -26,7 +26,6 @@ an object of class \code{textspace} as returned by \code{\link{starspace}}.
 Build a Starspace model for content-based recommendation (docspace). For example a user clicks on a webpage and this webpage contains a bunch or words.
 }
 \examples{
-library(udpipe)
 data(dekamer, package = "ruimtehol")
 data(dekamer_theme_terminology, package = "ruimtehol")
 ## Which person is interested in which theme (aka document)

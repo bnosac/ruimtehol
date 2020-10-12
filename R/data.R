@@ -18,7 +18,7 @@
 #' }
 #' @name dekamer
 #' @docType data
-#' @source \url{http://data.dekamer.be}, data is provided by \url{http://www.dekamer.be} in the public domain (CC0).
+#' @source \url{http://data.dekamer.be}, data is provided by www.dekamer.be in the public domain (CC0).
 #' @examples
 #' data(dekamer)
 #' str(dekamer)

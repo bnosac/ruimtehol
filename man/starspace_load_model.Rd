@@ -4,8 +4,7 @@
 \alias{starspace_load_model}
 \title{Load a Starspace model}
 \usage{
-starspace_load_model(object, method = c("ruimtehol", "tsv-data.table"),
-  ...)
+starspace_load_model(object, method = c("ruimtehol", "tsv-data.table"), ...)
 }
 \arguments{
 \item{object}{the path to a Starspace model on disk}

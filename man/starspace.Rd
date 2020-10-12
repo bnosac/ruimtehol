@@ -4,12 +4,27 @@
 \alias{starspace}
 \title{Interface to Starspace for training a Starspace model}
 \usage{
-starspace(model = "textspace.bin", file, trainMode = 0,
-  fileFormat = c("fastText", "labelDoc"), label = "__label__",
-  dim = 100, epoch = 5, lr = 0.01, loss = c("hinge", "softmax"),
-  margin = 0.05, similarity = c("cosine", "dot"),
-  negSearchLimit = 50, adagrad = TRUE, ws = 5, minCount = 1,
-  minCountLabel = 1, ngrams = 1, thread = 1, ...)
+starspace(
+  model = "textspace.bin",
+  file,
+  trainMode = 0,
+  fileFormat = c("fastText", "labelDoc"),
+  label = "__label__",
+  dim = 100,
+  epoch = 5,
+  lr = 0.01,
+  loss = c("hinge", "softmax"),
+  margin = 0.05,
+  similarity = c("cosine", "dot"),
+  negSearchLimit = 50,
+  adagrad = TRUE,
+  ws = 5,
+  minCount = 1,
+  minCountLabel = 1,
+  ngrams = 1,
+  thread = 1,
+  ...
+)
 }
 \arguments{
 \item{model}{the full path to where the model file will be saved. Defaults to 'textspace.bin'.}

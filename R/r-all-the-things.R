@@ -85,6 +85,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data(brussels_reviews, package = "udpipe")
 #' x <- subset(brussels_reviews, language == "nl")
@@ -106,6 +107,7 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 #' mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 #' head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, ...) {
   stopifnot(early_stopping >= 0 && early_stopping <= 1)
   ldots <- list(...)
@@ -141,6 +143,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data(brussels_reviews_anno, package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -154,6 +157,7 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, .
 #'                "het appartement zijn met veel smaak inrichten en zeer proper .")
 #' predict(model, sentences, type = "embedding")
 #' starspace_embedding(model, sentences)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 #' 
 #' \dontrun{
 #' library(udpipe)
@@ -220,6 +224,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data(brussels_reviews_anno, package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -234,6 +239,7 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #'                "het appartement zijn met veel smaak inrichten en zeer proper .")
 #' predict(model, sentences, type = "embedding")
 #' starspace_embedding(model, sentences)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 #' 
 #' \dontrun{
 #' library(udpipe)
@@ -301,7 +307,6 @@ embed_articlespace <- function(x, model = "articlespace.bin", early_stopping = 0
 #' @export
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
-#' library(udpipe)
 #' data(dekamer, package = "ruimtehol")
 #' data(dekamer_theme_terminology, package = "ruimtehol")
 #' ## Which person is interested in which theme (aka document)

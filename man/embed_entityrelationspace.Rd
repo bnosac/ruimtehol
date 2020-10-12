@@ -4,8 +4,12 @@
 \alias{embed_entityrelationspace}
 \title{Build a Starspace model for entity relationship completion}
 \usage{
-embed_entityrelationspace(x, model = "graphspace.bin",
-  early_stopping = 0.75, ...)
+embed_entityrelationspace(
+  x,
+  model = "graphspace.bin",
+  early_stopping = 0.75,
+  ...
+)
 }
 \arguments{
 \item{x}{a data.frame with columns entity_head, entity_tail and relation indicating the relation between the head and tail entity}

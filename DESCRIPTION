@@ -1,7 +1,7 @@
 Package: ruimtehol
 Type: Package
 Title: Learn Text 'Embeddings' with 'Starspace'
-Version: 0.2.4
+Version: 0.2.5
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -22,5 +22,5 @@ Depends: R (>= 2.10)
 Imports: Rcpp (>= 0.11.5), utils, graphics, stats
 Suggests: udpipe, data.table
 LinkingTo: Rcpp, BH
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 SystemRequirements: C++11

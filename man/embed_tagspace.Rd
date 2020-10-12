@@ -4,8 +4,7 @@
 \alias{embed_tagspace}
 \title{Build a Starspace model to be used for classification purposes}
 \usage{
-embed_tagspace(x, y, model = "tagspace.bin", early_stopping = 0.75,
-  ...)
+embed_tagspace(x, y, model = "tagspace.bin", early_stopping = 0.75, ...)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}

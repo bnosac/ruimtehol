@@ -22,6 +22,7 @@ an object of class \code{textspace} as returned by \code{\link{starspace}}.
 Build a Starspace model which calculates word embeddings
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data(brussels_reviews, package = "udpipe")
 x <- subset(brussels_reviews, language == "nl")
@@ -43,4 +44,5 @@ mostsimilar <- embedding_similarity(wordvectors, wordvectors["vriendelijk", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
 mostsimilar <- embedding_similarity(wordvectors, wordvectors["grote", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 10)
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 }

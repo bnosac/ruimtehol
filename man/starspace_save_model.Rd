@@ -4,10 +4,13 @@
 \alias{starspace_save_model}
 \title{Save a starspace model as a binary or tab-delimited TSV file}
 \usage{
-starspace_save_model(object, file = "textspace.ruimtehol",
+starspace_save_model(
+  object,
+  file = "textspace.ruimtehol",
   method = c("ruimtehol", "tsv-data.table", "binary", "tsv-starspace"),
-  labels = data.frame(code = character(), label = character(),
-  stringsAsFactors = FALSE))
+  labels = data.frame(code = character(), label = character(), stringsAsFactors =
+    FALSE)
+)
 }
 \arguments{
 \item{object}{an object of class \code{textspace} as returned by \code{\link{starspace}} or \code{\link{starspace_load_model}}}

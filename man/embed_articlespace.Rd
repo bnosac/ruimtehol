@@ -4,8 +4,7 @@
 \alias{embed_articlespace}
 \title{Build a Starspace model for learning the mapping between sentences and articles (articlespace)}
 \usage{
-embed_articlespace(x, model = "articlespace.bin",
-  early_stopping = 0.75, ...)
+embed_articlespace(x, model = "articlespace.bin", early_stopping = 0.75, ...)
 }
 \arguments{
 \item{x}{a data.frame with sentences containing the columns doc_id, sentence_id and token 
@@ -25,6 +24,7 @@ an object of class \code{textspace} as returned by \code{\link{starspace}}.
 Build a Starspace model for learning the mapping between sentences and articles (articlespace)
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data(brussels_reviews_anno, package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -39,6 +39,7 @@ sentences <- c("ook de keuken zijn zeer goed uitgerust .",
                "het appartement zijn met veel smaak inrichten en zeer proper .")
 predict(model, sentences, type = "embedding")
 starspace_embedding(model, sentences)
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 
 \dontrun{
 library(udpipe)
