@@ -4,7 +4,14 @@
 \alias{embed_tagspace}
 \title{Build a Starspace model to be used for classification purposes}
 \usage{
-embed_tagspace(x, y, model = "tagspace.bin", early_stopping = 0.75, ...)
+embed_tagspace(
+  x,
+  y,
+  model = "tagspace.bin",
+  early_stopping = 0.75,
+  useBytes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a character vector of text where tokens are separated by spaces}
@@ -14,6 +21,8 @@ embed_tagspace(x, y, model = "tagspace.bin", early_stopping = 0.75, ...)
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
 \item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 0.75.}
+
+\item{useBytes}{set to TRUE to avoid re-encoding when writing out train and/or test files. See \code{\link[base]{writeLines}} for details}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -28,14 +37,14 @@ data(dekamer, package = "ruimtehol")
 dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
 dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
-dekamer$text <- sapply(dekamer$text, 
+dekamer$text <- sapply(dekamer$text,
                        FUN = function(x) paste(x, collapse = " "))
 dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
 
 set.seed(123456789)
-model <- embed_tagspace(x = tolower(dekamer$text), 
-                        y = dekamer$question_theme_main, 
-                        early_stopping = 0.8, 
+model <- embed_tagspace(x = tolower(dekamer$text),
+                        y = dekamer$question_theme_main,
+                        early_stopping = 0.8,
                         dim = 10, minCount = 5)
 plot(model)
 predict(model, "de nmbs heeft het treinaanbod uitgebreid", k = 3)
@@ -46,8 +55,8 @@ starspace_embedding(model, "__label__MIGRATIEBELEID", type = "ngram")
 dekamer$question_themes <- gsub(" ", "-", dekamer$question_theme)
 dekamer$question_themes <- strsplit(dekamer$question_themes, split = ",")
 set.seed(123456789)
-model <- embed_tagspace(x = tolower(dekamer$text), 
-                        y = dekamer$question_themes, 
+model <- embed_tagspace(x = tolower(dekamer$text),
+                        y = dekamer$question_themes,
                         early_stopping = 0.8,
                         dim = 50, minCount = 2, epoch = 50)
 plot(model)

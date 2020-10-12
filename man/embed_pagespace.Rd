@@ -4,7 +4,13 @@
 \alias{embed_pagespace}
 \title{Build a Starspace model for interest-based recommendation}
 \usage{
-embed_pagespace(x, model = "pagespace.bin", early_stopping = 0.75, ...)
+embed_pagespace(
+  x,
+  model = "pagespace.bin",
+  early_stopping = 0.75,
+  useBytes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a list where each list element contains a character vector of pages which the user was interested in}
@@ -12,6 +18,8 @@ embed_pagespace(x, model = "pagespace.bin", early_stopping = 0.75, ...)
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
 \item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 0.75.}
+
+\item{useBytes}{set to TRUE to avoid re-encoding when writing out train and/or test files. See \code{\link[base]{writeLines}} for details}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -31,13 +39,13 @@ set.seed(123456789)
 model <- embed_pagespace(x, dim = 5, epoch = 5, minCount = 10, label = "__THEME__")
 plot(model)
 predict(model, "__THEME__MARINE __THEME__DEFENSIEBELEID")
- 
+
 pagevectors <- as.matrix(model)
 
-mostsimilar <- embedding_similarity(pagevectors, 
+mostsimilar <- embedding_similarity(pagevectors,
                                     pagevectors["__THEME__MIGRATIEBELEID", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
-mostsimilar <- embedding_similarity(pagevectors, 
+mostsimilar <- embedding_similarity(pagevectors,
                                     pagevectors["__THEME__DEFENSIEBELEID", ])
 head(sort(mostsimilar[, 1], decreasing = TRUE), 3)
 }

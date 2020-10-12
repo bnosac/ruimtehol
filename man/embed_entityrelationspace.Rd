@@ -8,6 +8,7 @@ embed_entityrelationspace(
   x,
   model = "graphspace.bin",
   early_stopping = 0.75,
+  useBytes = FALSE,
   ...
 )
 }
@@ -17,6 +18,8 @@ embed_entityrelationspace(
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
 \item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 0.75.}
+
+\item{useBytes}{set to TRUE to avoid re-encoding when writing out train and/or test files. See \code{\link[base]{writeLines}} for details}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -30,15 +33,15 @@ Build a Starspace model for entity relationship completion (graphspace).
 ## Example on Freebase - download the data
 filename <- paste(
   "https://raw.githubusercontent.com/bnosac-dev/GraphEmbeddings/master/",
-  "diffbot_data/FB15k/freebase_mtr100_mte100-train.txt", 
+  "diffbot_data/FB15k/freebase_mtr100_mte100-train.txt",
   sep = "")
 tmpfile <- tempfile(pattern = "freebase_mtr100_mte100_", fileext = "txt")
 ok <- suppressWarnings(try(
-  download.file(url = filename, destfile = tmpfile), 
+  download.file(url = filename, destfile = tmpfile),
   silent = TRUE))
 if(!inherits(ok, "try-error") && ok == 0){
   ## Build the model on the downloaded data
-  x <- read.delim(tmpfile, header = FALSE, nrows = 1000,  
+  x <- read.delim(tmpfile, header = FALSE, nrows = 1000,
                   col.names = c("entity_head", "relation", "entity_tail"),
                   stringsAsFactors = FALSE)
   head(x)

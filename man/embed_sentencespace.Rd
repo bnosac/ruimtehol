@@ -4,16 +4,24 @@
 \alias{embed_sentencespace}
 \title{Build a Starspace model to be used for sentence embedding}
 \usage{
-embed_sentencespace(x, model = "sentencespace.bin", early_stopping = 0.75, ...)
+embed_sentencespace(
+  x,
+  model = "sentencespace.bin",
+  early_stopping = 0.75,
+  useBytes = FALSE,
+  ...
+)
 }
 \arguments{
-\item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token 
-The doc_id is just an article or document identifier, 
+\item{x}{a data.frame with sentences containg the columns doc_id, sentence_id and token
+The doc_id is just an article or document identifier,
 the sentence_id column is a character field which contains words which are separated by a space and should not contain any tab characters}
 
 \item{model}{name of the model which will be saved, passed on to \code{\link{starspace}}}
 
 \item{early_stopping}{the percentage of the data that will be used as training data. If set to a value smaller than 1, 1-\code{early_stopping} percentage of the data which will be used as the validation set and early stopping will be executed. Defaults to 0.75.}
+
+\item{useBytes}{set to TRUE to avoid re-encoding when writing out train and/or test files. See \code{\link[base]{writeLines}} for details}
 
 \item{...}{further arguments passed on to \code{\link{starspace}} except file, trainMode and fileFormat}
 }
@@ -31,7 +39,7 @@ x <- subset(brussels_reviews_anno, language == "nl")
 x$token <- x$lemma
 x <- x[, c("doc_id", "sentence_id", "token")]
 set.seed(123456789)
-model <- embed_sentencespace(x, dim = 15, epoch = 15, 
+model <- embed_sentencespace(x, dim = 15, epoch = 15,
                              negSearchLimit = 1, maxNegSamples = 2)
 plot(model)
 sentences <- c("ook de keuken zijn zeer goed uitgerust .",
@@ -39,7 +47,6 @@ sentences <- c("ook de keuken zijn zeer goed uitgerust .",
 predict(model, sentences, type = "embedding")
 starspace_embedding(model, sentences)
 \dontshow{\} # End of main if statement running only if the required packages are installed}
-
 \dontrun{
 library(udpipe)
 data(dekamer, package = "ruimtehol")
@@ -48,7 +55,7 @@ x <- x[, c("doc_id", "sentence_id", "sentence", "token")]
 set.seed(123456789)
 model <- embed_sentencespace(x, dim = 15, epoch = 5, minCount = 5)
 plot(model)
-predict(model, "Wat zijn de cijfers qua doorstroming van 2016?", 
+predict(model, "Wat zijn de cijfers qua doorstroming van 2016?",
         basedoc = unique(x$sentence))
 
 embeddings <- starspace_embedding(model, unique(x$sentence), type = "document")
