@@ -69,6 +69,8 @@ jobs:
           install.packages("udpipe")
           install.packages("data.table")
           install.packages("BH")
+          install.packages("tinytex")
+          tinytex::parse_install( text = "! LaTeX Error: File ae.sty' not found.") 
           remotes::install_deps(pkgdir = ".", dependencies = TRUE)
         shell: Rscript {0}
 
