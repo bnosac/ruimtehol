@@ -256,7 +256,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     assert(end <= indices.end());
     
     bool amMaster = idx == 0;
-    auto t_epoch_start = std::chrono::high_resolution_clock::now();
+    //auto t_epoch_start = std::chrono::high_resolution_clock::now();
     
     losses[idx] = 0.0;
     counts[idx] = 0;
