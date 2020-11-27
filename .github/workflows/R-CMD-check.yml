@@ -87,8 +87,8 @@ jobs:
         env:
           _R_CHECK_CRAN_INCOMING_: false
         run:  |
-          R CMD INSTALL ../ruimtehol
-          R CMD build .
+          R CMD INSTALL .
+          R CMD build . --no-build-vignettes
           R CMD check --as-cran --no-manual --no-vignettes --no-tests --run-donttest *tar.gz
           R CMD check --as-cran --no-manual --no-vignettes *tar.gz
 
