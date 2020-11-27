@@ -71,6 +71,9 @@ jobs:
           install.packages("BH")
           install.packages("tinytex")
           tinytex::tlmgr_install(pkgs = "ae") 
+          tinytex::tlmgr_install(pkgs = "grfext")
+          tinytex::tlmgr_install(pkgs = "footmisc") 
+          tinytex::tlmgr_install(pkgs = "ctable") 
         shell: Rscript {0}
 
       - name: Session info
