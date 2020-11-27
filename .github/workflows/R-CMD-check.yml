@@ -74,6 +74,7 @@ jobs:
           tinytex::tlmgr_install(pkgs = "grfext")
           tinytex::tlmgr_install(pkgs = "footmisc") 
           tinytex::tlmgr_install(pkgs = "ctable") 
+          tinytex::tlmgr_install(pkgs = "hyperref") 
         shell: Rscript {0}
 
       - name: Session info
@@ -91,6 +92,7 @@ jobs:
           R CMD build . --no-build-vignettes
           R CMD check --as-cran --no-manual --no-vignettes --no-tests --run-donttest *tar.gz
           R CMD check --as-cran --no-manual --no-vignettes *tar.gz
+          R CMD build .
 
       - name: Upload check results
         if: failure()
