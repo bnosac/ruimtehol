@@ -87,7 +87,6 @@ jobs:
           R CMD build .
           R CMD check --as-cran --no-manual --no-vignettes --no-tests --run-donttest *tar.gz
           R CMD check --as-cran --no-manual --no-vignettes *tar.gz
-          R CMD check --as-cran --no-manual *tar.gz
 
       - name: Upload check results
         if: failure()
