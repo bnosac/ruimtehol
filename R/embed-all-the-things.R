@@ -60,7 +60,7 @@
 #' \item minCount:        minimal number of word occurences [1]
 #' \item minCountLabel:   minimal number of label occurences [1]
 #' \item ngrams:          max length of word ngram [1]
-#' \item bucket:          number of buckets [10000]
+#' \item bucket:          number of buckets [100000]
 #' \item label:           labels prefix [__label__]
 #' }
 #' 
@@ -100,7 +100,7 @@
 #' \dontrun{
 #' data(dekamer, package = "ruimtehol")
 #' x <- strsplit(dekamer$question, "\\W")
-#' x <- lapply(x, FUN = function(x) setdiff(x, ""))
+#' x <- lapply(x, FUN = function(x) x[x != ""])
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' 
 #' idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
@@ -230,7 +230,7 @@ print.textspace <- function(x, ...){
 #' data(dekamer, package = "ruimtehol")
 #' dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
@@ -293,7 +293,7 @@ starspace_dictionary <- function(object){
 #' @examples
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
@@ -454,9 +454,10 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' @title Load a Starspace model
 #' @description Load a Starspace model
 #' @param object the path to a Starspace model on disk
-#' @param method character indicating the method of loading. Possible values are 'ruimtehol' and 'tsv-data.table'. Defaults to 'ruimtehol'.
+#' @param method character indicating the method of loading. Possible values are 'ruimtehol', 'binary' and 'tsv-data.table'. Defaults to 'ruimtehol'.
 #' \itemize{
 #' \item{method \code{'ruimtehol'} loads the model, embeddings and labels which were saved with saveRDS by calling \code{\link{starspace_save_model}} and re-initilises a new Starspace model with the embeddings and the same parameters used to build the model}
+#' \item{method \code{'binary'} loads the embedding which were saved as a as a binary file using the original methods of the Starspace authors - see \code{\link{starspace_save_model}}}
 #' \item{method \code{'tsv-data.table'} loads the embedding which were saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
 #' }
 #' @param ... further arguments passed on to \code{\link{starspace}} in case of method 'tsv-data.table'
@@ -466,7 +467,7 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' @examples
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
@@ -486,7 +487,7 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' 
 #' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
-starspace_load_model <- function(object, method = c("ruimtehol", "binary"), ...){
+starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table", "binary"), ...){
   method <- match.arg(method)  
   stopifnot(is.character(object))
   stopifnot(file.exists(object))
@@ -563,7 +564,7 @@ starspace_load_model <- function(object, method = c("ruimtehol", "binary"), ...)
 #' @examples
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 
@@ -653,7 +654,7 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
 #' @examples 
 #' data(dekamer, package = "ruimtehol")
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text, 
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' 

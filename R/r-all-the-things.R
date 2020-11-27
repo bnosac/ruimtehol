@@ -12,7 +12,7 @@
 #' data(dekamer, package = "ruimtehol")
 #' dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 #' dekamer$text <- strsplit(dekamer$question, "\\W")
-#' dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+#' dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 #' dekamer$text <- sapply(dekamer$text,
 #'                        FUN = function(x) paste(x, collapse = " "))
 #' dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)
@@ -88,12 +88,11 @@ embed_tagspace <- function(x, y, model = "tagspace.bin", early_stopping = 0.75, 
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' \dontshow{if(require(udpipe))\{}
-#' @examples
 #' library(udpipe)
 #' data(brussels_reviews, package = "udpipe")
 #' x <- subset(brussels_reviews, language == "nl")
 #' x <- strsplit(x$feedback, "\\W")
-#' x <- lapply(x, FUN = function(x) setdiff(x, ""))
+#' x <- lapply(x, FUN = function(x) x[x != ""])
 #' x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 #' x <- tolower(x)
 #'
@@ -148,7 +147,6 @@ embed_wordspace <- function(x, model = "wordspace.bin", early_stopping = 0.75, u
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' \dontshow{if(require(udpipe))\{}
-#' @examples
 #' library(udpipe)
 #' data(brussels_reviews_anno, package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -230,7 +228,6 @@ embed_sentencespace <- function(x, model = "sentencespace.bin", early_stopping =
 #' @return an object of class \code{textspace} as returned by \code{\link{starspace}}.
 #' @examples 
 #' \dontshow{if(require(udpipe))\{}
-#' @examples
 #' library(udpipe)
 #' data(brussels_reviews_anno, package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")

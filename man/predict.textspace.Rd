@@ -69,7 +69,7 @@ The prediction functionality allows you to retrieve the following types of eleme
 \examples{
 data(dekamer, package = "ruimtehol")
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
-dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))
 

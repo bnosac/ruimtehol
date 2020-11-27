@@ -45,7 +45,7 @@ and you prefer using the methods provided by the Starspace authors instead of th
 \examples{
 data(dekamer, package = "ruimtehol")
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
-dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))
 

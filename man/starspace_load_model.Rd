@@ -4,14 +4,19 @@
 \alias{starspace_load_model}
 \title{Load a Starspace model}
 \usage{
-starspace_load_model(object, method = c("ruimtehol", "binary"), ...)
+starspace_load_model(
+  object,
+  method = c("ruimtehol", "tsv-data.table", "binary"),
+  ...
+)
 }
 \arguments{
 \item{object}{the path to a Starspace model on disk}
 
-\item{method}{character indicating the method of loading. Possible values are 'ruimtehol' and 'tsv-data.table'. Defaults to 'ruimtehol'.
+\item{method}{character indicating the method of loading. Possible values are 'ruimtehol', 'binary' and 'tsv-data.table'. Defaults to 'ruimtehol'.
 \itemize{
 \item{method \code{'ruimtehol'} loads the model, embeddings and labels which were saved with saveRDS by calling \code{\link{starspace_save_model}} and re-initilises a new Starspace model with the embeddings and the same parameters used to build the model}
+\item{method \code{'binary'} loads the embedding which were saved as a as a binary file using the original methods of the Starspace authors - see \code{\link{starspace_save_model}}}
 \item{method \code{'tsv-data.table'} loads the embedding which were saved as a tab-delimited flat file using the fast data.table fread function - see \code{\link{starspace_save_model}}}
 }}
 
@@ -26,7 +31,7 @@ Load a Starspace model
 \examples{
 data(dekamer, package = "ruimtehol")
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
-dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 dekamer$text <- sapply(dekamer$text, 
                        FUN = function(x) paste(x, collapse = " "))
 

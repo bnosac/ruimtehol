@@ -36,7 +36,7 @@ Build a Starspace model to be used for classification purposes
 data(dekamer, package = "ruimtehol")
 dekamer <- subset(dekamer, depotdat < as.Date("2017-02-01"))
 dekamer$text <- strsplit(dekamer$question, "\\\\W")
-dekamer$text <- lapply(dekamer$text, FUN = function(x) setdiff(x, ""))
+dekamer$text <- lapply(dekamer$text, FUN = function(x) x[x != ""])
 dekamer$text <- sapply(dekamer$text,
                        FUN = function(x) paste(x, collapse = " "))
 dekamer$question_theme_main <- gsub(" ", "-", dekamer$question_theme_main)

@@ -35,7 +35,7 @@ library(udpipe)
 data(brussels_reviews, package = "udpipe")
 x <- subset(brussels_reviews, language == "nl")
 x <- strsplit(x$feedback, "\\\\W")
-x <- lapply(x, FUN = function(x) setdiff(x, ""))
+x <- lapply(x, FUN = function(x) x[x != ""])
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 x <- tolower(x)
 

@@ -98,7 +98,7 @@ The Starspace C++ library internally uses spaces as a separator, make sure each 
 
 <<>>=
 dekamer$x <- strsplit(dekamer$question, "\\W")
-dekamer$x <- lapply(dekamer$x, FUN = function(x) setdiff(x, ""))
+dekamer$x <- lapply(dekamer$x, FUN = function(x) x[x != ""])
 dekamer$x <- sapply(dekamer$x, FUN = function(x) paste(x, collapse = " "))
 dekamer$x <- tolower(dekamer$x)
 dekamer$y <- strsplit(dekamer$question_theme, split = ",")
@@ -113,13 +113,13 @@ dekamer$y[1:2]
 Next a model is constructed, in this case a tagspace model which is a model which can be used for simple classification as well as multi-label classification (which is the case here).  
 
 <<results=hide>>=
-set.seed(321)
+set.seed(123456789)
 model <- embed_tagspace(x = dekamer$x, y = dekamer$y, 
                         early_stopping = 0.8, validationPatience = 10,
                         dim = 50, 
                         lr = 0.01, epoch = 40, loss = "softmax", adagrad = TRUE, 
                         similarity = "cosine", negSearchLimit = 50,
-                        ngrams = 2, minCount = 2,
+                        ngrams = 2, minCount = 2, bucket = 100000,
                         maxTrainTime = 2 * 60)
 @
 <<>>=
@@ -135,7 +135,7 @@ The code above has trained a model with the following relevant arguments
 \item  The \textbf{loss} which is optimised is softmax loss. If the loss has not decreased during 10 epochs as set with \textbf{validationPatience}, training is stopped.
 \item  Similarity between positive and negative labels is done by \textbf{cosine} similarity
 \item  \textbf{negSearchLimit} indicates the number of negative samples which are taken (for each question we know which labels were given (positive) and we sample from the list of labels which were not given a bunch of negatives)
-\item  model is trained on bigrams (argument \textbf{ngrams}) and these should occur at least twice (argument \textbf{minCount})
+\item  model is trained on bigrams (argument \textbf{ngrams}) and these should occur at least twice (argument \textbf{minCount}), embeddings of bigrams are hashed to 100000 buckets
 \item  model is trained for maximum 120 seconds (argument \textbf{maxTrainTime}))
 \end{itemize}
 

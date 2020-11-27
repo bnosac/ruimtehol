@@ -124,7 +124,7 @@ others can be passed on with ... . \cr
 \item minCount:        minimal number of word occurences [1]
 \item minCountLabel:   minimal number of label occurences [1]
 \item ngrams:          max length of word ngram [1]
-\item bucket:          number of buckets [10000]
+\item bucket:          number of buckets [100000]
 \item label:           labels prefix [__label__]
 }
 
@@ -149,7 +149,7 @@ others can be passed on with ... . \cr
 \dontrun{
 data(dekamer, package = "ruimtehol")
 x <- strsplit(dekamer$question, "\\\\W")
-x <- lapply(x, FUN = function(x) setdiff(x, ""))
+x <- lapply(x, FUN = function(x) x[x != ""])
 x <- sapply(x, FUN = function(x) paste(x, collapse = " "))
 
 idx <- sample.int(n = nrow(dekamer), size = round(nrow(dekamer) * 0.7))
