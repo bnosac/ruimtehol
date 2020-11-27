@@ -200,7 +200,7 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      int negSearchLimit = 50,
                      int minCount = 1,
                      int minCountLabel = 1,
-                     int bucket = 2000000,
+                     int bucket = 10000,
                      int ngrams = 1,
                      int trainMode = 0,
                      int K = 5,
@@ -215,7 +215,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
                      bool useWeight = false,
                      bool trainWord = false,
                      bool excludeLHS = false,
-                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100)) {
+                     Rcpp::NumericMatrix embeddings = Rcpp::NumericMatrix(0, 100),
+                     int embeddings_bucket_size = 0) {
   shared_ptr<starspace::Args> args = make_shared<starspace::Args>();
   args->model = model;
   /*
@@ -305,7 +306,8 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     Rcpp::CharacterVector terminology = dimnames[0];
     //Rcpp::Rcout << "Set up dictionary" << endl;
     sp->dict_ = make_shared<starspace::Dictionary>(sp->args_);
-    for (int i = 0; i < terminology.size(); i++){
+    // embeddings of hashed buckets come after the dictionary
+    for (int i = 0; i < (terminology.size() - embeddings_bucket_size); i++){
       std::string symbol = Rcpp::as<std::string>(terminology[i]);
       sp->dict_->insert(symbol);
     }
@@ -313,15 +315,40 @@ Rcpp::List textspace(std::string model = "textspace.bin",
     //Rcpp::Rcout << "Load embedding model" << endl;
     sp->model_ = make_shared<starspace::EmbedModel>(sp->args_, sp->dict_);
     for (int i = 0; i < terminology.size(); i++){
-      std::string symbol = Rcpp::as<std::string>(terminology[i]);
-      auto idx = sp->dict_->getId(symbol);  
-      if (idx == -1) {
-        Rcpp::Rcout << "Failed to insert embedding for term " << symbol << endl;
-      }else{
-        auto row = sp->model_->LHSEmbeddings_->row(idx);
-        for (unsigned int j = 0; j < args->dim; j++) {
-          row(j) = (float)(embeddings(i, j));
-        }    
+      if(i < (int)(sp->model_->LHSEmbeddings_->numRows())){
+        if(i < (terminology.size() - embeddings_bucket_size)){
+          // embeddings of real dictionary
+          std::string symbol = Rcpp::as<std::string>(terminology[i]);
+          auto idx = sp->dict_->getId(symbol);  
+          if (idx == -1) {
+            Rcpp::Rcout << "Failed to insert embedding for term " << symbol << endl;
+          }else{
+            auto row = sp->model_->LHSEmbeddings_->row(idx);
+            for (unsigned int j = 0; j < args->dim; j++) {
+              row(j) = (float)(embeddings(i, j));
+            }    
+          }
+        }else{
+          // embeddings of hashed buckets
+          auto row = sp->model_->LHSEmbeddings_->row(i);
+          for (unsigned int j = 0; j < args->dim; j++) {
+            row(j) = (float)(embeddings(i, j));
+          }    
+        }
+      }
+      auto row = sp->model_->LHSEmbeddings_->row(i);
+    }
+    // This only works in case of shared embeddings
+    if(!(sp->args_->shareEmb)){
+      Rcpp::stop("loading from R with shareEmb to FALSE has not been implemented");
+    }else{
+      sp->model_->RHSEmbeddings_ = sp->model_->LHSEmbeddings_;  
+    }
+    if (args->isTrain) {
+      // this is only needed for the backward, not the forward so only in case of training
+      if(sp->args_->adagrad){
+        sp->model_->LHSUpdates_.resize(sp->model_->LHSEmbeddings_->numRows());
+        sp->model_->RHSUpdates_.resize(sp->model_->RHSEmbeddings_->numRows());
       }
     }
     sp->initParser();
@@ -494,9 +521,38 @@ Rcpp::NumericMatrix textspace_embedding_ngram(SEXP textspacemodel, Rcpp::StringV
   return embedding;
 }
 
+
+// [[Rcpp::export]]
+Rcpp::NumericMatrix textspace_embedding_lhsrhs(SEXP textspacemodel, std::string type = "lhs") {
+  Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+
+  if(type == "lhs"){
+    Rcpp::NumericMatrix embedding(sp->model_->LHSEmbeddings_->numRows(), sp->args_->dim);
+    for (unsigned int i = 0; i < sp->model_->LHSEmbeddings_->numRows(); i++){
+      auto row = sp->model_->LHSEmbeddings_->row(i);
+      for (unsigned int j = 0; j < sp->args_->dim; j++) {
+        embedding(i, j) = row(j);
+      }    
+    }
+    return embedding;
+  }else if(type == "rhs"){
+    Rcpp::NumericMatrix embedding(sp->model_->RHSEmbeddings_->numRows(), sp->args_->dim);
+    for (unsigned int i = 0; i < sp->model_->RHSEmbeddings_->numRows(); i++){
+      auto row = sp->model_->RHSEmbeddings_->row(i);
+      for (unsigned int j = 0; j < sp->args_->dim; j++) {
+        embedding(i, j) = row(j);
+      }    
+    }
+    return embedding;
+  }else{
+    Rcpp::stop("type should be either lhs or rhs");
+  }
+}
+
 // [[Rcpp::export]]
 Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, Rcpp::StringVector basedoc = "", std::string sep = " ") { 
   Rcpp::XPtr<starspace::StarSpace> sp(textspacemodel);
+  //Rcpp::Rcout << "ngrams: " << sp->args_->ngrams << "\n";
   // Set number of elements to predict
   sp->args_->K = k;
   // Set dropout probability to 0 in test case.
@@ -533,6 +589,7 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
     Rcout << sp->dict_->getSymbol(sp->baseDocs_[i][0].first) << endl;
   }
   */
+  //Rcpp::Rcout << "basedocs: " << sp->baseDocs_.size() << "\n";
 
   // Do the prediction
   std::vector<starspace::Base> query_vec;
@@ -540,7 +597,9 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
   std::vector<starspace::Base> tokens;
   // split according to separator of the input query and put in query_vec all tokens which are part of the dictionary only
   sp->parseDoc(input, query_vec, sep);
+  //Rcpp::Rcout << "query_vec size: " << query_vec.size() << "\n";
   sp->predictOne(query_vec, predictions);
+  //Rcpp::Rcout << "predictions size: " << predictions.size() << "\n";
   std::vector<std::string> label;
   std::vector<std::string> basedoc_terms;
   std::vector<int32_t> basedoc_index;
@@ -549,6 +608,8 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
     prob.push_back(predictions[i].first);
     basedoc_index.push_back(predictions[i].second + 1); 
     tokens = sp->baseDocs_[predictions[i].second]; 
+    //Rcpp::Rcout << "tokens size: " << tokens.size() << "\n";
+    //Rcpp::Rcout << "predictions[i].first: " << predictions[i].first << "\n";
     std::string tokensline = "";
     if(user_basedocs){
       // If basedoc is given by R user as a character vector, should return just that instead of all the terms which are in the dictionary and are part of the basedoc
@@ -566,6 +627,7 @@ Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k = 5, 
     }else{
       for (auto t : tokens) {
         if (t.first < sp->dict_->size()) {
+          //Rcpp::Rcout << "getSymbol(t.first): " << sp->dict_->getSymbol(t.first) << "\n";
           label.push_back(sp->dict_->getSymbol(t.first));
         }
       }

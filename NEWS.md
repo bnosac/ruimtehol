@@ -1,3 +1,9 @@
+## CHANGES IN ruimtehol VERSION 0.3
+
+- Fixed a bug in saving models trained with ngrams > 1. Embeddings of hashed buckets were not saved. 
+- Default of bucket argument to the textspace C++ function is now changed to 10000 instead of 2000000, impacting all models with ngrams > 1. This was done as the embeddings of the buckets are now saved 
+- as.matrix.textspace now also allows to get the LHS and RHS embeddings
+
 ## CHANGES IN ruimtehol VERSION 0.2.5
 
 - Make example conditionally on availability of udpipe 

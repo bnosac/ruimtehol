@@ -60,7 +60,7 @@
 #' \item minCount:        minimal number of word occurences [1]
 #' \item minCountLabel:   minimal number of label occurences [1]
 #' \item ngrams:          max length of word ngram [1]
-#' \item bucket:          number of buckets [2000000]
+#' \item bucket:          number of buckets [10000]
 #' \item label:           labels prefix [__label__]
 #' }
 #' 
@@ -486,7 +486,7 @@ starspace_knn <- function(object, newdata, k = 5, ...){
 #' 
 #' ## clean up for cran
 #' file.remove("textspace.ruimtehol")
-starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table"), ...){
+starspace_load_model <- function(object, method = c("ruimtehol", "binary"), ...){
   method <- match.arg(method)  
   stopifnot(is.character(object))
   stopifnot(file.exists(object))
@@ -509,9 +509,16 @@ starspace_load_model <- function(object, method = c("ruimtehol", "tsv-data.table
     model <- ruimte$object
     model$args$data$testFile <- NULL
     arguments <- c(file = model$args$file, dim = model$args$dim, 
-                   model$args$data, model$args$param, model$args$dictionary, model$args$options)
+                   model$args$data, 
+                   model$args$param, 
+                   model$args$dictionary, 
+                   model$args$options)
     arguments <- as.list(arguments)
     arguments$embeddings <- ruimte$embeddings
+    arguments$embeddings_bucket_size <- 0L
+    if("dictionary_size" %in% names(ruimte)){
+      arguments$embeddings_bucket_size <- nrow(arguments$embeddings) - ruimte$dictionary_size
+    }
     arguments$file <- NULL
     arguments$validationFile <- NULL
     object <- do.call(starspace, arguments)
@@ -604,10 +611,17 @@ starspace_save_model <- function(object, file = "textspace.ruimtehol",
     stopifnot(inherits(labels, "data.frame"))
     stopifnot(all(c("code", "label") %in% colnames(labels)))
     labels$label_starspace <- as.character(sapply(labels$code, FUN=function(code) paste(object$args$dictionary$label, code, sep = "")))
+    ## embeddings of LHS (words + labels + buckets in case ngram > 1), buckets at the end
+    rn <- starspace_dictionary(object)$dictionary$term 
     ruimte <- list(
       object = object,
       labels = labels,
-      embeddings = as.matrix(object))
+      dictionary_size = length(rn),
+      embeddings = as.matrix(object, type = "LHS"))
+    # ruimte <- list(
+    #   object = object,
+    #   labels = labels,
+    #   embeddings = as.matrix(object, type = "all"))
     saveRDS(object = ruimte, file = file)
     result <- file
   }
@@ -690,7 +704,7 @@ starspace_embedding <- function(object, x, type = c("document", "ngram")){
 
 
 #' @export
-as.matrix.textspace <- function(x, type = c("all", "labels", "words"), prefix = TRUE, ...){
+as.matrix.textspace <- function(x, type = c("all", "labels", "words", "LHS", "RHS"), prefix = TRUE, ...){
   type <- match.arg(type)
   d <- starspace_dictionary(x)
   if("tsv" %in% names(list(...))){
@@ -715,6 +729,18 @@ as.matrix.textspace <- function(x, type = c("all", "labels", "words"), prefix = 
         stop("Starspace model has no words, you must have trained it only with labels")
       }
       emb <- starspace_embedding(object = x, x = words, type = "ngram")  
+    }else if(type %in% c("LHS", "RHS")){
+      ## embeddings of LHS/RHS (words + labels + buckets in case ngram > 1), buckets at the end
+      rn <- d$dictionary$term
+      stopifnot(inherits(x, "textspace"))
+      if(type == "LHS"){
+        emb <- textspace_embedding_lhsrhs(x$model, type = "lhs")    
+      }else if(type == "RHS"){
+        emb <- textspace_embedding_lhsrhs(x$model, type = "rhs")  
+      }
+      rown <- seq_len(nrow(emb)) 
+      rown[seq_along(rn)] <- rn
+      rownames(emb) <- rown
     }
   }
   if(!prefix){

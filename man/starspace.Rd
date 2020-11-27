@@ -124,7 +124,7 @@ others can be passed on with ... . \cr
 \item minCount:        minimal number of word occurences [1]
 \item minCountLabel:   minimal number of label occurences [1]
 \item ngrams:          max length of word ngram [1]
-\item bucket:          number of buckets [2000000]
+\item bucket:          number of buckets [10000]
 \item label:           labels prefix [__label__]
 }
 

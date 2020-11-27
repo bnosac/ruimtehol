@@ -27,8 +27,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // textspace
-Rcpp::List textspace(std::string model, bool save, /* Arguments specific for training */                      std::string trainFile, std::string initModel, std::string validationFile, /* Arguments specific for test  */                      std::string testFile, std::string basedoc, std::string predictionFile, /* Rest are the starspace defaults from Starspace/src/utils/args */                      std::string fileFormat, std::string label, std::string loss, std::string similarity, double lr, double termLr, double norm, double margin, double initRandSd, double p, double dropoutLHS, double dropoutRHS, double wordWeight, size_t dim, int epoch, int ws, int maxTrainTime, int validationPatience, int thread, int maxNegSamples, int negSearchLimit, int minCount, int minCountLabel, int bucket, int ngrams, int trainMode, int K, int batchSize, bool verbose, bool debug, bool adagrad, bool normalizeText, bool saveEveryEpoch, bool saveTempModel, bool shareEmb, bool useWeight, bool trainWord, bool excludeLHS, Rcpp::NumericMatrix embeddings);
-RcppExport SEXP _ruimtehol_textspace(SEXP modelSEXP, SEXP saveSEXP, SEXP trainFileSEXP, SEXP initModelSEXP, SEXP validationFileSEXP, SEXP testFileSEXP, SEXP basedocSEXP, SEXP predictionFileSEXP, SEXP fileFormatSEXP, SEXP labelSEXP, SEXP lossSEXP, SEXP similaritySEXP, SEXP lrSEXP, SEXP termLrSEXP, SEXP normSEXP, SEXP marginSEXP, SEXP initRandSdSEXP, SEXP pSEXP, SEXP dropoutLHSSEXP, SEXP dropoutRHSSEXP, SEXP wordWeightSEXP, SEXP dimSEXP, SEXP epochSEXP, SEXP wsSEXP, SEXP maxTrainTimeSEXP, SEXP validationPatienceSEXP, SEXP threadSEXP, SEXP maxNegSamplesSEXP, SEXP negSearchLimitSEXP, SEXP minCountSEXP, SEXP minCountLabelSEXP, SEXP bucketSEXP, SEXP ngramsSEXP, SEXP trainModeSEXP, SEXP KSEXP, SEXP batchSizeSEXP, SEXP verboseSEXP, SEXP debugSEXP, SEXP adagradSEXP, SEXP normalizeTextSEXP, SEXP saveEveryEpochSEXP, SEXP saveTempModelSEXP, SEXP shareEmbSEXP, SEXP useWeightSEXP, SEXP trainWordSEXP, SEXP excludeLHSSEXP, SEXP embeddingsSEXP) {
+Rcpp::List textspace(std::string model, bool save, /* Arguments specific for training */                      std::string trainFile, std::string initModel, std::string validationFile, /* Arguments specific for test  */                      std::string testFile, std::string basedoc, std::string predictionFile, /* Rest are the starspace defaults from Starspace/src/utils/args */                      std::string fileFormat, std::string label, std::string loss, std::string similarity, double lr, double termLr, double norm, double margin, double initRandSd, double p, double dropoutLHS, double dropoutRHS, double wordWeight, size_t dim, int epoch, int ws, int maxTrainTime, int validationPatience, int thread, int maxNegSamples, int negSearchLimit, int minCount, int minCountLabel, int bucket, int ngrams, int trainMode, int K, int batchSize, bool verbose, bool debug, bool adagrad, bool normalizeText, bool saveEveryEpoch, bool saveTempModel, bool shareEmb, bool useWeight, bool trainWord, bool excludeLHS, Rcpp::NumericMatrix embeddings, int embeddings_bucket_size);
+RcppExport SEXP _ruimtehol_textspace(SEXP modelSEXP, SEXP saveSEXP, SEXP trainFileSEXP, SEXP initModelSEXP, SEXP validationFileSEXP, SEXP testFileSEXP, SEXP basedocSEXP, SEXP predictionFileSEXP, SEXP fileFormatSEXP, SEXP labelSEXP, SEXP lossSEXP, SEXP similaritySEXP, SEXP lrSEXP, SEXP termLrSEXP, SEXP normSEXP, SEXP marginSEXP, SEXP initRandSdSEXP, SEXP pSEXP, SEXP dropoutLHSSEXP, SEXP dropoutRHSSEXP, SEXP wordWeightSEXP, SEXP dimSEXP, SEXP epochSEXP, SEXP wsSEXP, SEXP maxTrainTimeSEXP, SEXP validationPatienceSEXP, SEXP threadSEXP, SEXP maxNegSamplesSEXP, SEXP negSearchLimitSEXP, SEXP minCountSEXP, SEXP minCountLabelSEXP, SEXP bucketSEXP, SEXP ngramsSEXP, SEXP trainModeSEXP, SEXP KSEXP, SEXP batchSizeSEXP, SEXP verboseSEXP, SEXP debugSEXP, SEXP adagradSEXP, SEXP normalizeTextSEXP, SEXP saveEveryEpochSEXP, SEXP saveTempModelSEXP, SEXP shareEmbSEXP, SEXP useWeightSEXP, SEXP trainWordSEXP, SEXP excludeLHSSEXP, SEXP embeddingsSEXP, SEXP embeddings_bucket_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type trainWord(trainWordSEXP);
     Rcpp::traits::input_parameter< bool >::type excludeLHS(excludeLHSSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type embeddings(embeddingsSEXP);
-    rcpp_result_gen = Rcpp::wrap(textspace(model, save, trainFile, initModel, validationFile, testFile, basedoc, predictionFile, fileFormat, label, loss, similarity, lr, termLr, norm, margin, initRandSd, p, dropoutLHS, dropoutRHS, wordWeight, dim, epoch, ws, maxTrainTime, validationPatience, thread, maxNegSamples, negSearchLimit, minCount, minCountLabel, bucket, ngrams, trainMode, K, batchSize, verbose, debug, adagrad, normalizeText, saveEveryEpoch, saveTempModel, shareEmb, useWeight, trainWord, excludeLHS, embeddings));
+    Rcpp::traits::input_parameter< int >::type embeddings_bucket_size(embeddings_bucket_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace(model, save, trainFile, initModel, validationFile, testFile, basedoc, predictionFile, fileFormat, label, loss, similarity, lr, termLr, norm, margin, initRandSd, p, dropoutLHS, dropoutRHS, wordWeight, dim, epoch, ws, maxTrainTime, validationPatience, thread, maxNegSamples, negSearchLimit, minCount, minCountLabel, bucket, ngrams, trainMode, K, batchSize, verbose, debug, adagrad, normalizeText, saveEveryEpoch, saveTempModel, shareEmb, useWeight, trainWord, excludeLHS, embeddings, embeddings_bucket_size));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -158,6 +159,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// textspace_embedding_lhsrhs
+Rcpp::NumericMatrix textspace_embedding_lhsrhs(SEXP textspacemodel, std::string type);
+RcppExport SEXP _ruimtehol_textspace_embedding_lhsrhs(SEXP textspacemodelSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type textspacemodel(textspacemodelSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(textspace_embedding_lhsrhs(textspacemodel, type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // textspace_predict
 Rcpp::List textspace_predict(SEXP textspacemodel, std::string input, int k, Rcpp::StringVector basedoc, std::string sep);
 RcppExport SEXP _ruimtehol_textspace_predict(SEXP textspacemodelSEXP, SEXP inputSEXP, SEXP kSEXP, SEXP basedocSEXP, SEXP sepSEXP) {
@@ -190,13 +203,14 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_ruimtehol_textspace_help", (DL_FUNC) &_ruimtehol_textspace_help, 1},
     {"_ruimtehol_textspace_args", (DL_FUNC) &_ruimtehol_textspace_args, 1},
-    {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 47},
+    {"_ruimtehol_textspace", (DL_FUNC) &_ruimtehol_textspace, 48},
     {"_ruimtehol_textspace_evaluate", (DL_FUNC) &_ruimtehol_textspace_evaluate, 5},
     {"_ruimtehol_textspace_load_model", (DL_FUNC) &_ruimtehol_textspace_load_model, 2},
     {"_ruimtehol_textspace_save_model", (DL_FUNC) &_ruimtehol_textspace_save_model, 3},
     {"_ruimtehol_textspace_dictionary", (DL_FUNC) &_ruimtehol_textspace_dictionary, 1},
     {"_ruimtehol_textspace_embedding_doc", (DL_FUNC) &_ruimtehol_textspace_embedding_doc, 2},
     {"_ruimtehol_textspace_embedding_ngram", (DL_FUNC) &_ruimtehol_textspace_embedding_ngram, 2},
+    {"_ruimtehol_textspace_embedding_lhsrhs", (DL_FUNC) &_ruimtehol_textspace_embedding_lhsrhs, 2},
     {"_ruimtehol_textspace_predict", (DL_FUNC) &_ruimtehol_textspace_predict, 5},
     {"_ruimtehol_textspace_knn", (DL_FUNC) &_ruimtehol_textspace_knn, 3},
     {NULL, NULL, 0}
