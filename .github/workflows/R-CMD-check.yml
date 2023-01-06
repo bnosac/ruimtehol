@@ -24,9 +24,9 @@ jobs:
           - {os: macOS-latest, r: 'devel'}
           - {os: macOS-latest, r: 'release'}
           - {os: macOS-latest, r: 'oldrel'}
-          - {os: ubuntu-16.04, r: 'devel'}
-          - {os: ubuntu-16.04, r: 'release'}
-          - {os: ubuntu-16.04, r: 'oldrel'}
+          - {os: ubuntu-latest, r: 'devel'}
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'oldrel'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -84,19 +84,13 @@ jobs:
           pkgs[, c("Version"), drop = FALSE]
         shell: Rscript {0}
 
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-        run:  |
-          R CMD INSTALL .
-          R CMD build . --no-build-vignettes
-          R CMD check --as-cran --no-manual --no-vignettes --no-tests --run-donttest *tar.gz
-          R CMD check --as-cran --no-manual --no-vignettes *tar.gz
-          R CMD build .
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@master
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-build-vignettes")'
