@@ -214,9 +214,9 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
   assert(rate >= finishRate);
   assert(rate >= 0.0);
   
-  #ifdef __APPLE__
+  #if defined(__APPLE__) || defined(_WIN32)
   if(numThreads > 1){
-    Rcpp::Rcerr << "Mac OS does not work with threads > 1, will perform training using 1 thread instead." << "\n";
+    Rcpp::Rcerr << "Mac OS / Windows does not work with threads > 1, will perform training using 1 thread instead." << "\n";
   }
   #endif
   
@@ -343,7 +343,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     assert(b >= indices.begin());
     assert(e >= b);
     assert(e <= indices.end());
-    #ifdef __APPLE__
+    #if defined(__APPLE__) || defined(_WIN32)
       trainThread(i, b, e);
     #else
       threads.emplace_back(thread([=] {
@@ -371,7 +371,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
       }
     }
   };
-  #ifdef __APPLE__
+  #if defined(__APPLE__) || defined(_WIN32)
   doneTraining = true;
   normThread();
   #else

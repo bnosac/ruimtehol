@@ -1,3 +1,7 @@
+## CHANGES IN ruimtehol VERSION 0.3.1
+
+- Changes in src/Starspace/src/model.cpp (EmbedModel::train). On Windows, no longer use threads as on CRAN that seems to make the package FAIL.
+
 ## CHANGES IN ruimtehol VERSION 0.3
 
 - Fixed a bug in saving models trained with ngrams > 1. Embeddings of hashed buckets were not saved. 
