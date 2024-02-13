@@ -1,5 +1,10 @@
 
 #pragma once
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <Rcpp.h>
 #include <stdlib.h>
 
