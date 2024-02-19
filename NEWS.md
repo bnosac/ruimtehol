@@ -1,6 +1,7 @@
 ## CHANGES IN ruimtehol VERSION 0.3.2
 
 - Docs of starspace and starspace_dictionary: fix use of {} in itemize items
+- Remove compliance.cpp and compliance.h and move the abort/exit statements directly in the cpp files
 
 ## CHANGES IN ruimtehol VERSION 0.3.1
 
