@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -34,6 +33,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <Rcpp.h>
 
 int getNumberOfCores() {
 #ifdef WIN32
@@ -706,7 +706,7 @@ EmbedModel::kNN(shared_ptr<SparseLinear<Real>> lookup,
     }
     for (auto r : mostSimilar) {
       if (r.first == -1 || r.second == -1.0) {
-        abort();
+        Rcpp::stop("Incorrect Starspace usage");
       }
     }
     return mostSimilar;

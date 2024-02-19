@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -17,6 +16,7 @@
 #include <assert.h>
 #include <numeric>
 #include <stdlib.h> 
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -33,7 +33,7 @@ void LayerDataHandler::loadFromFile(
   ifstream fin(fileName);
   if (!fin.is_open()) {
     Rcpp::Rcerr << fileName << " cannot be opened for loading!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   fin.close();
 

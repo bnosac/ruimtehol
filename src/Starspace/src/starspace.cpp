@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -15,6 +14,7 @@
 #include <unordered_set>
 
 #include <boost/algorithm/string.hpp>
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -37,7 +37,7 @@ void StarSpace::initParser() {
     parser_ = make_shared<LayerDataParser>(dict_, args_);
   } else {
     Rcpp::Rcerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
 }
 
@@ -65,7 +65,7 @@ shared_ptr<InternDataHandler> StarSpace::initData() {
     return make_shared<LayerDataHandler>(args_);
   } else {
     Rcpp::Rcerr << "Unsupported file format. Currently support: fastText or labelDoc.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   return nullptr;
 }
@@ -102,7 +102,7 @@ void StarSpace::initFromSavedModel(const string& filename) {
   std::ifstream in(filename, std::ifstream::binary);
   if (!in.is_open()) {
     Rcpp::Rcerr << "Model file cannot be opened for loading!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   string magic;
   char c;
@@ -112,7 +112,7 @@ void StarSpace::initFromSavedModel(const string& filename) {
   Rcpp::Rcout << magic << endl;
   if (magic != kMagic) {
     Rcpp::Rcerr << "Magic signature does not match!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // load args
   args_->load(in);
@@ -137,7 +137,7 @@ void StarSpace::initFromTsv(const string& filename) {
   ifstream in(filename);
   if (!in.is_open()) {
     Rcpp::Rcerr << "Model file cannot be opened for loading!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // Test dimension of first line, adjust args appropriately
   // (This is also so we can load a TSV file without even specifying the dim.)
@@ -234,7 +234,7 @@ MatrixRow StarSpace::getNgramVector(const string& phrase) {
   boost::split(tokens, phrase, boost::is_any_of(string(" ")));
   if (tokens.size() > (unsigned int)(args_->ngrams)) {
     Rcpp::Rcerr << "Error! Input ngrams size is greater than model ngrams size.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   if (tokens.size() == 1) {
     // looking up the entity embedding directly
@@ -266,7 +266,7 @@ void StarSpace::loadBaseDocs() {
   if (args_->basedoc.empty()) {
     if (args_->fileFormat == "labelDoc") {
       Rcpp::Rcerr << "Must provide base labels when label is featured.\n";
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
     for (int i = 0; i < dict_->nlabels(); i++) {
       baseDocs_.push_back({ make_pair(i + dict_->nwords(), 1.0) });
@@ -280,7 +280,7 @@ void StarSpace::loadBaseDocs() {
     ifstream fin(args_->basedoc);
     if (!fin.is_open()) {
       Rcpp::Rcerr << "Base doc file cannot be opened for loading!" << std::endl;
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
     string line;
     while (getline(fin, line)) {
@@ -293,7 +293,7 @@ void StarSpace::loadBaseDocs() {
     fin.close();
     if (baseDocVectors_.size() == 0) {
       Rcpp::Rcerr << "ERROR: basedoc file '" << args_->basedoc << "' is empty." << std::endl;
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
     //Rcpp::Rcout << "Finished loading " << baseDocVectors_.size() << " base docs.\n";
   }
@@ -393,7 +393,7 @@ void StarSpace::evaluate() {
   // check that it is not in trainMode 5
   if (args_->trainMode == 5) {
     Rcpp::Rcerr << "Test is undefined in trainMode 5. Please use other trainMode for testing.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
 
   // set dropout probability to 0 in test case
@@ -469,7 +469,7 @@ void StarSpace::saveModel(const string& filename) {
   std::ofstream ofs(filename, std::ofstream::binary);
   if (!ofs.is_open()) {
     Rcpp::Rcerr << "Model file cannot be opened for saving!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // sign model
   ofs.write(kMagic.data(), kMagic.size() * sizeof(char));

@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -16,6 +15,7 @@
 #include <fstream>
 #include <numeric>
 #include <assert.h>
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -34,7 +34,7 @@ void InternDataHandler::errorOnZeroExample(const string& fileName) {
             << "Please check: is the file empty? "
             << "Do the examples contain proper feature and label according to the trainMode? "
             << "If your examples are unlabeled, try to set trainMode=5.\n";
-  exit(EXIT_FAILURE);
+  Rcpp::stop("Incorrect Starspace usage");
 }
 
 void InternDataHandler::loadFromFile(
@@ -44,7 +44,7 @@ void InternDataHandler::loadFromFile(
   ifstream fin(fileName);
   if (!fin.is_open()) {
     Rcpp::Rcerr << fileName << " cannot be opened for loading!" << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   fin.close();
 

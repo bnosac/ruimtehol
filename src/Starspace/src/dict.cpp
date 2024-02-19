@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -17,6 +16,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -140,7 +140,7 @@ void Dictionary::readFromFile(
   ifstream fin(file);
   if (!fin.is_open()) {
     Rcpp::Rcerr << "Input file cannot be opened!" << endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   int64_t minThreshold = 1;
   size_t lines_read = 0;
@@ -169,12 +169,12 @@ void Dictionary::readFromFile(
   Rcpp::Rcout << "Number of labels in dictionary: " << nlabels_ << std::endl;
   if (lines_read == 0) {
     Rcpp::Rcerr << "ERROR: Empty file." << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   if (size_ == 0) {
     Rcpp::Rcerr << "Empty vocabulary. Try a smaller -minCount value."
               << std::endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
 }
 
