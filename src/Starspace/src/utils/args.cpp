@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -15,6 +14,7 @@
 #include <string>
 #include <cstring>
 #include <assert.h>
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -72,7 +72,7 @@ void Args::parseArgs(int argc, char** argv) {
   if (argc <= 1) {
     Rcpp::Rcerr << "Usage: need to specify whether it is train or test.\n";
     printHelp();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   if (strcmp(argv[1], "train") == 0) {
     isTrain = true;
@@ -81,18 +81,18 @@ void Args::parseArgs(int argc, char** argv) {
   } else if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-help") == 0) {
     Rcpp::Rcerr << "Here is the help! Usage:" << std::endl;
     printHelp();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   } else {
     Rcpp::Rcerr << "Usage: the first argument should be either train or test.\n";
     printHelp();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   int i = 2;
   while (i < argc) {
     if (argv[i][0] != '-') {
       Rcpp::Rcout << "Provided argument without a dash! Usage:" << endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
 
     // handling "--"
@@ -103,7 +103,7 @@ void Args::parseArgs(int argc, char** argv) {
     if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
       Rcpp::Rcerr << "Here is the help! Usage:" << std::endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     } else if (strcmp(argv[i], "-trainFile") == 0) {
       trainFile = string(argv[i + 1]);
     } else if (strcmp(argv[i], "-validationFile") == 0) {
@@ -195,7 +195,7 @@ void Args::parseArgs(int argc, char** argv) {
     } else {
       Rcpp::Rcerr << "Unknown argument: " << argv[i] << std::endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
     i += 2;
   }
@@ -203,13 +203,13 @@ void Args::parseArgs(int argc, char** argv) {
     if (trainFile.empty() || model.empty()) {
       Rcpp::Rcerr << "Empty train file or output model path." << endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
   } else {
     if (testFile.empty() || model.empty()) {
       Rcpp::Rcerr << "Empty test file or model path." << endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("Incorrect Starspace usage");
     }
   }
   // check for trainMode
@@ -221,22 +221,22 @@ void Args::parseArgs(int argc, char** argv) {
     Rcpp::Rcerr << "trainMode 3: at training time, one label from RHS is picked as true label and another label from RHS is picked as LHS.\n";
     Rcpp::Rcerr << "trainMode 4: at training time, the first label from RHS is picked as LHS and the second one picked as true label.\n";
     Rcpp::Rcerr << "trainMode 5: continuous bag of words training.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // check for loss type
   if (!(loss == "hinge" || loss == "softmax")) {
     Rcpp::Rcerr << "Unsupported loss type: " << loss << endl;
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // check for similarity type
   if (!(similarity == "cosine" || similarity == "dot")) {
     Rcpp::Rcerr << "Unsupported similarity type. Should be either dot or cosine.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
   // check for file format
   if (!(fileFormat == "fastText" || fileFormat == "labelDoc")) {
     Rcpp::Rcerr << "Unsupported file format type. Should be either fastText or labelDoc.\n";
-    exit(EXIT_FAILURE);
+    Rcpp::stop("Incorrect Starspace usage");
   }
 }
 
