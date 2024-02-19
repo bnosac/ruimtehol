@@ -40,13 +40,13 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: r-lib/actions/setup-tinytex@v2
       - name: Install additional LaTeX packages
-          run: |
-            tlmgr install ae
-            tlmgr install grfext
-            tlmgr install footmisc
-            tlmgr install ctable
-            tlmgr install hyperref
-            tlmgr list --only-installed
+        run: |
+          tlmgr install ae
+          tlmgr install grfext
+          tlmgr install footmisc
+          tlmgr install ctable
+          tlmgr install hyperref
+          tlmgr list --only-installed
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
