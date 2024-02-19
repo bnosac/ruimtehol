@@ -105,7 +105,7 @@ others can be passed on with ... . \cr
 \item dim:             size of embedding vectors [100]
 \item epoch:           number of epochs [5]
 \item lr:              learning rate [0.01]
-\item loss:            loss function {hinge, softmax} [hinge]
+\item loss:            loss function: hinge, softmax [hinge]
 \item margin:          margin parameter in hinge loss. It's only effective if hinge loss is used. [0.05]
 \item similarity:      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss. It's only effective if hinge loss is used. [cosine]
 \item negSearchLimit:  number of negatives sampled [50]

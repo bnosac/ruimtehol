@@ -12,12 +12,12 @@ starspace_dictionary(object)
 \value{
 a list with elements 
 \enumerate{
-\item{ntokens: }{The number of tokens in the data}
-\item{nwords: }{The number of words which are part of the dictionary}
-\item{nlabels: }{The number of labels which are part of the dictionary}
-\item{labels: }{A character vector with the labels}
-\item{dictionary_size: }{The size of the dictionary (nwords + nlabels)}
-\item{dictionary: }{A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
+\item{ntokens: The number of tokens in the data}
+\item{nwords: The number of words which are part of the dictionary}
+\item{nlabels: The number of labels which are part of the dictionary}
+\item{labels: A character vector with the labels}
+\item{dictionary_size: The size of the dictionary (nwords + nlabels)}
+\item{dictionary: A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
 for each term if it is a word or a label}
 }
 }
