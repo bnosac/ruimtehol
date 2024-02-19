@@ -1,3 +1,7 @@
+## CHANGES IN ruimtehol VERSION 0.3.2
+
+- Docs of starspace and starspace_dictionary: fix use of {} in itemize items
+
 ## CHANGES IN ruimtehol VERSION 0.3.1
 
 - Changes in src/Starspace/src/model.cpp (EmbedModel::train). On Windows, no longer use threads as on CRAN that seems to make the package FAIL.

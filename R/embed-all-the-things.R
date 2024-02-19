@@ -41,7 +41,7 @@
 #' \item dim:             size of embedding vectors [100]
 #' \item epoch:           number of epochs [5]
 #' \item lr:              learning rate [0.01]
-#' \item loss:            loss function {hinge, softmax} [hinge]
+#' \item loss:            loss function: hinge, softmax [hinge]
 #' \item margin:          margin parameter in hinge loss. It's only effective if hinge loss is used. [0.05]
 #' \item similarity:      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss. It's only effective if hinge loss is used. [cosine]
 #' \item negSearchLimit:  number of negatives sampled [50]
@@ -218,12 +218,12 @@ print.textspace <- function(x, ...){
 #' @export
 #' @return a list with elements 
 #' \enumerate{
-#' \item{ntokens: }{The number of tokens in the data}
-#' \item{nwords: }{The number of words which are part of the dictionary}
-#' \item{nlabels: }{The number of labels which are part of the dictionary}
-#' \item{labels: }{A character vector with the labels}
-#' \item{dictionary_size: }{The size of the dictionary (nwords + nlabels)}
-#' \item{dictionary: }{A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
+#' \item{ntokens: The number of tokens in the data}
+#' \item{nwords: The number of words which are part of the dictionary}
+#' \item{nlabels: The number of labels which are part of the dictionary}
+#' \item{labels: A character vector with the labels}
+#' \item{dictionary_size: The size of the dictionary (nwords + nlabels)}
+#' \item{dictionary: A data.frame with all the words and labels from the dictionary. This data.frame has columns term, is_word and is_label indicating
 #' for each term if it is a word or a label}
 #' }
 #' @examples 
