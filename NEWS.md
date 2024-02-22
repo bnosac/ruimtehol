@@ -2,7 +2,8 @@
 
 - Docs of starspace and starspace_dictionary: fix use of {} in itemize items
 - Remove compliance.cpp and compliance.h and move the abort/exit statements directly in the cpp files
-- Drop C++11 specification in Makevars
+- Drop C++11 specification in Makevars 
+  - hereby replacing use of std::random_shuffle with the Fisher-Yates Shuffle Algorithm as indicated at https://gallery.rcpp.org/articles/stl-random-shuffle/
 
 ## CHANGES IN ruimtehol VERSION 0.3.1
 

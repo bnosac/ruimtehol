@@ -236,7 +236,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
   // Fisher-Yates Shuffle Algorithm - https://gallery.rcpp.org/articles/stl-random-shuffle/
   int j;
   for (int i = 0; i < numSamples - 1; i++) {
-    j = i + randWrapper(n - i);
+    j = i + randWrapper(numSamples - i);
     std::swap(indices[i], indices[j]);
   }
 
