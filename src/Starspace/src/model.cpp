@@ -228,7 +228,11 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     int i = 0;
     for (auto& idx: indices) idx = i++;
   }
-  std::shuffle(indices.begin(), indices.end(), randWrapper);
+  //std::random_shuffle(indices.begin(), indices.end(), randWrapper);
+  Rcpp::IntegerVector indices_r = Rcpp::sample(numSamples, numSamples, false, R_NilValue, true);
+  for (auto ii = 0; i < numSamples; ii++) {
+    indices[ii] = indices_r[ii];
+  }
 
   // Compute word negatives
   if (args_->trainMode == 5 || args_->trainWord) {
