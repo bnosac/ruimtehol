@@ -228,7 +228,17 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
     int i = 0;
     for (auto& idx: indices) idx = i++;
   }
-  std::random_shuffle(indices.begin(), indices.end(), randWrapper);
+  // std::random_shuffle(indices.begin(), indices.end(), randWrapper);
+  // Rcpp::IntegerVector indices_r = Rcpp::sample(numSamples, numSamples, false, R_NilValue, true) - 1;
+  // for (auto ii = 0; ii < numSamples; ii++) {
+  //   indices[ii] = indices_r[ii];
+  // }
+  // Fisher-Yates Shuffle Algorithm - https://gallery.rcpp.org/articles/stl-random-shuffle/
+  int j;
+  for (int i = 0; i < numSamples - 1; i++) {
+    j = i + randWrapper(numSamples - i);
+    std::swap(indices[i], indices[j]);
+  }
 
   // Compute word negatives
   if (args_->trainMode == 5 || args_->trainWord) {

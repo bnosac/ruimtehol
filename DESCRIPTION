@@ -23,4 +23,3 @@ Imports: Rcpp (>= 0.11.5), utils, graphics, stats
 Suggests: udpipe, data.table
 LinkingTo: Rcpp, BH
 RoxygenNote: 7.1.2
-SystemRequirements: C++11
