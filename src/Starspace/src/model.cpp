@@ -230,7 +230,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
   }
   //std::random_shuffle(indices.begin(), indices.end(), randWrapper);
   Rcpp::IntegerVector indices_r = Rcpp::sample(numSamples, numSamples, false, R_NilValue, true);
-  for (auto ii = 0; i < numSamples; ii++) {
+  for (auto ii = 0; ii < numSamples; ii++) {
     indices[ii] = indices_r[ii];
   }
 
