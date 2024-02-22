@@ -2,9 +2,9 @@
 ^\.Rproj\.user$
 .github
 LICENSE$
-dev
+dev/
 .bin
 .tsv
 inst/paper
 inst/ground-control-to-ruimtehol.pdf
-inst/extdata
+inst/extdata/
