@@ -93,4 +93,4 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
-          args: 'c("--no-manual", "--as-cran", "--no-vignettes")'
+          args: 'c("--no-manual", "--as-cran", "--no-vignettes", "--no-build-vignettes", "--ignore-vignettes")'
