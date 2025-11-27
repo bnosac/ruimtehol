@@ -9,6 +9,11 @@
 name: R-hub
 run-name: "${{ github.event.inputs.id }}: ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}"
 
+env:
+  CHECK_ARGS: "--as-cran --no-vignettes --no-build-vignettes --ignore-vignettes"
+  BUILD_ARGS: "--no-build-vignettes"
+  
+
 on:
   workflow_dispatch:
     inputs:
@@ -93,4 +98,3 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
-          args: 'c("--no-manual", "--as-cran", "--no-vignettes", "--no-build-vignettes", "--ignore-vignettes")'
