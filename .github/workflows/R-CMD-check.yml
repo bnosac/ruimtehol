@@ -45,6 +45,16 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          
+      - uses: r-lib/actions/setup-tinytex@v2
+      - name: Install additional LaTeX packages
+        run: |
+          tlmgr install ae
+          tlmgr install grfext
+          tlmgr install footmisc
+          tlmgr install ctable
+          tlmgr install hyperref
+          tlmgr list --only-installed             
 
       - uses: r-lib/actions/check-r-package@v2
         with:
